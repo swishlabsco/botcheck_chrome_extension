@@ -5,9 +5,9 @@
   "version": "1.1.0",
   "description": "Use machine learning techniques to detect propaganda accounts on Twitter.",
   "icons": {
-    "32": "icons/icon32.png",
-    "64": "icons/icon64.png",
-    "128": "icons/icon128.png"
+    "16": "icons/default@16-gray.png",
+    "48": "icons/default@48-gray.png",
+    "128": "icons/default@128-gray.png"
   },
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "content_scripts": [
