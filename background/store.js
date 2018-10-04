@@ -1,6 +1,7 @@
 Vue.use(Vuex);
 
-let apiRoot = 'https://ashbhat.pythonanywhere.com';
+let authApiRoot = 'https://ashbhat.pythonanywhere.com';
+let apiRoot = 'https://botcheckdummy-dot-surfsafe-rbl.appspot.com';
 
 let store = new Vuex.Store({
   state: {
@@ -23,6 +24,7 @@ let store = new Vuex.Store({
           visible: false
         }
       },
+      message: 'Scanning...',
       results: {
         exampleUserName: {
           username: 'exampleUserName',
@@ -33,39 +35,30 @@ let store = new Vuex.Store({
     }
   },
   actions: {
-    AUTH_APIKEY_GET(context, browserToken) {
-      axios.get(`${apiRoot}/chromekey?token=${browserToken}`).then(res => {
-        if (res && res.data && res.data.token) {
-          context.commit('AUTH_CLOSE');
-          context.commit('AUTH_APIKEY_SET', res.data.token);
-          if (context.state.synced.dialogs.auth.screenName) {
-            context.dispatch('SCREEN_NAME_CHECK', context.state.synced.dialogs.auth.screenName);
-          }
-        }
-      });
-    },
     AUTH_TWITTER(context) {
       let browserToken = generateBrowserToken();
       chrome.tabs.create(
         {
-          url: `${apiRoot}/chromelogin?token=${browserToken}`
+          url: `${apiRoot}/ExtensionLogin?token=${browserToken}`
         },
         authTab => {
-          chrome.tabs.onRemoved.addListener(closedTabId => {
-            if (closedTabId === authTab.id) {
-              context.dispatch('AUTH_APIKEY_GET', browserToken);
-            }
+          chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+              // Note: this event is fired twice:
+              // Once with `changeInfo.status` = "loading" and another time with "complete"
+              if (changeInfo.status === 'complete' && tab.url.indexOf('https://twitter.com/?apikey=') == 0) {
+                var url = new URL(tab.url);
+                var query = parseQueryString(url.search);
+                context.commit('AUTH_APIKEY_SET', query.apikey);
+              }
           });
         }
       );
     },
-    SCREEN_NAME_CHECK(context, screenName) {
+    DEEP_SCAN(context, screenName) {
       if (!context.state.apiKey) {
-        context.commit('AUTH_OPEN', screenName);
+        context.dispatch('AUTH_TWITTER');
         return;
       }
-
-      context.commit('RESULTS_OPEN', screenName);
 
       // Don't check network again if we've already done the check
       // This will reset on browser restart
@@ -75,7 +68,7 @@ let store = new Vuex.Store({
       }
 
       axios
-        .post(`${apiRoot}/checkhandle/`, {
+        .post(`${apiRoot}/DeepScan`, {
           username: screenName,
           apikey: context.state.apiKey
         })
@@ -111,7 +104,6 @@ let store = new Vuex.Store({
       state.clientTabId = tabId;
     },
     AUTH_APIKEY_SET(state, apiKey) {
-      state.synced.dialogs.auth.visible = false;
       state.apiKey = apiKey;
     },
     SCREEN_NAME_CHECK_DONE(state, result) {
@@ -149,3 +141,13 @@ let store = new Vuex.Store({
     }
   }
 });
+
+function parseQueryString(queryString) {
+    var query = {};
+    var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
+    for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i].split('=');
+        query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+    }
+    return query;
+}

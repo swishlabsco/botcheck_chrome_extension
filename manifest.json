@@ -12,19 +12,19 @@
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "content_scripts": [
     {
-      "css": ["styles/element.css", "styles/style.css"],
+      "css": ["styles/element.css", "styles/style.css", "styles/botcheck.css"],
       "js": [
         "lib/vue.min.js",
         "lib/vuex.min.js",
         "lib/element.js",
         "lib/util.js",
         "lib/errors.js",
-        "content/components/button-check.js",
+        "content/components/botcheck-status.js",
         "content/components/dialog-auth.js",
         "content/components/dialog-results.js",
         "content/components/dialog-thanks.js",
         "content/storeClient.js",
-        "content/injectButtons.js",
+        "content/injectScanner.js",
         "content/injectDialogs.js"
       ],
       "matches": ["https://twitter.com/*"]
@@ -45,6 +45,6 @@
   "browser_action": {
     "default_popup": "popup/popup.html"
   },
-  "permissions": ["storage"],
-  "web_accessible_resources": ["*.ttf", "*.woff"]
+  "permissions": ["storage","tabs"],
+  "web_accessible_resources": ["*.ttf", "*.woff","*.png"]
 }

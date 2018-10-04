@@ -1,0 +1,21 @@
+.ProfileHeaderCard-botcheck {
+  color: #657786;
+  font-size: 14px;
+  line-height: 20px;
+  margin-bottom: 8px;
+  position: relative;
+}
+.ProfileHeaderCard-botcheck .Icon {
+  min-width: 18px;
+  position: absolute;
+  top: 1px;
+}
+.ProfileHeaderCard-botcheck .status-text {
+  padding-left: 22px;
+  line-height: 1;
+  color: #657786;
+  vertical-align: middle;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  font-size: 14px;
+}
