@@ -1,34 +1,65 @@
 @twitterTextGrey: #657786;
 @botcheckRed: #FB0015;
+@botcheckLightRed: #FFD6D7;
 
 .botcheck-feed-container {
     display: inline-block;
 }
 
-.ProfileHeaderCard-botcheck {
+.botcheck {
 	color: @twitterTextGrey;
     font-size: 14px;
     line-height: 20px;
     margin-bottom: 8px;
     position: relative;
 
-    .Icon {
+    .icon {
     	width: 18px;
 	    position: absolute;
 	    top: 1px;
+        background-image: none;
     }
 
 	.status-text {
 		padding-left: 22px;
 		line-height: 1;
 		color: @twitterTextGrey;
-    	vertical-align: bottom;
+    	vertical-align: middle;
     	box-decoration-break: clone;
     	-webkit-box-decoration-break: clone;
     	font-size: 14px;
+        font-weight: bold;
+        display: inline-block;
 
         &.bot {
             color: @botcheckRed;
         }
 	}
+
+    &.button {
+        border-radius: 25px;
+        background: @botcheckLightRed;
+        user-select: none;
+        cursor: pointer;
+
+        .icon {
+            position: relative;
+            vertical-align: middle;
+            padding-left: 10px;
+            padding-top: 3px;
+        }
+
+        .status-text {
+            padding-left: 4px;
+            padding-right: 10px;
+            vertical-align: middle;
+            margin-top: 3px;
+            font-size: 12px;
+        }
+    }
+
+    &.pull-up {
+        margin-top: -4px;
+        margin-left: 4px;
+    }
 }
