@@ -1,3 +1,6 @@
+.botcheck-feed-container {
+  display: inline-block;
+}
 .ProfileHeaderCard-botcheck {
   color: #657786;
   font-size: 14px;
@@ -6,7 +9,7 @@
   position: relative;
 }
 .ProfileHeaderCard-botcheck .Icon {
-  min-width: 18px;
+  width: 18px;
   position: absolute;
   top: 1px;
 }
@@ -14,8 +17,11 @@
   padding-left: 22px;
   line-height: 1;
   color: #657786;
-  vertical-align: middle;
+  vertical-align: bottom;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
   font-size: 14px;
+}
+.ProfileHeaderCard-botcheck .status-text.bot {
+  color: #FB0015;
 }

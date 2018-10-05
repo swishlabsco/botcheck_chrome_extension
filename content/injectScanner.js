@@ -58,7 +58,8 @@ function processTweetEl(tweetEl) {
 
   let screenName = getScreenNameFromElement(tweetEl);
 
-  let el = document.createElement('span');
+  let el = document.createElement('div');
+  el.classList = 'botcheck-feed-container';
   el.innerHTML = '<botcheck-status :screen-name="screenName"></botcheck-status>';
   tweetEl.querySelector('.ProfileTweet-actionList').appendChild(el);
 
@@ -69,6 +70,9 @@ function processTweetEl(tweetEl) {
       return {
         screenName
       };
+    },
+    mounted: function() {
+      store.broadcastAction('LIGHT_SCAN', this.screenName);
     }
   });
 }

@@ -1,4 +1,9 @@
 @twitterTextGrey: #657786;
+@botcheckRed: #FB0015;
+
+.botcheck-feed-container {
+    display: inline-block;
+}
 
 .ProfileHeaderCard-botcheck {
 	color: @twitterTextGrey;
@@ -21,5 +26,9 @@
     	box-decoration-break: clone;
     	-webkit-box-decoration-break: clone;
     	font-size: 14px;
+
+        &.bot {
+            color: @botcheckRed;
+        }
 	}
 }

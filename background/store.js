@@ -79,6 +79,31 @@ let store = new Vuex.Store({
           }
         });
     },
+    LIGHT_SCAN(context, screenName) {
+      if (!context.state.apiKey) {
+        context.dispatch('AUTH_TWITTER');
+        return;
+      }
+
+      // Don't check network again if we've already done the check
+      // This will reset on browser restart
+      if (context.state.synced.results[screenName]) {
+        context.commit('SCREEN_NAME_CHECK_DONE', context.state.synced.results[screenName]);
+        return;
+      }
+
+      axios
+        .post(`${apiRoot}/LightScan`, {
+          username: screenName,
+          apikey: context.state.apiKey
+        })
+        .then(result => {
+          if (result && result.data) {
+            context.commit('SCREEN_NAME_CHECK_DONE', result.data);
+            context.dispatch('LOG', result.data);
+          }
+        });
+    },
     DISAGREE(context, prediction) {
       axios.post(`${apiRoot}/disagree`, {
         prediction,
