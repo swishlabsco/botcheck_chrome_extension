@@ -59,7 +59,7 @@ function processTweetEl(tweetEl) {
   let screenName = getScreenNameFromElement(tweetEl);
 
   let el = document.createElement('span');
-  el.innerHTML = '<button-check :screen-name="screenName"></button-check>';
+  el.innerHTML = '<botcheck-status :screen-name="screenName"></botcheck-status>';
   tweetEl.querySelector('.ProfileTweet-actionList').appendChild(el);
 
   new Vue({
@@ -90,11 +90,11 @@ function processProfileEl(profileEl) {
     return;
   }
 
-  // Insert button below screen name
+  // Insert with other metadata
   let el = document.createElement('div');
-  el.innerHTML = '<button-check :screen-name="screenName"></button-check>';
+  el.innerHTML = '<botcheck-status :screen-name="screenName"></botcheck-status>';
   profileEl
-    .querySelector('.ProfileHeaderCard-screenname, .ProfileCard-screenname')
+    .querySelector('.ProfileHeaderCard-bio')
     .insertAdjacentElement('afterend', el);
 
   new Vue({
@@ -104,6 +104,9 @@ function processProfileEl(profileEl) {
       return {
         screenName
       };
+    },
+    mounted: function() {
+      store.broadcastAction('DEEP_SCAN', this.screenName);
     }
   });
 }
