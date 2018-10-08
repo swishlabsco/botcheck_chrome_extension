@@ -1,0 +1,41 @@
+@textColor: #666;
+@lightGrey: #E5E5E5;
+
+html, body {
+	margin: 0;
+	padding: 0;
+	color: @textColor;
+	width: 200px;
+}
+
+ul {
+	list-style-type: none;
+	padding: 10px 0 0 0;
+	margin-left: 0;
+
+	li:not(.divider) {
+		display: block;
+		padding: 8px 15px;
+
+		&:last-of-type {
+			padding: 7px 15px 0 15px;
+		}
+
+		a {
+			font-size: 13px;
+			color: @textColor;
+			text-decoration: none;
+
+			&:hover {
+				text-decoration: none;
+			}
+		}
+	}
+
+	li.divider {
+		display: block;
+		height: 1px;
+		background: @lightGrey;
+		margin: 8px 0;
+	}
+}

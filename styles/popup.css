@@ -1,0 +1,33 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  color: #666;
+  width: 200px;
+}
+ul {
+  list-style-type: none;
+  padding: 10px 0 0 0;
+  margin-left: 0;
+}
+ul li:not(.divider) {
+  display: block;
+  padding: 8px 15px;
+}
+ul li:not(.divider):last-of-type {
+  padding: 7px 15px 0 15px;
+}
+ul li:not(.divider) a {
+  font-size: 13px;
+  color: #666;
+  text-decoration: none;
+}
+ul li:not(.divider) a:hover {
+  text-decoration: none;
+}
+ul li.divider {
+  display: block;
+  height: 1px;
+  background: #E5E5E5;
+  margin: 8px 0;
+}

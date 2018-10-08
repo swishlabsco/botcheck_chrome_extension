@@ -9,10 +9,5 @@ let app = new Vue({
     return {
       apiKey: store.state.apiKey
     };
-  },
-  methods: {
-    authWithTwitter() {
-      store.dispatch('AUTH_TWITTER');
-    }
   }
 });
