@@ -1,11 +1,11 @@
 Vue.component('botcheck-status', {
   template: html`
-    <div class="ProfileHeaderCard-botcheck">
-      <span class="Icon"><img :src="icon"/></span>
-      <span class="status-text">{{message}}</span>
+    <div :class="containerClass">
+      <span class="icon"><img :src="icon"/></span>
+      <span :class="messageClass">{{message}}</span>
     </div>
   `(),
-  props: ['screenName'],
+  props: ['screenName', 'isFeed', 'isRetweet', 'isProfile'],
   computed: {
     icon() {
       let result = this.$store.state.synced.results[this.screenName];
@@ -18,16 +18,38 @@ Vue.component('botcheck-status', {
 
       return chrome.extension.getURL('icons/default@18-gray.png');
     },
+    containerClass() {
+      let className = 'botcheck';
+      let result = this.$store.state.synced.results[this.screenName];
+      if (!this.isFeed && !this.isProfile && result && result.prediction) {
+        className += ' button';
+      }
+      if (this.isRetweet) {
+        className += ' pull-up';
+      }
+      return className;
+    },
+    messageClass() {
+      let result = this.$store.state.synced.results[this.screenName];
+      if (result && result.prediction) {
+        return 'status-text bot';
+      }
+      else if (result && !result.prediction) {
+        return 'status-text';
+      }
+      
+      return 'status-text';
+    },
     message() {
       let result = this.$store.state.synced.results[this.screenName];
       if (result && result.prediction) {
-        return 'Likely a Bot'
+        return 'Likely a Bot';
       }
       else if (result && !result.prediction) {
-        return 'Not a Bot'
+        return 'Not a Bot';
       }
       
-      return 'Scanning...'
+      return 'Scanning...';
     }
   }
 });

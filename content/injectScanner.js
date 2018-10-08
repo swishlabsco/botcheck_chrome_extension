@@ -20,7 +20,14 @@ function initData() {
 
 function injectButtons() {
   // This first tries to inject the buttons on tweets/profiles already on the page
-  document.querySelectorAll('.tweet').forEach(processTweetEl);
+  // Tweets
+  document.querySelectorAll('.tweet.js-stream-tweet').forEach(function(tweet) {
+    processTweetEl(tweet, true);
+  });
+  // Permalink tweets
+  document.querySelectorAll('.tweet.permalink-tweet').forEach(function(tweet) {
+    processTweetEl(tweet, false);
+  });
   document.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach(processProfileEl);
 
   // Then we set up an observer to do the same for any future tweets/profiles
@@ -31,8 +38,18 @@ function injectButtons() {
         if (!addedNode.querySelectorAll) {
           return;
         }
+        // Retweet
+        if (addedNode.classList.contains('tweet') && addedNode.classList.contains('js-stream-tweet')) {
+          processTweetEl(addedNode, false, true);
+        }
         // Tweets
-        addedNode.querySelectorAll('.tweet').forEach(processTweetEl);
+        addedNode.querySelectorAll('.tweet.js-stream-tweet').forEach(function(tweet) {
+          processTweetEl(tweet, true, false);
+        });
+        // Permalink tweets
+        addedNode.querySelectorAll('.tweet.permalink-tweet').forEach(function(tweet) {
+          processTweetEl(tweet, false, false);
+        });
         // Profile pages
         addedNode.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach(processProfileEl);
         // Hover profiles
@@ -49,7 +66,7 @@ function injectButtons() {
 }
 
 // Process a Tweet and add the Botcheck button to it
-function processTweetEl(tweetEl) {
+function processTweetEl(tweetEl, isFeed, isRetweet) {
   if (!tweetEl.dataset || !tweetEl.dataset.screenName || tweetEl.dataset.botcheckInjected) {
     return;
   }
@@ -57,18 +74,32 @@ function processTweetEl(tweetEl) {
   tweetEl.dataset.botcheckInjected = true;
 
   let screenName = getScreenNameFromElement(tweetEl);
+  let isProfile = false;
 
-  let el = document.createElement('span');
-  el.innerHTML = '<botcheck-status :screen-name="screenName"></botcheck-status>';
-  tweetEl.querySelector('.ProfileTweet-actionList').appendChild(el);
+  let el = document.createElement('div');
+  el.classList = 'botcheck-feed-container';
+  el.innerHTML = '<botcheck-status :screen-name="screenName" :is-feed="isFeed" :is-retweet="isRetweet" :is-profile="isProfile"></botcheck-status>';
+
+  if (isRetweet) {
+    tweetEl.querySelector('.stream-item-header').appendChild(el);
+  }
+  else {
+    tweetEl.querySelector('.ProfileTweet-actionList').appendChild(el);
+  }
 
   new Vue({
     el,
     store,
     data() {
       return {
-        screenName
+        screenName,
+        isFeed,
+        isRetweet,
+        isProfile
       };
+    },
+    mounted: function() {
+      store.broadcastAction('LIGHT_SCAN', this.screenName);
     }
   });
 }
@@ -82,6 +113,7 @@ function processProfileEl(profileEl) {
   profileEl.dataset.botcheckInjected = true;
 
   let screenName = getScreenNameFromElement(profileEl);
+  let isProfile = true;
 
   if (!screenName) return;
 
@@ -105,7 +137,8 @@ function processProfileEl(profileEl) {
     store,
     data() {
       return {
-        screenName
+        screenName,
+        isProfile
       };
     },
     mounted: function() {
