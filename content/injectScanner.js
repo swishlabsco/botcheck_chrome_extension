@@ -124,10 +124,13 @@ function processProfileEl(profileEl) {
 
   // Insert with other metadata
   let el = document.createElement('div');
-  el.innerHTML = '<botcheck-status :screen-name="screenName" :is-profile="isProfile"></botcheck-status>';
-  profileEl
-    .querySelector('.ProfileHeaderCard-bio')
-    .insertAdjacentElement('afterend', el);
+  el.innerHTML = '<botcheck-status :screen-name="screenName"></botcheck-status>';
+  
+  // Get bio and insert after if it exists
+  var bio = profileEl.querySelector('.ProfileHeaderCard-bio');
+  if (bio) {
+    bio.insertAdjacentElement('afterend', el);
+  }
 
   new Vue({
     el,
