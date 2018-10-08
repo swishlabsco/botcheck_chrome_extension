@@ -7,6 +7,7 @@ let store = new Vuex.Store({
   state: {
     apiKey: '',
     clientTabId: -1,
+    authTabId: -1,
     // Anything in 'synced' will automatically be synchronized
     // with any injected content scripts running in tabs
     synced: {
@@ -36,23 +37,26 @@ let store = new Vuex.Store({
   },
   actions: {
     AUTH_TWITTER(context) {
-      let browserToken = generateBrowserToken();
-      chrome.tabs.create(
-        {
-          url: `${apiRoot}/ExtensionLogin?token=${browserToken}`
-        },
-        authTab => {
-          chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-              // Note: this event is fired twice:
-              // Once with `changeInfo.status` = "loading" and another time with "complete"
-              if (changeInfo.status === 'complete' && tab.url.indexOf('https://twitter.com/?apikey=') == 0) {
-                var url = new URL(tab.url);
-                var query = parseQueryString(url.search);
-                context.commit('AUTH_APIKEY_SET', query.apikey);
-              }
-          });
-        }
-      );
+      if (context.state.authTabId === -1) {
+        let browserToken = generateBrowserToken();
+        chrome.tabs.create(
+          {
+            url: `${apiRoot}/ExtensionLogin?token=${browserToken}`
+          },
+          authTab => {
+            context.commit('AUTH_TAB_SET', authTab);
+            chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+                // Note: this event is fired twice:
+                // Once with `changeInfo.status` = "loading" and another time with "complete"
+                if (changeInfo.status === 'complete' && tab.url.indexOf('https://twitter.com/?apikey=') == 0) {
+                  var url = new URL(tab.url);
+                  var query = parseQueryString(url.search);
+                  context.commit('AUTH_APIKEY_SET', query.apikey);
+                }
+            });
+          }
+        );
+      }
     },
     DEEP_SCAN(context, screenName) {
       if (!context.state.apiKey) {
@@ -152,12 +156,8 @@ let store = new Vuex.Store({
     THANKS_CLOSE(state) {
       state.synced.dialogs.thanks.visible = false;
     },
-    AUTH_OPEN(state, screenName) {
-      state.synced.dialogs.auth.screenName = screenName;
-      state.synced.dialogs.auth.visible = true;
-    },
-    AUTH_CLOSE(state) {
-      state.synced.dialogs.auth.visible = false;
+    AUTH_TAB_SET(state, tabId) {
+      state.authTabId = tabId;
     },
     SHARE(context, screenName) {
       chrome.tabs.create({
