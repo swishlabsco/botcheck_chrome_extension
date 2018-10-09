@@ -70,16 +70,16 @@ let store = new Vuex.Store({
         return;
       }
 
+      // Don't do whitelisted accounts, return not a bot
+      if (context.state.synced.whitelist[args.screenName]) {
+        context.commit('SCREEN_NAME_CHECK_DONE', { realname: args.realName, username: args.screenName, prediction: false });
+        return;
+      }
+
       // Don't check network again if we've already done the check
       // This will reset on browser restart
       if (context.state.synced.results[args.screenName]) {
         context.commit('SCREEN_NAME_CHECK_DONE', context.state.synced.results[args.screenName]);
-        return;
-      }
-
-      // Don't do whitelisted accounts, return not a bot
-      if (context.state.synced.whitelist.indexOf(screenName) > -1) {
-        context.commit('SCREEN_NAME_CHECK_DONE', { username: screenName, prediction: false });
         return;
       }
 
@@ -102,16 +102,16 @@ let store = new Vuex.Store({
         return;
       }
 
+      // Don't do whitelisted accounts, return not a bot
+      if (context.state.synced.whitelist[args.screenName]) {
+        context.commit('SCREEN_NAME_CHECK_DONE', { realname: args.realName, username: args.screenName, prediction: false });
+        return;
+      }
+
       // Don't check network again if we've already done the check
       // This will reset on browser restart
       if (context.state.synced.results[args.screenName]) {
         context.commit('SCREEN_NAME_CHECK_DONE', context.state.synced.results[args.screenName]);
-        return;
-      }
-
-      // Don't do whitelisted accounts, return not a bot
-      if (context.state.synced.whitelist.indexOf(screenName) > -1) {
-        context.commit('SCREEN_NAME_CHECK_DONE', { username: screenName, prediction: false });
         return;
       }
 
