@@ -1,7 +1,6 @@
 Vue.use(Vuex);
 
-let apiRoot = 'https://botcheckdummy-dot-surfsafe-rbl.appspot.com';
-//let apiRoot = 'https://botcheck2-dot-surfsafe-rbl.appspot.com';
+let apiRoot = 'https://botcheck2-dot-surfsafe-rbl.appspot.com';
 
 let store = new Vuex.Store({
   state: {
