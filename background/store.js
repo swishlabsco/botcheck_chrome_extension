@@ -179,8 +179,11 @@ let store = new Vuex.Store({
         Vue.set(state.synced.whitelist, payload.user.username, payload.user);
 
       }
-      else {
+      else if (payload.type === 'delete') {
         Vue.delete(state.synced.whitelist, payload.username);
+      }
+      else {
+        state.synced.whitelist = payload.whitelist;
       }
     },
     SCREEN_NAME_CHECK_DONE(state, result) {

@@ -13,7 +13,7 @@ chrome.storage.sync.get(null, state => {
   if (state.apiKey) {
     store.commit('AUTH_APIKEY_SET', state.apiKey);
   }
-  if (state && state.synced && state.synced.whitelist) {
-  	store.commit('WHITELIST_SET', state.synced.whitelist);
+  if (state.whitelist) {
+  	store.commit('WHITELIST_SET', { type: 'load', whitelist: state.whitelist });
   }
 });
