@@ -124,7 +124,7 @@ function processProfileEl(profileEl) {
 
   // Insert with other metadata
   let el = document.createElement('div');
-  el.innerHTML = '<botcheck-status :screen-name="screenName"></botcheck-status>';
+  el.innerHTML = '<botcheck-status :screen-name="screenName" :is-profile="isProfile"></botcheck-status>';
   
   // Get bio and insert after if it exists
   var bio = profileEl.querySelector('.ProfileHeaderCard-bio');

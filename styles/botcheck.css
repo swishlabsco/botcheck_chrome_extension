@@ -47,7 +47,111 @@
   margin-top: 3px;
   font-size: 12px;
 }
+.botcheck.inline {
+  display: inline-block;
+}
 .botcheck.pull-up {
   margin-top: -4px;
   margin-left: 4px;
+}
+.botcheck-dialog .el-dialog {
+  width: 640px;
+}
+.botcheck-dialog .el-container {
+  padding: 0 20px;
+}
+.botcheck-dialog .el-main {
+  padding-top: 10px;
+  padding-bottom: 0;
+}
+.botcheck-dialog .el-dropdown {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+}
+.botcheck-dialog .el-dropdown-item {
+  font-size: 13px;
+}
+.botcheck-dialog .el-icon-arrow-down {
+  font-weight: bold;
+  cursor: pointer;
+}
+.botcheck-dialog img {
+  width: 80px;
+  display: inline-block;
+}
+.botcheck-dialog .header {
+  font-size: 17px;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 10px;
+  letter-spacing: 0.4px;
+  color: #333333;
+}
+.botcheck-dialog strong {
+  color: #333333;
+}
+.botcheck-dialog span:not(.header) {
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: 0.4px;
+}
+.botcheck-dialog span:not(.header).status-text {
+  margin-bottom: 3rem;
+  display: inline-block;
+}
+.botcheck-dialog .share-link {
+  cursor: pointer;
+  display: inline-block;
+  position: absolute;
+  bottom: 15px;
+  right: 20px;
+}
+.botcheck-dialog .share-link i {
+  font-size: 18px;
+  color: #FB0015;
+  vertical-align: middle;
+}
+.botcheck-dialog .share-link span {
+  font-size: 13px;
+  display: inline-block;
+  margin-left: 4px;
+  color: #FB0015;
+  vertical-align: middle;
+  margin-top: 2px;
+}
+.botcheck-dialog.whitelist .el-dialog {
+  width: 325px;
+  height: 260px;
+}
+.botcheck-dialog.whitelist .el-dialog__body {
+  padding: 20px 0;
+}
+.botcheck-dialog.whitelist .el-row {
+  width: 100%;
+}
+.botcheck-dialog.whitelist .header {
+  color: #657786;
+  font-weight: 400;
+  font-size: 16px;
+}
+.botcheck-dialog.whitelist .item {
+  display: block;
+  width: 100%;
+  padding: 10px 0;
+}
+.botcheck-dialog.whitelist .item:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+.botcheck-dialog.whitelist .item .screenName {
+  float: left;
+  color: #BFBFBF;
+  font-size: 14px;
+}
+.botcheck-dialog.whitelist .item .delete {
+  float: right;
+  line-height: 1.1;
+  cursor: pointer;
 }

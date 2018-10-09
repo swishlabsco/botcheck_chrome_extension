@@ -1,6 +1,8 @@
 @twitterTextGrey: #657786;
+@lightGrey: #BFBFBF;
 @botcheckRed: #FB0015;
 @botcheckLightRed: #FFD6D7;
+@black: #333333;
 
 .botcheck-feed-container {
     display: inline-block;
@@ -58,8 +60,139 @@
         }
     }
 
+    &.inline {
+        display: inline-block;
+    }
+
     &.pull-up {
         margin-top: -4px;
         margin-left: 4px;
+    }
+}
+
+.botcheck-dialog {
+    .el-dialog {
+        width: 640px;
+    }
+
+    .el-container {
+        padding: 0 20px;
+    }
+
+    .el-main {
+        padding-top: 10px;
+        padding-bottom: 0;
+    }
+
+    .el-dropdown {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+    }
+
+    .el-dropdown-item {
+        font-size: 13px;
+    }
+
+    .el-icon-arrow-down {
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    img {
+        width: 80px;
+        display: inline-block;
+    }
+
+    .header {
+        font-size: 17px;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 10px;
+        letter-spacing: 0.4px;
+        color: @black;
+    }
+
+    strong {
+        color: @black;
+    }
+
+    span:not(.header) {
+        font-size: 16px;
+        line-height: 1.5;
+        letter-spacing: 0.4px;
+
+        &.status-text {
+            margin-bottom: 3rem;
+            display: inline-block;
+        }
+    }
+
+    .share-link {
+        cursor: pointer;
+        display: inline-block;
+        position: absolute;
+        bottom: 15px;
+        right: 20px;
+
+        i {
+            font-size: 18px;
+            color: @botcheckRed;
+            vertical-align: middle;
+        }
+
+        span {
+            font-size: 13px;
+            display: inline-block;
+            margin-left: 4px;
+            color: @botcheckRed;
+            vertical-align: middle;
+            margin-top: 2px;
+        }
+    }
+
+    &.whitelist {
+        .el-dialog {
+            width: 325px;
+            height: 260px;
+        }
+
+        .el-dialog__body {
+            padding: 20px 0;
+        }
+
+        .el-row {
+            width: 100%;
+        }
+
+        .header {
+            color: @twitterTextGrey;
+            font-weight: 400;
+            font-size: 16px;
+        }
+
+        .item {
+            display: block;
+            width: 100%;
+            padding: 10px 0;
+
+            &:after {
+                content: '';
+                display: block;
+                clear: both;
+            }
+
+            .screenName {
+                float: left;
+                color: @lightGrey;
+                font-size: 14px;
+            }
+
+            .delete {
+                float: right;
+                line-height: 1.1;
+                cursor: pointer;
+            }
+        }
     }
 }

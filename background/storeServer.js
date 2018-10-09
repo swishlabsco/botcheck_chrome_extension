@@ -16,7 +16,10 @@ chrome.runtime.onMessage.addListener((request, sender) => {
   // We need to know which tab to send messages to,
   // so we store it in state when the client tab sends
   // a mutation or action
-  store.commit('CLIENT_TAB_SET', sender.tab.id);
+
+  if (sender && sender.tab) {
+    store.commit('CLIENT_TAB_SET', sender.tab.id);
+  }
 
   if (request.name === 'STATE_MUTATION') {
     store.commit(request.details.name, request.details.args);
