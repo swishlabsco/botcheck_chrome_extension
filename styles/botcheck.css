@@ -15,6 +15,10 @@
   background-image: none;
   display: inline-block;
 }
+.botcheck .icon img {
+  width: 18px;
+  display: inline-block;
+}
 .botcheck .status-text {
   padding-left: 22px;
   line-height: 1;
