@@ -12,18 +12,19 @@ ul {
 }
 ul li:not(.divider) {
   display: block;
-  padding: 8px 15px;
-}
-ul li:not(.divider):last-of-type {
-  padding: 7px 15px 0 15px;
 }
 ul li:not(.divider) a {
   font-size: 13px;
   color: #666;
   text-decoration: none;
+  display: block;
+  padding: 8px 15px;
 }
 ul li:not(.divider) a:hover {
   text-decoration: none;
+}
+ul li:not(.divider):last-of-type a {
+  padding: 7px 15px 0 15px;
 }
 ul li.divider {
   display: block;
