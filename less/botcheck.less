@@ -3,6 +3,7 @@
 @botcheckRed: #FB0015;
 @botcheckLightRed: #FFD6D7;
 @black: #333333;
+@lightBlack: #666666;
 
 .botcheck-feed-container {
     display: inline-block;
@@ -166,7 +167,11 @@
         }
 
         .el-dialog__body {
-            padding: 20px 0;
+            padding: 0;
+        }
+
+        .el-main {
+            padding: 15px 0 0 0;
         }
 
         .el-row {
@@ -174,15 +179,17 @@
         }
 
         .header {
-            color: @twitterTextGrey;
+            color: @lightBlack;
             font-weight: 400;
             font-size: 16px;
+            margin-bottom: 0;
         }
 
         .item {
-            display: block;
+            display: flex;
             width: 100%;
             padding: 10px 0;
+            align-items: center;
 
             &:after {
                 content: '';
@@ -190,16 +197,30 @@
                 clear: both;
             }
 
-            .screenName {
-                float: left;
-                color: @lightGrey;
-                font-size: 14px;
+            .name {
+                flex: 1;
+
+                .realName {
+                    color: @lightBlack;
+                    font-size: 15px;
+                    font-weight: bold;
+                    display: block;
+                }
+
+                .screenName {
+                    color: @lightGrey;
+                    font-size: 13px;
+                }
             }
 
             .delete {
-                float: right;
-                line-height: 1.1;
                 cursor: pointer;
+
+                i {
+                    color: @lightBlack;
+                    font-size: 24px;
+                    font-weight: bold;
+                }
             }
         }
     }

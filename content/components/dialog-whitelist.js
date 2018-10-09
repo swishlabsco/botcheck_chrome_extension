@@ -1,15 +1,24 @@
 Vue.component('dialog-whitelist', {
   template: html`
-    <el-dialog :visible.sync="dialogVisible" class="botcheck-dialog whitelist">
+    <el-dialog :visible.sync="dialogVisible" class="botcheck-dialog whitelist" :show-close="false">
       <el-main>
         <el-container>
           <el-row>
             <el-col :span="24">
               <span class="header">Whitelisted Accounts</span>
-              <hr/>
-              <div v-for="name in items" class="item">
-                <span class="screenName">@{{name}}</span>
-                <span class="delete" @click="remove(name)"><i class="Icon Icon--close"></i></span>
+            </el-col>
+          </el-row>
+        </el-container>
+        <hr/>
+        <el-container>
+          <el-row>
+            <el-col :span="24">
+              <div v-for="user in users" class="item">
+                <div class="name">
+                  <span class="realName">{{user.realname}}</span>
+                  <span class="screenName">@{{user.username}}</span>
+                </div>
+                <span class="delete" @click="remove(user.username)"><i class="Icon Icon--close"></i></span>
               </div>
             </el-col>
           </el-row>
@@ -26,7 +35,7 @@ Vue.component('dialog-whitelist', {
         this.$store.broadcastMutation('WHITELIST_CLOSE');
       }
     },
-    items() {
+    users() {
       return this.$store.state.synced.whitelist;
     }
   },
