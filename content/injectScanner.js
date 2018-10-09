@@ -74,11 +74,12 @@ function processTweetEl(tweetEl, isFeed, isRetweet) {
   tweetEl.dataset.botcheckInjected = true;
 
   let screenName = getScreenNameFromElement(tweetEl);
+  let realName = getRealNameFromElement(tweetEl);
   let isProfile = false;
 
   let el = document.createElement('div');
   el.classList = 'botcheck-feed-container';
-  el.innerHTML = '<botcheck-status :screen-name="screenName" :is-feed="isFeed" :is-retweet="isRetweet" :is-profile="isProfile"></botcheck-status>';
+  el.innerHTML = '<botcheck-status :real-name="realName" :screen-name="screenName" :is-feed="isFeed" :is-retweet="isRetweet" :is-profile="isProfile"></botcheck-status>';
 
   if (isRetweet) {
     tweetEl.querySelector('.stream-item-header').appendChild(el);
@@ -92,6 +93,7 @@ function processTweetEl(tweetEl, isFeed, isRetweet) {
     store,
     data() {
       return {
+        realName,
         screenName,
         isFeed,
         isRetweet,
@@ -99,7 +101,7 @@ function processTweetEl(tweetEl, isFeed, isRetweet) {
       };
     },
     mounted: function() {
-      store.broadcastAction('LIGHT_SCAN', this.screenName);
+      store.broadcastAction('LIGHT_SCAN', { realName: this.realName, screenName: this.screenName });
     }
   });
 }
@@ -113,6 +115,7 @@ function processProfileEl(profileEl) {
   profileEl.dataset.botcheckInjected = true;
 
   let screenName = getScreenNameFromElement(profileEl);
+  let realName = getRealNameFromElement(profileEl);
   let isProfile = true;
 
   if (!screenName) return;
@@ -124,7 +127,7 @@ function processProfileEl(profileEl) {
 
   // Insert with other metadata
   let el = document.createElement('div');
-  el.innerHTML = '<botcheck-status :screen-name="screenName" :is-profile="isProfile"></botcheck-status>';
+  el.innerHTML = '<botcheck-status :real-name="realName" :screen-name="screenName" :is-profile="isProfile"></botcheck-status>';
   
   // Get bio and insert after if it exists
   var bio = profileEl.querySelector('.ProfileHeaderCard-bio');
@@ -137,12 +140,13 @@ function processProfileEl(profileEl) {
     store,
     data() {
       return {
+        realName,
         screenName,
         isProfile
       };
     },
     mounted: function() {
-      store.broadcastAction('DEEP_SCAN', this.screenName);
+      store.broadcastAction('DEEP_SCAN', { realName: this.realName, screenName: this.screenName });
     }
   });
 }
@@ -160,5 +164,21 @@ function getScreenNameFromElement(element) {
     element.querySelector('[data-screen-name]').dataset.screenName
   ) {
     return element.querySelector('[data-screen-name]').dataset.screenName;
+  }
+}
+
+// You can pass in a tweet or profile DOM node and get the real name here
+function getRealNameFromElement(element) {
+  if (!element) {
+    return;
+  }
+
+  if (element.dataset && element.dataset.name) {
+    return element.dataset.name;
+  } else if (
+    element.querySelector('[data-name]') &&
+    element.querySelector('[data-name]').dataset.name
+  ) {
+    return element.querySelector('[data-name]').dataset.name;
   }
 }

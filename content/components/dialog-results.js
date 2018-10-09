@@ -79,8 +79,11 @@ Vue.component('dialog-results', {
         this.$store.broadcastMutation('THANKS_OPEN');
       }
       else if (type === 'whitelist') {
+        let results = this.$store.state.synced.results;
+        let dialogScreenName = this.$store.state.synced.dialogs.results.screenName;
+        
         this.$store.broadcastMutation('RESULTS_CLOSE');
-        this.$store.broadcastAction('ADD_TO_WHITELIST', this.screenName);
+        this.$store.broadcastAction('ADD_TO_WHITELIST', results[dialogScreenName]);
       }
       else if (type === 'report') {
 
