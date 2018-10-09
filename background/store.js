@@ -1,6 +1,7 @@
 Vue.use(Vuex);
 
-let apiRoot = 'https://botcheck2-dot-surfsafe-rbl.appspot.com';
+let apiRoot = 'https://botcheckdummy-dot-surfsafe-rbl.appspot.com';
+//let apiRoot = 'https://botcheck2-dot-surfsafe-rbl.appspot.com';
 
 let store = new Vuex.Store({
   state: {
@@ -30,16 +31,13 @@ let store = new Vuex.Store({
       message: 'Scanning...',
       results: {
         exampleUserName: {
+          realname: 'exampleRealName',
           username: 'exampleUserName',
           prediction: false,
           profile_image: ''
         }
       },
       whitelist: {
-        exampleUserName: {
-          username: 'exampleUserName',
-          handle: 'exampleHandle'
-        }
       }
     }
   },
@@ -66,7 +64,7 @@ let store = new Vuex.Store({
         );
       }
     },
-    DEEP_SCAN(context, screenName) {
+    DEEP_SCAN(context, args) {
       if (!context.state.apiKey) {
         context.dispatch('AUTH_TWITTER');
         return;
@@ -74,8 +72,8 @@ let store = new Vuex.Store({
 
       // Don't check network again if we've already done the check
       // This will reset on browser restart
-      if (context.state.synced.results[screenName]) {
-        context.commit('SCREEN_NAME_CHECK_DONE', context.state.synced.results[screenName]);
+      if (context.state.synced.results[args.screenName]) {
+        context.commit('SCREEN_NAME_CHECK_DONE', context.state.synced.results[args.screenName]);
         return;
       }
 
@@ -87,17 +85,18 @@ let store = new Vuex.Store({
 
       axios
         .post(`${apiRoot}/DeepScan`, {
-          username: screenName,
+          username: args.screenName,
           apikey: context.state.apiKey
         })
         .then(result => {
           if (result && result.data) {
+            result.data.realname = args.realName;
             context.commit('SCREEN_NAME_CHECK_DONE', result.data);
             context.dispatch('LOG', result.data);
           }
         });
     },
-    LIGHT_SCAN(context, screenName) {
+    LIGHT_SCAN(context, args) {
       if (!context.state.apiKey) {
         context.dispatch('AUTH_TWITTER');
         return;
@@ -105,8 +104,8 @@ let store = new Vuex.Store({
 
       // Don't check network again if we've already done the check
       // This will reset on browser restart
-      if (context.state.synced.results[screenName]) {
-        context.commit('SCREEN_NAME_CHECK_DONE', context.state.synced.results[screenName]);
+      if (context.state.synced.results[args.screenName]) {
+        context.commit('SCREEN_NAME_CHECK_DONE', context.state.synced.results[args.screenName]);
         return;
       }
 
@@ -118,26 +117,26 @@ let store = new Vuex.Store({
 
       axios
         .post(`${apiRoot}/LightScan`, {
-          username: screenName,
+          username: args.screenName,
           apikey: context.state.apiKey
         })
         .then(result => {
           if (result && result.data) {
+            result.data.realname = args.realName;
             context.commit('SCREEN_NAME_CHECK_DONE', result.data);
             context.dispatch('LOG', result.data);
           }
         });
     },
-    ADD_TO_WHITELIST(context, screenName) {
+    ADD_TO_WHITELIST(context, args) {
       if (!context.state.synced.whitelist) {
         context.state.synced.whitelist = [];
       }
 
       // add user to whitelist and save (if it's not already in the list)
-      if (context.state.synced.whitelist.indexOf(screenName) === -1) {
-        context.state.synced.whitelist.push(screenName);
-        
-        context.commit('WHITELIST_SET', context.state.synced.whitelist);
+      var existing = context.state.synced.whitelist[args.screenName];
+      if (!existing) {
+        context.commit('WHITELIST_SET', { type: 'add', user: args });
       }
     },
     REMOVE_FROM_WHITELIST(context, screenName) {
@@ -146,11 +145,7 @@ let store = new Vuex.Store({
       }
 
       // remove user from whitelist and save
-      context.state.synced.whitelist = context.state.synced.whitelist.filter(function(user) {
-        return user !== screenName;
-      });
-
-      context.commit('WHITELIST_SET', context.state.synced.whitelist);
+      context.commit('WHITELIST_SET', { type: 'delete', username: screenName });
     },
     DISAGREE(context, prediction) {
       axios.post(`${apiRoot}/disagree`, {
@@ -179,8 +174,14 @@ let store = new Vuex.Store({
     AUTH_APIKEY_SET(state, apiKey) {
       state.apiKey = apiKey;
     },
-    WHITELIST_SET(state, whitelist) {
-      state.synced.whitelist = whitelist;
+    WHITELIST_SET(state, payload) {
+      if (payload.type === 'add') {
+        Vue.set(state.synced.whitelist, payload.user.username, payload.user);
+
+      }
+      else {
+        Vue.delete(state.synced.whitelist, payload.username);
+      }
     },
     SCREEN_NAME_CHECK_DONE(state, result) {
       Vue.set(state.synced.results, result.username, result);

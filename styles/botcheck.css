@@ -132,33 +132,49 @@
   height: 260px;
 }
 .botcheck-dialog.whitelist .el-dialog__body {
-  padding: 20px 0;
+  padding: 0;
+}
+.botcheck-dialog.whitelist .el-main {
+  padding: 15px 0 0 0;
 }
 .botcheck-dialog.whitelist .el-row {
   width: 100%;
 }
 .botcheck-dialog.whitelist .header {
-  color: #657786;
+  color: #666666;
   font-weight: 400;
   font-size: 16px;
+  margin-bottom: 0;
 }
 .botcheck-dialog.whitelist .item {
-  display: block;
+  display: flex;
   width: 100%;
   padding: 10px 0;
+  align-items: center;
 }
 .botcheck-dialog.whitelist .item:after {
   content: '';
   display: block;
   clear: both;
 }
-.botcheck-dialog.whitelist .item .screenName {
-  float: left;
+.botcheck-dialog.whitelist .item .name {
+  flex: 1;
+}
+.botcheck-dialog.whitelist .item .name .realName {
+  color: #666666;
+  font-size: 15px;
+  font-weight: bold;
+  display: block;
+}
+.botcheck-dialog.whitelist .item .name .screenName {
   color: #BFBFBF;
-  font-size: 14px;
+  font-size: 13px;
 }
 .botcheck-dialog.whitelist .item .delete {
-  float: right;
-  line-height: 1.1;
   cursor: pointer;
+}
+.botcheck-dialog.whitelist .item .delete i {
+  color: #666666;
+  font-size: 24px;
+  font-weight: bold;
 }
