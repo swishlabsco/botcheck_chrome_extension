@@ -38,7 +38,7 @@ store.broadcastAction = function(name, args) {
 // them to our local store, thus giving the illusion of a unified data
 // store across background and all tabs with our extension
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  // console.log(request.name, request.payload);
+  //console.log(request.name, request.payload);
   if (request.name === 'STATE_UPDATE') {
     store.commit('REMOTE_STATE_UPDATE', request.payload);
   } else if (request.name === 'STATE_INIT') {

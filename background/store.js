@@ -20,6 +20,9 @@ let store = new Vuex.Store({
         thanks: {
           visible: false
         },
+        whitelist: {
+          visible: false
+        },
         auth: {
           screenName: '',
           visible: false
@@ -31,6 +34,12 @@ let store = new Vuex.Store({
           username: 'exampleUserName',
           prediction: false,
           profile_image: ''
+        }
+      },
+      whitelist: {
+        exampleUserName: {
+          username: 'exampleUserName',
+          handle: 'exampleHandle'
         }
       }
     }
@@ -108,6 +117,30 @@ let store = new Vuex.Store({
           }
         });
     },
+    ADD_TO_WHITELIST(context, screenName) {
+      if (!context.state.synced.whitelist) {
+        context.state.synced.whitelist = [];
+      }
+
+      // add user to whitelist and save (if it's not already in the list)
+      if (context.state.synced.whitelist.indexOf(screenName) === -1) {
+        context.state.synced.whitelist.push(screenName);
+        
+        context.commit('WHITELIST_SET', context.state.synced.whitelist);
+      }
+    },
+    REMOVE_FROM_WHITELIST(context, screenName) {
+      if (!context.state.synced.whitelist) {
+        context.state.synced.whitelist = [];
+      }
+
+      // remove user from whitelist and save
+      context.state.synced.whitelist = context.state.synced.whitelist.filter(function(user) {
+        return user !== screenName;
+      });
+
+      context.commit('WHITELIST_SET', context.state.synced.whitelist);
+    },
     DISAGREE(context, prediction) {
       axios.post(`${apiRoot}/disagree`, {
         prediction,
@@ -135,6 +168,9 @@ let store = new Vuex.Store({
     AUTH_APIKEY_SET(state, apiKey) {
       state.apiKey = apiKey;
     },
+    WHITELIST_SET(state, whitelist) {
+      state.synced.whitelist = whitelist;
+    },
     SCREEN_NAME_CHECK_DONE(state, result) {
       Vue.set(state.synced.results, result.username, result);
       state.synced.dialogs.results.loading = false;
@@ -152,6 +188,12 @@ let store = new Vuex.Store({
     },
     THANKS_CLOSE(state) {
       state.synced.dialogs.thanks.visible = false;
+    },
+    WHITELIST_OPEN(state) {
+      state.synced.dialogs.whitelist.visible = true;
+    },
+    WHITELIST_CLOSE(state) {
+      state.synced.dialogs.whitelist.visible = false;
     },
     AUTH_TAB_SET(state, tabId) {
       state.authTabId = tabId;

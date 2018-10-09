@@ -79,7 +79,8 @@ Vue.component('dialog-results', {
         this.$store.broadcastMutation('THANKS_OPEN');
       }
       else if (type === 'whitelist') {
-
+        this.$store.broadcastMutation('RESULTS_CLOSE');
+        this.$store.broadcastAction('ADD_TO_WHITELIST', this.screenName);
       }
       else if (type === 'report') {
 
