@@ -13,6 +13,7 @@
   position: absolute;
   top: 1px;
   background-image: none;
+  display: inline-block;
 }
 .botcheck .status-text {
   padding-left: 22px;
@@ -39,6 +40,8 @@
   vertical-align: middle;
   padding-left: 10px;
   padding-top: 3px;
+  width: 18px;
+  display: inline-block;
 }
 .botcheck.button .status-text {
   padding-left: 4px;
