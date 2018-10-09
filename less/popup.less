@@ -15,19 +15,22 @@ ul {
 
 	li:not(.divider) {
 		display: block;
-		padding: 8px 15px;
-
-		&:last-of-type {
-			padding: 7px 15px 0 15px;
-		}
 
 		a {
 			font-size: 13px;
 			color: @textColor;
 			text-decoration: none;
+			display: block;
+			padding: 8px 15px;
 
 			&:hover {
 				text-decoration: none;
+			}
+		}
+
+		&:last-of-type {
+			a {
+				padding: 7px 15px 0 15px;
 			}
 		}
 	}
