@@ -1,6 +1,6 @@
 Vue.component('botcheck-status', {
   template: html`
-    <div :class="containerClass">
+    <div :class="containerClass" @click="openModal()">
       <span class="icon"><img :src="icon"/></span>
       <span :class="messageClass">{{message}}</span>
     </div>
@@ -27,6 +27,9 @@ Vue.component('botcheck-status', {
       if (this.isRetweet) {
         className += ' pull-up';
       }
+      if (this.isProfile) {
+        className += ' inline';
+      }
       return className;
     },
     messageClass() {
@@ -50,6 +53,14 @@ Vue.component('botcheck-status', {
       }
       
       return 'Scanning...';
+    }
+  },
+  methods: {
+    openModal() {
+      let result = this.$store.state.synced.results[this.screenName];
+      if (!this.isFeed && !this.isProfile && result && result.prediction) {
+        store.broadcastMutation('RESULTS_OPEN', this.screenName);
+      }
     }
   }
 });

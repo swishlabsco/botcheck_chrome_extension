@@ -140,9 +140,6 @@ let store = new Vuex.Store({
       state.synced.dialogs.results.loading = false;
     },
     RESULTS_OPEN(state, screenName) {
-      if (!state.synced.results[screenName]) {
-        state.synced.dialogs.results.loading = true;
-      }
       state.synced.dialogs.results.visible = true;
       state.synced.dialogs.results.screenName = screenName;
     },
@@ -158,6 +155,11 @@ let store = new Vuex.Store({
     },
     AUTH_TAB_SET(state, tabId) {
       state.authTabId = tabId;
+    },
+    LEARN_MORE(context) {
+      chrome.tabs.create({
+        url: 'https://botcheck.me'
+      });
     },
     SHARE(context, screenName) {
       chrome.tabs.create({

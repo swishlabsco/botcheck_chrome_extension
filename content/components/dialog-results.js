@@ -1,53 +1,56 @@
 Vue.component('dialog-results', {
   template: html`
-    <el-dialog :visible.sync="dialogVisible" :class="{ 'botcheck-result-positive': results.prediction, 'botcheck-dialog': true }">
-      <el-container v-loading="loading">
-
-        <el-header height="auto">
-          <h1 v-if="results.prediction === true">
-            Propaganda Bot like patterns found
-          </h1>
-          <h1 v-if="results.prediction === false">
-            Propaganda Bot like patterns not found
-          </h1>
-        </el-header>
-
+    <el-dialog :visible.sync="dialogVisible" :class="{ 'botcheck-dialog': true }" :show-close="false">
+      <el-container>
         <el-main>
-          <img :src="profileImage" class="botcheck-profile-image" v-if="predictionLoaded">
-          <span v-if="results.prediction === true">
-            Our model has classified
-            <strong>@{{ results.username }}</strong> to exhibit patterns conducive to a political bot or highly moderated account.
-          </span>
-          <span v-if="results.prediction === false">
-            Our model finds that
-            <strong>@{{ results.username }}</strong> does not exhibit patterns conducive to propaganda bots or moderated behavior conducive
-            to political propaganda accounts.
-          </span>
-        </el-main>
-
-        <el-footer height="auto" v-if="predictionLoaded">
-          <el-row type="flex" align="middle">
-
-            <el-col :span="12">
-              <a href="https://medium.com/@robhat/identifying-propaganda-bots-on-twitter-5240e7cb81a9" target="_blank">How this works</a>
-              &bull;
-              <a href="http://twitter.com/theashbhat" target="_blank">Follow us for updates</a>
+          <el-row type="flex">
+            <el-col :span="5">
+              <img :src="icon" class="botcheck-modal-image">
             </el-col>
-
-            <el-col :span="12" class="text-right">
-              <el-button size="medium" round @click="disagree" class="u-textUserColorHover u-borderUserColorHover">
-                Disagree
-              </el-button>
-              <el-button size="medium" round type="primary" @click="dialogVisible = false" class="u-bgUserColor u-borderUserColor u-bgUserColorDarkHover">Close</el-button>
+            <el-col :span="19">
+              <span class="header" v-if="results.prediction === true">Propaganda Bot-like Patterns Detected!</span>
+              <span class="status-text" v-if="results.prediction === true">
+                Our model has classified
+                <strong>@{{ results.username }}</strong> to exhibit patterns conducive to a political bot or highly moderated account. This account is likely a bot.
+              </span>
+              <span class="header" v-if="results.prediction === false">Propaganda Bot-like Patterns Not Detected!</span>
+              <span class="status-text" v-if="results.prediction === false">
+                Our model finds that
+                <strong>@{{ results.username }}</strong> does not exhibit patterns conducive to propaganda bots or moderated behavior conducive
+                to political propaganda accounts.
+              </span>
             </el-col>
-
           </el-row>
-        </el-footer>
-
+          <div class="share-link" @click="share">
+            <i class="Icon Icon--bird"></i><span>Share Result</span>
+          </div>
+          <el-dropdown trigger="click" @command="actionCommand">
+            <span class="el-dropdown-link">
+              <i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="disagree">Disagree</el-dropdown-item>
+              <el-dropdown-item command="whitelist">Whitelist</el-dropdown-item>
+              <el-dropdown-item divided command="report">Report to Twitter</el-dropdown-item>
+              <el-dropdown-item divided command="learn-more">Learn More</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </el-main>
       </el-container>
-      </el-dialog>
+    </el-dialog>
   `(),
   computed: {
+    icon() {
+      let results = this.$store.state.synced.results;
+      let dialogScreenName = this.$store.state.synced.dialogs.results.screenName;
+      let result = results[dialogScreenName];
+
+      if (result && result.prediction === true) {
+        return chrome.extension.getURL('icons/mad@128.png');
+      }
+
+      return chrome.extension.getURL('icons/happy@128.png');
+    },
     screenName() {
       return this.$store.state.synced.dialogs.results.screenName;
     },
@@ -59,9 +62,6 @@ Vue.component('dialog-results', {
       }
       return {};
     },
-    loading() {
-      return this.$store.state.synced.dialogs.results.loading;
-    },
     dialogVisible: {
       get() {
         return this.$store.state.synced.dialogs.results.visible;
@@ -69,19 +69,24 @@ Vue.component('dialog-results', {
       set() {
         this.$store.broadcastMutation('RESULTS_CLOSE');
       }
-    },
-    predictionLoaded() {
-      return typeof this.results.prediction !== 'undefined';
-    },
-    profileImage() {
-      return this.results.profile_image && this.results.profile_image.replace('http:', 'https:');
     }
   },
   methods: {
-    disagree() {
-      this.$store.broadcastMutation('RESULTS_CLOSE');
-      this.$store.broadcastAction('DISAGREE', this.results.prediction);
-      this.$store.broadcastMutation('THANKS_OPEN');
+    actionCommand(type) {
+      if (type === 'disagree') {
+        this.$store.broadcastMutation('RESULTS_CLOSE');
+        this.$store.broadcastAction('DISAGREE', this.results.prediction);
+        this.$store.broadcastMutation('THANKS_OPEN');
+      }
+      else if (type === 'whitelist') {
+
+      }
+      else if (type === 'report') {
+
+      }
+      else {
+        this.$store.broadcastMutation('LEARN_MORE');
+      }
     },
     share() {
       this.$store.broadcastMutation('RESULTS_CLOSE');

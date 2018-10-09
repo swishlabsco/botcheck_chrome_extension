@@ -47,7 +47,76 @@
   margin-top: 3px;
   font-size: 12px;
 }
+.botcheck.inline {
+  display: inline-block;
+}
 .botcheck.pull-up {
   margin-top: -4px;
   margin-left: 4px;
+}
+.botcheck-dialog .el-dialog {
+  width: 640px;
+}
+.botcheck-dialog .el-container {
+  padding: 0 20px;
+}
+.botcheck-dialog .el-main {
+  padding-top: 10px;
+  padding-bottom: 0;
+}
+.botcheck-dialog .el-dropdown {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+}
+.botcheck-dialog .el-dropdown-item {
+  font-size: 13px;
+}
+.botcheck-dialog .el-icon-arrow-down {
+  font-weight: bold;
+  cursor: pointer;
+}
+.botcheck-dialog img {
+  width: 80px;
+  display: inline-block;
+}
+.botcheck-dialog .header {
+  font-size: 17px;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 10px;
+  letter-spacing: 0.4px;
+  color: #333333;
+}
+.botcheck-dialog strong {
+  color: #333333;
+}
+.botcheck-dialog span:not(.header) {
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: 0.4px;
+}
+.botcheck-dialog span:not(.header).status-text {
+  margin-bottom: 3rem;
+  display: inline-block;
+}
+.botcheck-dialog .share-link {
+  cursor: pointer;
+  display: inline-block;
+  position: absolute;
+  bottom: 15px;
+  right: 20px;
+}
+.botcheck-dialog .share-link i {
+  font-size: 18px;
+  color: #FB0015;
+  vertical-align: middle;
+}
+.botcheck-dialog .share-link span {
+  font-size: 13px;
+  display: inline-block;
+  margin-left: 4px;
+  color: #FB0015;
+  vertical-align: middle;
+  margin-top: 2px;
 }
