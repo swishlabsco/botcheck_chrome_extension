@@ -70,6 +70,12 @@ let store = new Vuex.Store({
         return;
       }
 
+      // Don't do whitelisted accounts, return not a bot
+      if (context.state.synced.whitelist[args.screenName]) {
+        context.commit('SCREEN_NAME_CHECK_DONE', { realname: args.realName, username: args.screenName, prediction: false });
+        return;
+      }
+
       // Don't check network again if we've already done the check
       // This will reset on browser restart
       if (context.state.synced.results[args.screenName]) {
@@ -93,6 +99,12 @@ let store = new Vuex.Store({
     LIGHT_SCAN(context, args) {
       if (!context.state.apiKey) {
         context.dispatch('AUTH_TWITTER');
+        return;
+      }
+
+      // Don't do whitelisted accounts, return not a bot
+      if (context.state.synced.whitelist[args.screenName]) {
+        context.commit('SCREEN_NAME_CHECK_DONE', { realname: args.realName, username: args.screenName, prediction: false });
         return;
       }
 
@@ -167,8 +179,11 @@ let store = new Vuex.Store({
         Vue.set(state.synced.whitelist, payload.user.username, payload.user);
 
       }
-      else {
+      else if (payload.type === 'delete') {
         Vue.delete(state.synced.whitelist, payload.username);
+      }
+      else {
+        state.synced.whitelist = payload.whitelist;
       }
     },
     SCREEN_NAME_CHECK_DONE(state, result) {
