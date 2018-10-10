@@ -10,13 +10,13 @@ Vue.component('botcheck-status', {
     icon() {
       let result = this.$store.state.synced.results[this.screenName];
       if (result && result.prediction) {
-        return chrome.extension.getURL('icons/mad@18.png');
+        return chrome.extension.getURL('icons/mad.svg');
       }
       else if (result && !result.prediction) {
-        return chrome.extension.getURL('icons/happy_outline@48.png');
+        return chrome.extension.getURL('icons/happy_outline.svg');
       }
 
-      return chrome.extension.getURL('icons/scanning@48.png');
+      return chrome.extension.getURL('icons/scanning.svg');
     },
     containerClass() {
       let className = 'botcheck';
