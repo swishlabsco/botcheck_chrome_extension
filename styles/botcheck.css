@@ -11,7 +11,7 @@
 .botcheck .icon {
   width: 18px;
   position: absolute;
-  top: 1px;
+  top: 0;
   background-image: none;
   display: inline-block;
 }

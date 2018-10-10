@@ -46,5 +46,5 @@
     "default_popup": "popup/popup.html"
   },
   "permissions": ["storage","tabs"],
-  "web_accessible_resources": ["*.ttf", "*.woff","*.png"]
+  "web_accessible_resources": ["*.ttf", "*.woff","*.png","*.svg"]
 }
