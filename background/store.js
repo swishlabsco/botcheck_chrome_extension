@@ -217,9 +217,15 @@ let store = new Vuex.Store({
         url: 'https://botcheck.me'
       });
     },
-    SHARE(context, screenName) {
+    REPORT_TWEET(context) {
       chrome.tabs.create({
-        url: `https://twitter.com/intent/tweet/?text=I+just+found+out+@${screenName}+is+likely+a+propaganda+account%2C+by+using+the+botcheck+browser+extension%21+You+can+download+it+from+https%3A%2F%2Fbotcheck.me+and+check+for+yourself.`
+        url: 'https://help.twitter.com/forms'
+      });
+    },
+    SHARE(context, args) {
+      var msg = args.prediction === true ? 'likely' : 'not+likely';
+      chrome.tabs.create({
+        url: `https://twitter.com/intent/tweet/?text=I+just+found+out+@${args.screenName}+is+${msg}+a+propaganda+account%2C+by+using+the+botcheck+browser+extension%21+You+can+download+it+from+https%3A%2F%2Fbotcheck.me+and+check+for+yourself.`
       });
     }
   }

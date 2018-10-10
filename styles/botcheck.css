@@ -7,6 +7,7 @@
   line-height: 20px;
   margin-bottom: 8px;
   position: relative;
+  cursor: pointer;
 }
 .botcheck .icon {
   width: 18px;
@@ -126,6 +127,12 @@
   color: #FB0015;
   vertical-align: middle;
   margin-top: 2px;
+}
+.botcheck-dialog .share-link.positive i {
+  color: #00D68C;
+}
+.botcheck-dialog .share-link.positive span {
+  color: #00D68C;
 }
 .botcheck-dialog.whitelist .el-dialog {
   width: 325px;

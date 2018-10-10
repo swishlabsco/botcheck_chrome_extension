@@ -21,7 +21,7 @@ Vue.component('dialog-results', {
               </span>
             </el-col>
           </el-row>
-          <div class="share-link" @click="share">
+          <div @click="share" :class="{ 'share-link': true, 'positive': results.prediction === false }">
             <i class="Icon Icon--bird"></i><span>Share Result</span>
           </div>
           <el-dropdown trigger="click" @command="actionCommand">
@@ -86,7 +86,7 @@ Vue.component('dialog-results', {
         this.$store.broadcastAction('ADD_TO_WHITELIST', results[dialogScreenName]);
       }
       else if (type === 'report') {
-
+        this.$store.broadcastMutation('REPORT_TWEET');
       }
       else {
         this.$store.broadcastMutation('LEARN_MORE');
@@ -94,7 +94,7 @@ Vue.component('dialog-results', {
     },
     share() {
       this.$store.broadcastMutation('RESULTS_CLOSE');
-      this.$store.broadcastMutation('SHARE', this.screenName);
+      this.$store.broadcastMutation('SHARE', { prediction: this.results.prediction, screenName: this.screenName });
     }
   }
 });

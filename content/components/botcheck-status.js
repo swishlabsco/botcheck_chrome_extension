@@ -58,9 +58,7 @@ Vue.component('botcheck-status', {
   methods: {
     openModal() {
       let result = this.$store.state.synced.results[this.screenName];
-      if (!this.isFeed && !this.isProfile && result && result.prediction) {
-        store.broadcastMutation('RESULTS_OPEN', this.screenName);
-      }
+      store.broadcastMutation('RESULTS_OPEN', this.screenName);
     }
   }
 });
