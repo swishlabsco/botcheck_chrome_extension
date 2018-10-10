@@ -2,6 +2,7 @@
 @lightGrey: #BFBFBF;
 @botcheckRed: #FB0015;
 @botcheckLightRed: #FFD6D7;
+@botcheckGreen: #00D68C;
 @black: #333333;
 @lightBlack: #666666;
 
@@ -15,6 +16,7 @@
     line-height: 20px;
     margin-bottom: 8px;
     position: relative;
+    cursor: pointer;
 
     .icon {
     	width: 18px;
@@ -157,6 +159,16 @@
             color: @botcheckRed;
             vertical-align: middle;
             margin-top: 2px;
+        }
+
+        &.positive {
+            i {
+                color: @botcheckGreen;
+            }
+
+            span {
+                color: @botcheckGreen;
+            }
         }
     }
 
