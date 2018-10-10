@@ -4,15 +4,16 @@
 .botcheck {
   color: #657786;
   font-size: 14px;
-  line-height: 20px;
+  line-height: 1;
   margin-bottom: 8px;
   position: relative;
   cursor: pointer;
 }
 .botcheck .icon {
   width: 18px;
+  height: 18px;
   position: absolute;
-  top: 0;
+  bottom: 0;
   background-image: none;
   display: inline-block;
 }
@@ -62,6 +63,13 @@
   margin-top: -4px;
   margin-left: 4px;
 }
+.botcheck.retweet {
+  margin-top: 3px;
+  margin-left: 3px;
+}
+.botcheck-dialog {
+  z-index: 5000 !important;
+}
 .botcheck-dialog .el-dialog {
   width: 640px;
 }
@@ -76,6 +84,9 @@
   position: absolute;
   top: 15px;
   right: 20px;
+}
+.botcheck-dialog .el-dropdown-menu {
+  z-index: 5001 !important;
 }
 .botcheck-dialog .el-dropdown-item {
   font-size: 13px;

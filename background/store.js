@@ -219,7 +219,7 @@ let store = new Vuex.Store({
     },
     REPORT_TWEET(context) {
       chrome.tabs.create({
-        url: 'https://help.twitter.com/forms'
+        url: 'https://help.twitter.com/en/rules-and-policies/twitter-report-violation'
       });
     },
     SHARE(context, args) {

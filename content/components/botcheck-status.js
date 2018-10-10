@@ -1,6 +1,6 @@
 Vue.component('botcheck-status', {
   template: html`
-    <div :class="containerClass" @click="openModal()">
+    <div :class="containerClass" @click="openModal">
       <span class="icon"><img :src="icon"/></span>
       <span :class="messageClass">{{message}}</span>
     </div>
@@ -21,10 +21,13 @@ Vue.component('botcheck-status', {
     containerClass() {
       let className = 'botcheck';
       let result = this.$store.state.synced.results[this.screenName];
-      if (!this.isFeed && !this.isProfile && result && result.prediction) {
+      if (!this.isFeed && !this.isProfile && result && result.prediction === true) {
         className += ' button';
       }
-      if (this.isRetweet) {
+      if (!this.isFeed && !this.isProfile && result && result.prediction === false) {
+        className += ' retweet';
+      }
+      if (this.isRetweet && result.prediction === true) {
         className += ' pull-up';
       }
       if (this.isProfile) {
@@ -34,10 +37,10 @@ Vue.component('botcheck-status', {
     },
     messageClass() {
       let result = this.$store.state.synced.results[this.screenName];
-      if (result && result.prediction) {
+      if (result && result.prediction === true) {
         return 'status-text bot';
       }
-      else if (result && !result.prediction) {
+      else if (result && result.prediction === false) {
         return 'status-text';
       }
       
@@ -56,7 +59,10 @@ Vue.component('botcheck-status', {
     }
   },
   methods: {
-    openModal() {
+    openModal(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
       let result = this.$store.state.synced.results[this.screenName];
       store.broadcastMutation('RESULTS_OPEN', this.screenName);
     }
