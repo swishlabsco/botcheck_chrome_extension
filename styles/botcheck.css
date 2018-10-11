@@ -29,7 +29,6 @@
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
   font-size: 14px;
-  font-weight: bold;
   display: inline-block;
 }
 .botcheck .status-text.bot {
