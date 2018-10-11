@@ -10,6 +10,16 @@
     display: inline-block;
 }
 
+// .el-dropdown-menu is appended to body,
+// so it sits outside .botcheck
+.el-dropdown-menu {
+    z-index: 5001 !important;
+}
+
+.el-dropdown-item {
+    font-size: 13px;
+}
+
 .botcheck {
 	color: @twitterTextGrey;
     font-size: 14px;
@@ -106,14 +116,6 @@
         position: absolute;
         top: 15px;
         right: 20px;
-    }
-
-    .el-dropdown-menu {
-        z-index: 5001 !important;
-    }
-
-    .el-dropdown-item {
-        font-size: 13px;
     }
 
     .el-icon-arrow-down {

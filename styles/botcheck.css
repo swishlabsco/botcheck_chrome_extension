@@ -1,6 +1,12 @@
 .botcheck-feed-container {
   display: inline-block;
 }
+.el-dropdown-menu {
+  z-index: 5001 !important;
+}
+.el-dropdown-item {
+  font-size: 13px;
+}
 .botcheck {
   color: #657786;
   font-size: 14px;
@@ -83,12 +89,6 @@
   position: absolute;
   top: 15px;
   right: 20px;
-}
-.botcheck-dialog .el-dropdown-menu {
-  z-index: 5001 !important;
-}
-.botcheck-dialog .el-dropdown-item {
-  font-size: 13px;
 }
 .botcheck-dialog .el-icon-arrow-down {
   font-weight: bold;
