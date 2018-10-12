@@ -17,7 +17,7 @@ const botcheckScanner = {
     try {
       jsonData = JSON.parse(document.querySelector('#init-data').value);
     } catch (ex) {
-      errorHandler(ex);
+      botcheckUtils.errorHandler(ex);
     }
 
     botcheckCacheScreenName = jsonData.screenName;
@@ -130,8 +130,8 @@ const botcheckScanner = {
 
     profileEl.dataset.botcheckInjected = true;
 
-    let screenName = getScreenNameFromElement(profileEl);
-    let realName = getRealNameFromElement(profileEl);
+    let screenName = botcheckScanner.getScreenNameFromElement(profileEl);
+    let realName = botcheckScanner.getRealNameFromElement(profileEl);
     let isProfile = true;
 
     if (!screenName) return;
