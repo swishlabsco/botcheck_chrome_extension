@@ -121,7 +121,7 @@ const botcheckScanner = {
           isProfile
         };
       },
-      mounted: () => {
+      mounted: function () { // eslint-disable-line object-shorthand
         store.dispatch('LIGHT_SCAN', { realName: this.realName, screenName: this.screenName });
       }
     });
@@ -166,7 +166,7 @@ const botcheckScanner = {
           isProfile
         };
       },
-      mounted: () => {
+      mounted: function () { // eslint-disable-line object-shorthand
         store.dispatch('DEEP_SCAN', { realName: this.realName, screenName: this.screenName });
       }
     });
