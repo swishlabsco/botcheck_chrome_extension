@@ -106,6 +106,11 @@ const store = new Vuex.Store({
     },
     DEEP_SCAN(context, args) {
       console.log('(botcheck) action: DEEP_SCAN');
+
+      if (!args.realName || !args.screenName) {
+        console.error('(botcheck) Called deep scan without real name or screen name.');
+        return;
+      }
       if (!context.state.apiKey) {
         context.dispatch('AUTH_TWITTER');
         return;
@@ -143,6 +148,11 @@ const store = new Vuex.Store({
     },
     LIGHT_SCAN(context, args) {
       console.log('(botcheck) action: LIGHT_SCAN');
+
+      if (!args.realName || !args.screenName) {
+        console.error('(botcheck) Called light scan without real name or screen name.');
+        return;
+      }
       if (!context.state.apiKey) {
         context.dispatch('AUTH_TWITTER');
         return;
