@@ -20,12 +20,12 @@
         "vendor/axios.js",
         "content/util.js",
         "content/components/botcheck-status.js",
-        "content/components/dialog-whitelist.js",
         "content/components/dialog-results.js",
         "content/components/dialog-thanks.js",
-        "content/slient.js",
+        "content/components/dialog-whitelist.js",
+        "content/store.js",
         "content/scanner.js",
-        "content/injectDialogs.js"
+        "content/index.js"
       ],
       "matches": ["https://twitter.com/*"]
     }
