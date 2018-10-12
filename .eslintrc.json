@@ -3,7 +3,7 @@
     "browser": true,
     "es6": true
   },
-  "extends": "airbnb",
+  "extends": "airbnb-base",
   "rules": {
     "prefer-const": "off",
     "func-names": "off",
