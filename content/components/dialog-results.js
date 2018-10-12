@@ -66,31 +66,31 @@ Vue.component('dialog-results', {
         return this.$store.state.dialogs.results.visible;
       },
       set() {
-        this.$store.broadcastMutation('RESULTS_CLOSE');
+        this.$store.commit('RESULTS_CLOSE');
       }
     }
   },
   methods: {
     actionCommand(type) {
       if (type === 'disagree') {
-        this.$store.broadcastMutation('RESULTS_CLOSE');
-        this.$store.broadcastAction('DISAGREE', this.results.prediction);
-        this.$store.broadcastMutation('THANKS_OPEN');
+        this.$store.commit('RESULTS_CLOSE');
+        this.$store.dispatch('DISAGREE', this.results.prediction);
+        this.$store.commit('THANKS_OPEN');
       } else if (type === 'whitelist') {
         const results = this.$store.state.results;
         const dialogScreenName = this.$store.state.dialogs.results.screenName;
 
-        this.$store.broadcastMutation('RESULTS_CLOSE');
-        this.$store.broadcastAction('ADD_TO_WHITELIST', results[dialogScreenName]);
+        this.$store.commit('RESULTS_CLOSE');
+        this.$store.dispatch('ADD_TO_WHITELIST', results[dialogScreenName]);
       } else if (type === 'report') {
-        this.$store.broadcastMutation('REPORT_TWEET');
+        this.$store.commit('REPORT_TWEET');
       } else {
-        this.$store.broadcastMutation('LEARN_MORE');
+        this.$store.commit('LEARN_MORE');
       }
     },
     share() {
-      this.$store.broadcastMutation('RESULTS_CLOSE');
-      this.$store.broadcastMutation('SHARE', { prediction: this.results.prediction, screenName: this.screenName });
+      this.$store.commit('RESULTS_CLOSE');
+      this.$store.commit('SHARE', { prediction: this.results.prediction, screenName: this.screenName });
     }
   }
 });

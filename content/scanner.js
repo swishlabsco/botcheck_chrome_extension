@@ -122,7 +122,7 @@ const botcheckScanner = {
         };
       },
       mounted: () => {
-        store.broadcastAction('LIGHT_SCAN', { realName: this.realName, screenName: this.screenName });
+        store.dispatch('LIGHT_SCAN', { realName: this.realName, screenName: this.screenName });
       }
     });
   },
@@ -167,7 +167,7 @@ const botcheckScanner = {
         };
       },
       mounted: () => {
-        store.broadcastAction('DEEP_SCAN', { realName: this.realName, screenName: this.screenName });
+        store.dispatch('DEEP_SCAN', { realName: this.realName, screenName: this.screenName });
       }
     });
   },

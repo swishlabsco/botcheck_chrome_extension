@@ -32,7 +32,7 @@ Vue.component('dialog-whitelist', {
         return this.$store.state.dialogs.whitelist.visible;
       },
       set() {
-        this.$store.broadcastMutation('WHITELIST_CLOSE');
+        this.$store.commit('WHITELIST_CLOSE');
       }
     },
     users() {
@@ -41,7 +41,7 @@ Vue.component('dialog-whitelist', {
   },
   methods: {
     remove(screenName) {
-      this.$store.broadcastAction('REMOVE_FROM_WHITELIST', screenName);
+      this.$store.dispatch('REMOVE_FROM_WHITELIST', screenName);
     }
   }
 });

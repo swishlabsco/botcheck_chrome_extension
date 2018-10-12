@@ -64,7 +64,7 @@ Vue.component('botcheck-status', {
       e.stopPropagation();
 
       const result = this.$store.state.results[this.screenName];
-      store.broadcastMutation('RESULTS_OPEN', this.screenName);
+      store.commit('RESULTS_OPEN', this.screenName);
     }
   }
 });
