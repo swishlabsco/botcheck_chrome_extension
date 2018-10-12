@@ -14,8 +14,8 @@
     {
       "css": ["styles/element.css", "styles/style.css", "styles/botcheck.css"],
       "js": [
-        "lib/vue.min.js",
-        "lib/vuex.min.js",
+        "lib/vue.js",
+        "lib/vuex.js",
         "lib/element.js",
         "lib/util.js",
         "lib/errors.js",
@@ -32,15 +32,16 @@
   ],
   "background": {
     "scripts": [
-      "lib/vue.min.js",
-      "lib/vuex.min.js",
+      "lib/vue.js",
+      "lib/vuex.js",
       "lib/axios.js",
       "lib/util.js",
       "lib/errors.js",
       "background/store.js",
       "background/storePersist.js",
       "background/storeServer.js"
-    ]
+    ],
+    "persistent": false
   },
   "browser_action": {
     "default_popup": "popup/popup.html"
