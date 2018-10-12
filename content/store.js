@@ -1,6 +1,12 @@
+/**
+ * /content/store.js
+ *
+ * A Vuex store that keeps track of state in the current tab.
+ */
+
 Vue.use(Vuex);
 
-let store = new Vuex.Store({
+const store = new Vuex.Store({
   state: {
     dialogs: {
       results: {
@@ -35,24 +41,11 @@ let store = new Vuex.Store({
     AUTH_TWITTER(context) {
       console.log('action: AUTH_TWITTER');
       if (context.state.authTabId === -1) {
-        let browserToken = botcheckUtils.generateBrowserToken();
-        chrome.tabs.create(
-          {
-            url: `${botcheckConfig.apiRoot}/ExtensionLogin?token=${browserToken}`
-          },
-          authTab => {
-            context.commit('AUTH_TAB_SET', authTab);
-            chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-              // Note: this event is fired twice:
-              // Once with `changeInfo.status` = "loading" and another time with "complete"
-              if (changeInfo.status === 'complete' && tab.url.indexOf('https://twitter.com/?apikey=') === 0) {
-                const url = new URL(tab.url);
-                const query = botcheckUtils.parseQueryString(url.search);
-                context.commit('AUTH_APIKEY_SET', query.apikey);
-              }
-            });
-          }
-        );
+        const browserToken = botcheckUtils.generateBrowserToken();
+        chrome.tabs.create({
+          url: `${botcheckConfig.apiRoot}/ExtensionLogin?token=${browserToken}`
+        });
+        // Now the auth listener should listen for the login and trigger a response.
       }
     },
     DEEP_SCAN(context, args) {
@@ -80,7 +73,7 @@ let store = new Vuex.Store({
           username: args.screenName,
           apikey: context.state.apiKey
         })
-        .then(result => {
+        .then((result) => {
           if (result && result.data) {
             result.data.realname = args.realName;
             context.commit('SCREEN_NAME_CHECK_DONE', result.data);
@@ -113,7 +106,7 @@ let store = new Vuex.Store({
           username: args.screenName,
           apikey: context.state.apiKey
         })
-        .then(result => {
+        .then((result) => {
           if (result && result.data) {
             result.data.realname = args.realName;
             context.commit('SCREEN_NAME_CHECK_DONE', result.data);
@@ -153,7 +146,7 @@ let store = new Vuex.Store({
     LOG(context, payload) {
       console.log('action: LOG');
       // Log errors/messages/etc to remote logger
-      let uuid = botcheckUtils.generateUuid();
+      const uuid = botcheckUtils.generateUuid();
       try {
         axios.post('https://log.declaredintent.com/entries', {
           namespace: 'me.botcheck.chrome-extension',
@@ -217,10 +210,6 @@ let store = new Vuex.Store({
       console.log('WHITELIST_CLOSE');
       state.dialogs.whitelist.visible = false;
     },
-    AUTH_TAB_SET(state, tabId) {
-      console.log('AUTH_TAB_SET');
-      state.authTabId = tabId;
-    },
     LEARN_MORE(context) {
       console.log('LEARN_MORE');
       chrome.tabs.create({
@@ -240,51 +229,5 @@ let store = new Vuex.Store({
         url: `https://twitter.com/intent/tweet/?text=I+just+found+out+@${args.screenName}+is+${msg}+a+propaganda+account%2C+by+using+the+botcheck+browser+extension%21+You+can+download+it+from+https%3A%2F%2Fbotcheck.me+and+check+for+yourself.`
       });
     }
-  }
-});
-
-// Listen for incoming state changes from the background, and commit
-// them to our local store, thus giving the illusion of a unified data
-// store across background and all tabs with our extension
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  // console.log(request.name, request.payload);
-  if (request.name === 'STATE_UPDATE') {
-    store.commit('REMOTE_STATE_UPDATE', request.payload);
-  } else if (request.name === 'STATE_INIT') {
-    store.commit('REMOTE_STATE_UPDATE', request.payload);
-    // Once the initial state arrives, inject the UI
-    botcheckScanner.injectDialogs();
-    botcheckScanner.injectButtons();
-  }
-});
-
-// Send any uncaught exceptions up to log collector
-Vue.config.errorHandler = (error, vm, info) => {
-  console.error(error);
-  store.dispatch('LOG', {
-    message: error.message,
-    stack: error.stack,
-    error: error.error,
-    filename: error.filename,
-    vueInfo: info
-  });
-};
-
-// Load api key and whitelist from chrome storage on startup
-chrome.storage.sync.get(null, state => {
-  if (state.apiKey) {
-    store.commit('AUTH_APIKEY_SET', state.apiKey);
-  }
-  if (state.whitelist) {
-    store.commit('WHITELIST_SET', { type: 'load', whitelist: state.whitelist });
-  }
-});
-
-// Save api key to chrome storage when API key changes
-store.subscribe((mutation, state) => {
-  if (mutation.type === 'AUTH_APIKEY_SET' && mutation.payload) {
-    chrome.storage.sync.set({ apiKey: mutation.payload });
-  } else if (mutation.type === 'WHITELIST_SET') {
-    chrome.storage.sync.set({ whitelist: state.whitelist });
   }
 });

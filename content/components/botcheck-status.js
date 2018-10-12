@@ -8,7 +8,7 @@ Vue.component('botcheck-status', {
   props: ['realName', 'screenName', 'isFeed', 'isRetweet', 'isProfile'],
   computed: {
     icon() {
-      let result = this.$store.state.results[this.screenName];
+      const result = this.$store.state.results[this.screenName];
       if (result && result.prediction) {
         return chrome.extension.getURL('icons/mad.svg');
       }
@@ -20,7 +20,7 @@ Vue.component('botcheck-status', {
     },
     containerClass() {
       let className = 'botcheck';
-      let result = this.$store.state.results[this.screenName];
+      const result = this.$store.state.results[this.screenName];
       if (!this.isFeed && !this.isProfile && result && result.prediction === true) {
         className += ' button';
       }
@@ -36,7 +36,7 @@ Vue.component('botcheck-status', {
       return className;
     },
     messageClass() {
-      let result = this.$store.state.results[this.screenName];
+      const result = this.$store.state.results[this.screenName];
       if (result && result.prediction === true) {
         return 'status-text bot';
       }
@@ -47,7 +47,7 @@ Vue.component('botcheck-status', {
       return 'status-text';
     },
     message() {
-      let result = this.$store.state.results[this.screenName];
+      const result = this.$store.state.results[this.screenName];
       if (result && result.prediction) {
         return 'Likely a Bot';
       }
@@ -63,7 +63,7 @@ Vue.component('botcheck-status', {
       e.preventDefault();
       e.stopPropagation();
 
-      let result = this.$store.state.results[this.screenName];
+      const result = this.$store.state.results[this.screenName];
       store.broadcastMutation('RESULTS_OPEN', this.screenName);
     }
   }

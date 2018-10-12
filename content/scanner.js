@@ -1,3 +1,8 @@
+/**
+ * /content/scanner.js
+ *
+ * Utility object for handling the Twitter DOM.
+ */
 
 let botcheckCacheScreenName;
 
@@ -38,9 +43,9 @@ const botcheckScanner = {
 
     // Then we set up an observer to do the same for any future tweets/profiles
     // that get added to the DOM because e.g. the user scrolled down or opened a tweet
-    let observer = new MutationObserver(mutations => {
-      mutations.forEach(mutation => {
-        mutation.addedNodes.forEach(addedNode => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((addedNode) => {
           if (!addedNode.querySelectorAll) {
             return;
           }
@@ -72,14 +77,14 @@ const botcheckScanner = {
   },
 
   injectDialogs: () => {
-    let el = document.createElement('div');
+    const el = document.createElement('div');
     el.innerHTML = `
       <dialog-whitelist></dialog-whitelist>
       <dialog-results></dialog-results>
       <dialog-thanks></dialog-thanks>
     `;
     document.body.appendChild(el);
-    new Vue({ el, store });
+    new Vue({ el, store }); // eslint-disable-line no-new
   },
 
   // Process a Tweet and add the Botcheck button to it
@@ -90,11 +95,11 @@ const botcheckScanner = {
 
     tweetEl.dataset.botcheckInjected = true;
 
-    let screenName = botcheckScanner.getScreenNameFromElement(tweetEl);
-    let realName = botcheckScanner.getRealNameFromElement(tweetEl);
-    let isProfile = false;
+    const screenName = botcheckScanner.getScreenNameFromElement(tweetEl);
+    const realName = botcheckScanner.getRealNameFromElement(tweetEl);
+    const isProfile = false;
 
-    let el = document.createElement('div');
+    const el = document.createElement('div');
     el.classList = 'botcheck-feed-container';
     el.innerHTML = '<botcheck-status :real-name="realName" :screen-name="screenName" :is-feed="isFeed" :is-retweet="isRetweet" :is-profile="isProfile"></botcheck-status>';
 
@@ -104,7 +109,7 @@ const botcheckScanner = {
       tweetEl.querySelector('.ProfileTweet-actionList').appendChild(el);
     }
 
-    new Vue({
+    new Vue({ // eslint-disable-line no-new
       el,
       store,
       data() {
@@ -130,9 +135,9 @@ const botcheckScanner = {
 
     profileEl.dataset.botcheckInjected = true;
 
-    let screenName = botcheckScanner.getScreenNameFromElement(profileEl);
-    let realName = botcheckScanner.getRealNameFromElement(profileEl);
-    let isProfile = true;
+    const screenName = botcheckScanner.getScreenNameFromElement(profileEl);
+    const realName = botcheckScanner.getRealNameFromElement(profileEl);
+    const isProfile = true;
 
     if (!screenName) return;
 
@@ -142,7 +147,7 @@ const botcheckScanner = {
     }
 
     // Insert with other metadata
-    let el = document.createElement('div');
+    const el = document.createElement('div');
     el.innerHTML = '<botcheck-status :real-name="realName" :screen-name="screenName" :is-profile="isProfile"></botcheck-status>';
 
     // Get bio and insert after if it exists
@@ -151,7 +156,7 @@ const botcheckScanner = {
       bio.insertAdjacentElement('afterend', el);
     }
 
-    new Vue({
+    new Vue({ // eslint-disable-line no-new
       el,
       store,
       data() {

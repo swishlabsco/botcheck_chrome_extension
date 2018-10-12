@@ -41,9 +41,8 @@ Vue.component('dialog-results', {
   `,
   computed: {
     icon() {
-      let results = this.$store.state.results;
-      let dialogScreenName = this.$store.state.dialogs.results.screenName;
-      let result = results[dialogScreenName];
+      const dialogScreenName = this.$store.state.dialogs.results.screenName;
+      const result = this.$store.state.results[dialogScreenName];
 
       if (result && result.prediction === true) {
         return chrome.extension.getURL('icons/mad@128.png');
@@ -55,8 +54,8 @@ Vue.component('dialog-results', {
       return this.$store.state.dialogs.results.screenName;
     },
     results() {
-      let results = this.$store.state.results;
-      let dialogScreenName = this.$store.state.dialogs.results.screenName;
+      const results = this.$store.state.results;
+      const dialogScreenName = this.$store.state.dialogs.results.screenName;
       if (results && results[dialogScreenName]) {
         return results[dialogScreenName];
       }
@@ -78,8 +77,8 @@ Vue.component('dialog-results', {
         this.$store.broadcastAction('DISAGREE', this.results.prediction);
         this.$store.broadcastMutation('THANKS_OPEN');
       } else if (type === 'whitelist') {
-        let results = this.$store.state.results;
-        let dialogScreenName = this.$store.state.dialogs.results.screenName;
+        const results = this.$store.state.results;
+        const dialogScreenName = this.$store.state.dialogs.results.screenName;
 
         this.$store.broadcastMutation('RESULTS_CLOSE');
         this.$store.broadcastAction('ADD_TO_WHITELIST', results[dialogScreenName]);
