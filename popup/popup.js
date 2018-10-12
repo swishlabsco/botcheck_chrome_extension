@@ -11,14 +11,14 @@ let app = new Vue({
     };
   },
   methods: {
-  	openWhitelist() {
-  		chrome.runtime.sendMessage({
-  			name: 'STATE_MUTATION',
-  			details: {
-  				name: 'WHITELIST_OPEN',
-  				args: ''
-  			}
-  		});
-  	}
+    openWhitelist() {
+      chrome.runtime.sendMessage({
+        name: 'STATE_MUTATION',
+        details: {
+          name: 'WHITELIST_OPEN',
+          args: ''
+        }
+      });
+    }
   }
 });
