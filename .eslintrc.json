@@ -15,7 +15,8 @@
     "no-console": 0,
     "no-plusplus": 0,
     "no-unused-vars": 0,
-    "prefer-destructuring": 0
+    "prefer-destructuring": 0,
+    "func-names": ["error", "as-needed"]
   },
   "globals": {
     "chrome": true,
