@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Botcheck.me",
   "short_name": "Botcheck.me",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Use machine learning techniques to detect propaganda accounts on Twitter.",
   "icons": {
     "16": "icons/default@16-gray.png",
@@ -14,38 +14,25 @@
     {
       "css": ["styles/element.css", "styles/style.css", "styles/botcheck.css"],
       "js": [
-        "lib/vue.js",
-        "lib/vuex.js",
-        "lib/element.js",
-        "lib/util.js",
-        "lib/errors.js",
+        "vendor/vue.js",
+        "vendor/vuex.js",
+        "vendor/element.js",
+        "vendor/axios.js",
+        "content/util.js",
         "content/components/botcheck-status.js",
         "content/components/dialog-whitelist.js",
         "content/components/dialog-results.js",
         "content/components/dialog-thanks.js",
-        "content/storeClient.js",
-        "content/injectScanner.js",
+        "content/slient.js",
+        "content/scanner.js",
         "content/injectDialogs.js"
       ],
       "matches": ["https://twitter.com/*"]
     }
   ],
-  "background": {
-    "scripts": [
-      "lib/vue.js",
-      "lib/vuex.js",
-      "lib/axios.js",
-      "lib/util.js",
-      "lib/errors.js",
-      "background/store.js",
-      "background/storePersist.js",
-      "background/storeServer.js"
-    ],
-    "persistent": false
-  },
   "browser_action": {
     "default_popup": "popup/popup.html"
   },
-  "permissions": ["storage","tabs"],
+  "permissions": ["storage", "tabs"],
   "web_accessible_resources": ["*.ttf", "*.woff","*.png","*.svg"]
 }
