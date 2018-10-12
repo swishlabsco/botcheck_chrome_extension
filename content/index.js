@@ -4,6 +4,8 @@
  * The start point of the extension.
  */
 
+console.log('(botcheck) Botcheck starting!');
+
 // Send any uncaught exceptions up to log collector
 Vue.config.errorHandler = (error, vm, info) => {
   console.error('(Vue error handler) Dispatching log:');
@@ -17,11 +19,13 @@ Vue.config.errorHandler = (error, vm, info) => {
   });
 };
 
-// Load api key and whitelist from chrome storage on startup
+// Load api key and whitelist from chrome storage
 chrome.storage.sync.get(null, (state) => {
+  console.log('Botcheck init - got state:');
+  console.log(state);
   if (!state.apiKey) {
     // No API key found, ask user to login
-    store.commit('AUTH_TWITTER');
+    store.dispatch('AUTH_TWITTER');
   }
   if (state.apiKey) {
     store.commit('AUTH_APIKEY_SET', state.apiKey);
@@ -31,18 +35,9 @@ chrome.storage.sync.get(null, (state) => {
   }
 });
 
-// Save api key to chrome storage when API key changes
-store.subscribe((mutation, state) => {
-  if (mutation.type === 'AUTH_APIKEY_SET' && mutation.payload) {
-    chrome.storage.sync.set({ apiKey: mutation.payload });
-  } else if (mutation.type === 'WHITELIST_SET') {
-    chrome.storage.sync.set({ whitelist: state.whitelist });
-  }
-});
-
 chrome.storage.onChanged.addListener((changes, areaName) => {
-  console.log('Chrome storage changed:\nchanges:');
-  console.log(changes);
-  console.log('areaName:');
-  console.log(areaName);
+  if (changes.apiKey.newValue) {
+    console.log('(botcheck) Detected new API key in storage');
+    store.commit('AUTH_APIKEY_SET', changes.apiKey.newValue);
+  }
 });

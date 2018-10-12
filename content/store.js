@@ -39,17 +39,13 @@ const store = new Vuex.Store({
   },
   actions: {
     AUTH_TWITTER(context) {
-      console.log('action: AUTH_TWITTER');
-      if (context.state.authTabId === -1) {
-        const browserToken = botcheckUtils.generateBrowserToken();
-        chrome.tabs.create({
-          url: `${botcheckConfig.apiRoot}/ExtensionLogin?token=${browserToken}`
-        });
-        // Now the auth listener should listen for the login and trigger a response.
-      }
+      console.log('(botcheck) action: AUTH_TWITTER');
+      const browserToken = botcheckUtils.generateBrowserToken();
+      window.open(`${botcheckConfig.apiRoot}/ExtensionLogin?token=${browserToken}`);
+      // Now the background script auth-listener.js should see the login and trigger a response.
     },
     DEEP_SCAN(context, args) {
-      console.log('action: DEEP_SCAN');
+      console.log('(botcheck) action: DEEP_SCAN');
       if (!context.state.apiKey) {
         context.dispatch('AUTH_TWITTER');
         return;
@@ -82,7 +78,7 @@ const store = new Vuex.Store({
         });
     },
     LIGHT_SCAN(context, args) {
-      console.log('action: LIGHT_SCAN');
+      console.log('(botcheck) action: LIGHT_SCAN');
       if (!context.state.apiKey) {
         context.dispatch('AUTH_TWITTER');
         return;
@@ -115,7 +111,7 @@ const store = new Vuex.Store({
         });
     },
     ADD_TO_WHITELIST(context, args) {
-      console.log('action: ADD_TO_WHITELIST');
+      console.log('(botcheck) action: ADD_TO_WHITELIST');
       if (!context.state.whitelist) {
         context.state.whitelist = [];
       }
@@ -127,7 +123,7 @@ const store = new Vuex.Store({
       }
     },
     REMOVE_FROM_WHITELIST(context, screenName) {
-      console.log('action: REMOVE_FROM_WHITELIST');
+      console.log('(botcheck) action: REMOVE_FROM_WHITELIST');
       if (!context.state.whitelist) {
         context.state.whitelist = [];
       }
@@ -136,7 +132,7 @@ const store = new Vuex.Store({
       context.commit('WHITELIST_SET', { type: 'delete', username: screenName });
     },
     DISAGREE(context, prediction) {
-      console.log('action: DISAGREE');
+      console.log('(botcheck) action: DISAGREE');
       axios.post(`${botcheckConfig.apiRoot}/disagree`, {
         prediction,
         username: context.state.dialogs.results.screenName,
@@ -144,7 +140,7 @@ const store = new Vuex.Store({
       });
     },
     LOG(context, payload) {
-      console.log('action: LOG');
+      console.log('(botcheck) action: LOG');
       // Log errors/messages/etc to remote logger
       const uuid = botcheckUtils.generateUuid();
       try {
@@ -162,15 +158,15 @@ const store = new Vuex.Store({
   },
   mutations: {
     CLIENT_TAB_SET(state, tabId) {
-      console.log('CLIENT_TAB_SET');
+      console.log('(botcheck) mutation: CLIENT_TAB_SET');
       state.clientTabId = tabId;
     },
     AUTH_APIKEY_SET(state, apiKey) {
-      console.log('AUTH_APIKEY_SET');
+      console.log('(botcheck) mutation: AUTH_APIKEY_SET');
       state.apiKey = apiKey;
     },
     WHITELIST_SET(state, payload) {
-      console.log('WHITELIST_SET');
+      console.log('(botcheck) mutation: WHITELIST_SET');
       if (payload.type === 'add') {
         Vue.set(state.whitelist, payload.user.username, payload.user);
       } else if (payload.type === 'delete') {
@@ -180,54 +176,48 @@ const store = new Vuex.Store({
       }
     },
     SCREEN_NAME_CHECK_DONE(state, result) {
-      console.log('SCREEN_NAME_CHECK_DONE');
+      console.log('(botcheck) mutation: SCREEN_NAME_CHECK_DONE');
       Vue.set(state.results, result.username, result);
       state.dialogs.results.loading = false;
     },
     RESULTS_OPEN(state, screenName) {
-      console.log('RESULTS_OPEN');
+      console.log('(botcheck) mutation: RESULTS_OPEN');
       state.dialogs.results.visible = true;
       state.dialogs.results.screenName = screenName;
     },
     RESULTS_CLOSE(state) {
-      console.log('RESULTS_CLOSE');
+      console.log('(botcheck) mutation: RESULTS_CLOSE');
       state.dialogs.results.visible = false;
       state.dialogs.results.screenName = '';
     },
     THANKS_OPEN(state) {
-      console.log('THANKS_OPEN');
+      console.log('(botcheck) mutation: THANKS_OPEN');
       state.dialogs.thanks.visible = true;
     },
     THANKS_CLOSE(state) {
-      console.log('THANKS_CLOSE');
+      console.log('(botcheck) mutation: THANKS_CLOSE');
       state.dialogs.thanks.visible = false;
     },
     WHITELIST_OPEN(state) {
-      console.log('WHITELIST_OPEN');
+      console.log('(botcheck) mutation: WHITELIST_OPEN');
       state.dialogs.whitelist.visible = true;
     },
     WHITELIST_CLOSE(state) {
-      console.log('WHITELIST_CLOSE');
+      console.log('(botcheck) mutation: WHITELIST_CLOSE');
       state.dialogs.whitelist.visible = false;
     },
     LEARN_MORE(context) {
-      console.log('LEARN_MORE');
-      chrome.tabs.create({
-        url: 'https://botcheck.me'
-      });
+      console.log('(botcheck) mutation: LEARN_MORE');
+      window.open('https://botcheck.me');
     },
     REPORT_TWEET(context) {
-      console.log('REPORT_TWEET');
-      chrome.tabs.create({
-        url: 'https://help.twitter.com/en/rules-and-policies/twitter-report-violation'
-      });
+      console.log('(botcheck) mutation: REPORT_TWEET');
+      window.open('https://help.twitter.com/en/rules-and-policies/twitter-report-violation');
     },
     SHARE(context, args) {
-      console.log('SHARE');
+      console.log('(botcheck) mutation: SHARE');
       const msg = args.prediction === true ? 'likely' : 'not+likely';
-      chrome.tabs.create({
-        url: `https://twitter.com/intent/tweet/?text=I+just+found+out+@${args.screenName}+is+${msg}+a+propaganda+account%2C+by+using+the+botcheck+browser+extension%21+You+can+download+it+from+https%3A%2F%2Fbotcheck.me+and+check+for+yourself.`
-      });
+      window.open(`https://twitter.com/intent/tweet/?text=I+just+found+out+@${args.screenName}+is+${msg}+a+propaganda+account%2C+by+using+the+botcheck+browser+extension%21+You+can+download+it+from+https%3A%2F%2Fbotcheck.me+and+check+for+yourself.`);
     }
   }
 });

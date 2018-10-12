@@ -23,16 +23,5 @@ const botcheckUtils = {
         .substring(1);
     }
     return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
-  },
-  parseQueryString: (queryString) => {
-    const query = {};
-    const pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
-
-    pairs.forEach((i) => {
-      const pair = pairs[i].split('=');
-      query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
-    });
-
-    return query;
   }
 };

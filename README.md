@@ -8,7 +8,9 @@ This extension uses [Vue.js](https://vuejs.org/) with [element](http://element.e
 
 ## Architecture
 
-The extension injects various Vue components into twitter, as well as one Vuex store. Only content scripts are used, as the only required browser feature is storage.
+The extension injects various Vue components into twitter, as well as one Vuex store. Mostly content scripts are used, with a single background script being used to listen for authentication.
+
+When the background script detects that the user was authenticated, it stores the API key, and the content scripts detect that change. This means at the moment there is no need for sending messages between content and background scripts.
 
 ## Running Eslint
 
