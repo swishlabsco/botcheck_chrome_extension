@@ -1,5 +1,5 @@
 Vue.component('dialog-results', {
-  template: html`
+  template: `
     <el-dialog :visible.sync="dialogVisible" :class="{ 'botcheck-dialog': true }" :show-close="false">
       <el-container>
         <el-main>
@@ -38,11 +38,11 @@ Vue.component('dialog-results', {
         </el-main>
       </el-container>
     </el-dialog>
-  `(),
+  `,
   computed: {
     icon() {
-      let results = this.$store.state.synced.results;
-      let dialogScreenName = this.$store.state.synced.dialogs.results.screenName;
+      let results = this.$store.state.results;
+      let dialogScreenName = this.$store.state.dialogs.results.screenName;
       let result = results[dialogScreenName];
 
       if (result && result.prediction === true) {
@@ -52,11 +52,11 @@ Vue.component('dialog-results', {
       return chrome.extension.getURL('icons/happy@128.png');
     },
     screenName() {
-      return this.$store.state.synced.dialogs.results.screenName;
+      return this.$store.state.dialogs.results.screenName;
     },
     results() {
-      let results = this.$store.state.synced.results;
-      let dialogScreenName = this.$store.state.synced.dialogs.results.screenName;
+      let results = this.$store.state.results;
+      let dialogScreenName = this.$store.state.dialogs.results.screenName;
       if (results && results[dialogScreenName]) {
         return results[dialogScreenName];
       }
@@ -64,7 +64,7 @@ Vue.component('dialog-results', {
     },
     dialogVisible: {
       get() {
-        return this.$store.state.synced.dialogs.results.visible;
+        return this.$store.state.dialogs.results.visible;
       },
       set() {
         this.$store.broadcastMutation('RESULTS_CLOSE');
@@ -77,18 +77,15 @@ Vue.component('dialog-results', {
         this.$store.broadcastMutation('RESULTS_CLOSE');
         this.$store.broadcastAction('DISAGREE', this.results.prediction);
         this.$store.broadcastMutation('THANKS_OPEN');
-      }
-      else if (type === 'whitelist') {
-        let results = this.$store.state.synced.results;
-        let dialogScreenName = this.$store.state.synced.dialogs.results.screenName;
-        
+      } else if (type === 'whitelist') {
+        let results = this.$store.state.results;
+        let dialogScreenName = this.$store.state.dialogs.results.screenName;
+
         this.$store.broadcastMutation('RESULTS_CLOSE');
         this.$store.broadcastAction('ADD_TO_WHITELIST', results[dialogScreenName]);
-      }
-      else if (type === 'report') {
+      } else if (type === 'report') {
         this.$store.broadcastMutation('REPORT_TWEET');
-      }
-      else {
+      } else {
         this.$store.broadcastMutation('LEARN_MORE');
       }
     },

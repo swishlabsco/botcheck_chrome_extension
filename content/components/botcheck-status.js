@@ -1,18 +1,18 @@
 Vue.component('botcheck-status', {
-  template: html`
+  template: `
     <div :class="containerClass" @click="openModal">
       <span class="icon"><img :src="icon"/></span>
       <span :class="messageClass">{{message}}</span>
     </div>
-  `(),
+  `,
   props: ['realName', 'screenName', 'isFeed', 'isRetweet', 'isProfile'],
   computed: {
     icon() {
-      let result = this.$store.state.synced.results[this.screenName];
+      let result = this.$store.state.results[this.screenName];
       if (result && result.prediction) {
         return chrome.extension.getURL('icons/mad.svg');
       }
-      else if (result && !result.prediction) {
+      if (result && !result.prediction) {
         return chrome.extension.getURL('icons/happy_outline.svg');
       }
 
@@ -20,7 +20,7 @@ Vue.component('botcheck-status', {
     },
     containerClass() {
       let className = 'botcheck';
-      let result = this.$store.state.synced.results[this.screenName];
+      let result = this.$store.state.results[this.screenName];
       if (!this.isFeed && !this.isProfile && result && result.prediction === true) {
         className += ' button';
       }
@@ -36,25 +36,25 @@ Vue.component('botcheck-status', {
       return className;
     },
     messageClass() {
-      let result = this.$store.state.synced.results[this.screenName];
+      let result = this.$store.state.results[this.screenName];
       if (result && result.prediction === true) {
         return 'status-text bot';
       }
-      else if (result && result.prediction === false) {
+      if (result && result.prediction === false) {
         return 'status-text';
       }
-      
+
       return 'status-text';
     },
     message() {
-      let result = this.$store.state.synced.results[this.screenName];
+      let result = this.$store.state.results[this.screenName];
       if (result && result.prediction) {
         return 'Likely a Bot';
       }
-      else if (result && !result.prediction) {
+      if (result && !result.prediction) {
         return 'Not a Bot';
       }
-      
+
       return 'Scanning...';
     }
   },
@@ -63,7 +63,7 @@ Vue.component('botcheck-status', {
       e.preventDefault();
       e.stopPropagation();
 
-      let result = this.$store.state.synced.results[this.screenName];
+      let result = this.$store.state.results[this.screenName];
       store.broadcastMutation('RESULTS_OPEN', this.screenName);
     }
   }

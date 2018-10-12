@@ -1,5 +1,5 @@
 Vue.component('dialog-whitelist', {
-  template: html`
+  template: `
     <el-dialog :visible.sync="dialogVisible" class="botcheck-dialog whitelist" :show-close="false">
       <el-main>
         <el-container>
@@ -25,18 +25,18 @@ Vue.component('dialog-whitelist', {
         </el-container>
       </el-main>
     </el-dialog>
-  `(),
+  `,
   computed: {
     dialogVisible: {
       get() {
-        return this.$store.state.synced.dialogs.whitelist.visible;
+        return this.$store.state.dialogs.whitelist.visible;
       },
       set() {
         this.$store.broadcastMutation('WHITELIST_CLOSE');
       }
     },
     users() {
-      return this.$store.state.synced.whitelist;
+      return this.$store.state.whitelist;
     }
   },
   methods: {

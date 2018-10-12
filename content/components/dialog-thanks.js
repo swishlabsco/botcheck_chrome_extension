@@ -1,5 +1,5 @@
 Vue.component('dialog-thanks', {
-  template: html`
+  template: `
     <el-dialog :visible.sync="dialogVisible" class="botcheck-dialog">
       <el-main>
         <el-container>
@@ -12,11 +12,11 @@ Vue.component('dialog-thanks', {
         </el-container>
       </el-main>
     </el-dialog>
-  `(),
+  `,
   computed: {
     dialogVisible: {
       get() {
-        return this.$store.state.synced.dialogs.thanks.visible;
+        return this.$store.state.dialogs.thanks.visible;
       },
       set() {
         this.$store.broadcastMutation('THANKS_CLOSE');
