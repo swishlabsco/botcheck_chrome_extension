@@ -37,6 +37,70 @@ const store = new Vuex.Store({
     whitelist: {
     }
   },
+  mutations: {
+    CLIENT_TAB_SET(state, tabId) {
+      console.log('(botcheck) mutation: CLIENT_TAB_SET');
+      state.clientTabId = tabId;
+    },
+    AUTH_APIKEY_SET(state, apiKey) {
+      console.log('(botcheck) mutation: AUTH_APIKEY_SET');
+      state.apiKey = apiKey;
+    },
+    WHITELIST_SET(state, payload) {
+      console.log('(botcheck) mutation: WHITELIST_SET');
+      if (payload.type === 'add') {
+        Vue.set(state.whitelist, payload.user.username, payload.user);
+      } else if (payload.type === 'delete') {
+        Vue.delete(state.whitelist, payload.username);
+      } else {
+        state.whitelist = payload.whitelist;
+      }
+    },
+    SCREEN_NAME_CHECK_DONE(state, result) {
+      console.log('(botcheck) mutation: SCREEN_NAME_CHECK_DONE');
+      Vue.set(state.results, result.username, result);
+      state.dialogs.results.loading = false;
+    },
+    RESULTS_OPEN(state, screenName) {
+      console.log('(botcheck) mutation: RESULTS_OPEN');
+      state.dialogs.results.visible = true;
+      state.dialogs.results.screenName = screenName;
+    },
+    RESULTS_CLOSE(state) {
+      console.log('(botcheck) mutation: RESULTS_CLOSE');
+      state.dialogs.results.visible = false;
+      state.dialogs.results.screenName = '';
+    },
+    THANKS_OPEN(state) {
+      console.log('(botcheck) mutation: THANKS_OPEN');
+      state.dialogs.thanks.visible = true;
+    },
+    THANKS_CLOSE(state) {
+      console.log('(botcheck) mutation: THANKS_CLOSE');
+      state.dialogs.thanks.visible = false;
+    },
+    WHITELIST_OPEN(state) {
+      console.log('(botcheck) mutation: WHITELIST_OPEN');
+      state.dialogs.whitelist.visible = true;
+    },
+    WHITELIST_CLOSE(state) {
+      console.log('(botcheck) mutation: WHITELIST_CLOSE');
+      state.dialogs.whitelist.visible = false;
+    },
+    LEARN_MORE(context) {
+      console.log('(botcheck) mutation: LEARN_MORE');
+      window.open('https://botcheck.me');
+    },
+    REPORT_TWEET(context) {
+      console.log('(botcheck) mutation: REPORT_TWEET');
+      window.open('https://help.twitter.com/en/rules-and-policies/twitter-report-violation');
+    },
+    SHARE(context, args) {
+      console.log('(botcheck) mutation: SHARE');
+      const msg = args.prediction === true ? 'likely' : 'not+likely';
+      window.open(`https://twitter.com/intent/tweet/?text=I+just+found+out+@${args.screenName}+is+${msg}+a+propaganda+account%2C+by+using+the+botcheck+browser+extension%21+You+can+download+it+from+https%3A%2F%2Fbotcheck.me+and+check+for+yourself.`);
+    }
+  },
   actions: {
     AUTH_TWITTER(context) {
       console.log('(botcheck) action: AUTH_TWITTER');
@@ -154,70 +218,6 @@ const store = new Vuex.Store({
         console.error('Unable to log to declared intent. Attempted to send payload:');
         console.error(payload);
       }
-    }
-  },
-  mutations: {
-    CLIENT_TAB_SET(state, tabId) {
-      console.log('(botcheck) mutation: CLIENT_TAB_SET');
-      state.clientTabId = tabId;
-    },
-    AUTH_APIKEY_SET(state, apiKey) {
-      console.log('(botcheck) mutation: AUTH_APIKEY_SET');
-      state.apiKey = apiKey;
-    },
-    WHITELIST_SET(state, payload) {
-      console.log('(botcheck) mutation: WHITELIST_SET');
-      if (payload.type === 'add') {
-        Vue.set(state.whitelist, payload.user.username, payload.user);
-      } else if (payload.type === 'delete') {
-        Vue.delete(state.whitelist, payload.username);
-      } else {
-        state.whitelist = payload.whitelist;
-      }
-    },
-    SCREEN_NAME_CHECK_DONE(state, result) {
-      console.log('(botcheck) mutation: SCREEN_NAME_CHECK_DONE');
-      Vue.set(state.results, result.username, result);
-      state.dialogs.results.loading = false;
-    },
-    RESULTS_OPEN(state, screenName) {
-      console.log('(botcheck) mutation: RESULTS_OPEN');
-      state.dialogs.results.visible = true;
-      state.dialogs.results.screenName = screenName;
-    },
-    RESULTS_CLOSE(state) {
-      console.log('(botcheck) mutation: RESULTS_CLOSE');
-      state.dialogs.results.visible = false;
-      state.dialogs.results.screenName = '';
-    },
-    THANKS_OPEN(state) {
-      console.log('(botcheck) mutation: THANKS_OPEN');
-      state.dialogs.thanks.visible = true;
-    },
-    THANKS_CLOSE(state) {
-      console.log('(botcheck) mutation: THANKS_CLOSE');
-      state.dialogs.thanks.visible = false;
-    },
-    WHITELIST_OPEN(state) {
-      console.log('(botcheck) mutation: WHITELIST_OPEN');
-      state.dialogs.whitelist.visible = true;
-    },
-    WHITELIST_CLOSE(state) {
-      console.log('(botcheck) mutation: WHITELIST_CLOSE');
-      state.dialogs.whitelist.visible = false;
-    },
-    LEARN_MORE(context) {
-      console.log('(botcheck) mutation: LEARN_MORE');
-      window.open('https://botcheck.me');
-    },
-    REPORT_TWEET(context) {
-      console.log('(botcheck) mutation: REPORT_TWEET');
-      window.open('https://help.twitter.com/en/rules-and-policies/twitter-report-violation');
-    },
-    SHARE(context, args) {
-      console.log('(botcheck) mutation: SHARE');
-      const msg = args.prediction === true ? 'likely' : 'not+likely';
-      window.open(`https://twitter.com/intent/tweet/?text=I+just+found+out+@${args.screenName}+is+${msg}+a+propaganda+account%2C+by+using+the+botcheck+browser+extension%21+You+can+download+it+from+https%3A%2F%2Fbotcheck.me+and+check+for+yourself.`);
     }
   }
 });
