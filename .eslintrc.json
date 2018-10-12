@@ -26,11 +26,8 @@
     "Vue": true,
     "Vuex": true,
     "axios": true,
-    "injectDialogs": true,
-    "injectButtons": true,
-    "errorHandler": true,
-    "generateBrowserToken": true,
-    "generateUuid": true,
-    "html": true
+    "botcheckScanner": true,
+    "botcheckUtils": true,
+    "botcheckConfig": true
   }
 }
