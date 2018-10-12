@@ -37,6 +37,11 @@
   "browser_action": {
     "default_popup": "popup/popup.html"
   },
-  "permissions": ["storage", "tabs"],
+  "permissions": [
+    "storage",
+    "tabs",
+    "https://botcheck2-dot-surfsafe-rbl.appspot.com/*",
+    "https://log.declaredintent.com/*"
+  ],
   "web_accessible_resources": ["*.ttf", "*.woff","*.png","*.svg"]
 }
