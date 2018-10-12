@@ -89,8 +89,8 @@ Vue.component('dialog-results', {
       }
     },
     share() {
-      this.$store.commit('RESULTS_CLOSE');
       this.$store.commit('SHARE', { prediction: this.results.prediction, screenName: this.screenName });
+      this.$store.commit('RESULTS_CLOSE');
     }
   }
 });
