@@ -19,25 +19,32 @@ Vue.config.errorHandler = (error, vm, info) => {
   });
 };
 
+// Called when an API key is retrieved
+function begin(apiKey) {
+  store.commit('AUTH_APIKEY_SET', apiKey);
+  botcheckScanner.injectButtons();
+  botcheckScanner.injectDialogs();
+}
+
 // Load api key and whitelist from chrome storage
 chrome.storage.sync.get(null, (state) => {
-  console.log('Botcheck init - got state:');
+  console.log('(botcheck) Starting... Got state:');
   console.log(state);
   if (!state.apiKey) {
     // No API key found, ask user to login
+    // and do nothing until API key is received
     store.dispatch('AUTH_TWITTER');
-  }
-  if (state.apiKey) {
-    store.commit('AUTH_APIKEY_SET', state.apiKey);
+    return;
   }
   if (state.whitelist) {
     store.commit('WHITELIST_SET', { type: 'load', whitelist: state.whitelist });
   }
+  begin(state.apiKey);
 });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (changes.apiKey.newValue) {
     console.log('(botcheck) Detected new API key in storage');
-    store.commit('AUTH_APIKEY_SET', changes.apiKey.newValue);
+    begin(changes.apiKey.newValue);
   }
 });

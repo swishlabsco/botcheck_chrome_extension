@@ -38,10 +38,6 @@ const store = new Vuex.Store({
     }
   },
   mutations: {
-    CLIENT_TAB_SET(state, tabId) {
-      console.log('(botcheck) mutation: CLIENT_TAB_SET');
-      state.clientTabId = tabId;
-    },
     AUTH_APIKEY_SET(state, apiKey) {
       console.log('(botcheck) mutation: AUTH_APIKEY_SET');
       state.apiKey = apiKey;
@@ -52,7 +48,7 @@ const store = new Vuex.Store({
         Vue.set(state.whitelist, payload.user.username, payload.user);
       } else if (payload.type === 'delete') {
         Vue.delete(state.whitelist, payload.username);
-      } else {
+      } else if (payload.type === 'load') {
         state.whitelist = payload.whitelist;
       }
     },
@@ -139,6 +135,10 @@ const store = new Vuex.Store({
             context.commit('SCREEN_NAME_CHECK_DONE', result.data);
             context.dispatch('LOG', result.data);
           }
+        })
+        .catch((e) => {
+          console.error(e);
+          console.error('Unable to run deep scan.');
         });
     },
     LIGHT_SCAN(context, args) {
@@ -172,6 +172,10 @@ const store = new Vuex.Store({
             context.commit('SCREEN_NAME_CHECK_DONE', result.data);
             context.dispatch('LOG', result.data);
           }
+        })
+        .catch((e) => {
+          console.error(e);
+          console.error('Unable to run light scan.');
         });
     },
     ADD_TO_WHITELIST(context, args) {
@@ -197,27 +201,34 @@ const store = new Vuex.Store({
     },
     DISAGREE(context, prediction) {
       console.log('(botcheck) action: DISAGREE');
-      axios.post(`${botcheckConfig.apiRoot}/disagree`, {
-        prediction,
-        username: context.state.dialogs.results.screenName,
-        apikey: context.state.apiKey
-      });
+      axios
+        .post(`${botcheckConfig.apiRoot}/disagree`, {
+          prediction,
+          username: context.state.dialogs.results.screenName,
+          apikey: context.state.apiKey
+        })
+        .catch((e) => {
+          console.error(e);
+          console.error('Unable to log disagreement.');
+        });
     },
     LOG(context, payload) {
       console.log('(botcheck) action: LOG');
       // Log errors/messages/etc to remote logger
       const uuid = botcheckUtils.generateUuid();
-      try {
-        axios.post('https://log.declaredintent.com/entries', {
+
+      axios
+        .post('https://log.declaredintent.com/entries', {
           namespace: 'me.botcheck.chrome-extension',
           useragent: navigator && navigator.userAgent,
           payload,
           uuid
+        })
+        .catch((e) => {
+          console.error(e);
+          console.error('Unable to log to declared intent. Attempted to send payload:');
+          console.error(payload);
         });
-      } catch (ex) {
-        console.error('Unable to log to declared intent. Attempted to send payload:');
-        console.error(payload);
-      }
     }
   }
 });
