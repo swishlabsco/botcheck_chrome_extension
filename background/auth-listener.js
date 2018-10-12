@@ -41,17 +41,5 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         console.error(chrome.runtime.lastError);
       }
     });
-
-    /*
-    // Send message to all Twitter tabs
-    chrome.tabs.query({ url: 'https://twitter.com/*' }, (tabs) => {
-      tabs.forEach((tab) => {
-        chrome.runtime.sendMessage(tab.id, {
-          type: 'botcheck-apikey-received',
-          apiKey: query.apiKey
-        });
-      });
-    });
-    */
   }
 });
