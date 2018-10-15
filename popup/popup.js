@@ -7,18 +7,24 @@ const app = new Vue({
   el: '#app',
   data() {
     return {
-      apiKey: store.state.apiKey
+      showMainView: true,
+      showWhitelistView: false,
+      users: [
+        {
+          realname: 'Marcos',
+          username: 'voxelbased'
+        }
+      ]
     };
   },
   methods: {
     openWhitelist() {
-      chrome.runtime.sendMessage({
-        name: 'STATE_MUTATION',
-        details: {
-          name: 'WHITELIST_OPEN',
-          args: ''
-        }
-      });
+      this.showMainView = false;
+      this.showWhitelistView = true;
+    },
+    closeWhitelist() {
+      this.showWhitelistView = false;
+      this.showMainView = true;
     }
   }
 });

@@ -2,29 +2,56 @@
 
 <head>
   <meta charset="utf-8">
-  <script src="../lib/vue.min.js"></script>
-  <script src="../lib/vuex.min.js"></script>
+  <script src="../vendor/vue.js"></script>
+  <script src="../vendor/vuex.js"></script>
+  <script src="../vendor/element.js"></script>
+  <link rel="stylesheet" type="text/css" href="../styles/element.css">
   <link rel="stylesheet" type="text/css" href="../styles/popup.css">
 </head>
 
 <body>
   <div id="app">
-    <ul>
-      <li>
-        <a href="https://botcheck.me" target="_blank">Botcheck.me Site</a>
-      </li>
-      <li>
-        <a href="https://medium.com/@robhat/identifying-propaganda-bots-on-twitter-5240e7cb81a9" target="_blank">How This Works</a>
-      </li>
-      <li>
-        <a href="http://twitter.com/theashbhat" target="_blank">Follow Us for Updates</a>
-      </li>
-      <li class="divider"></li>
-      <li>
-        <a href="#" @click="openWhitelist">View Whitelist</a>
-      </li>
-    </ul>
-   
+    <div id="main-view" v-if="showMainView">
+      <ul>
+        <li>
+          <a href="https://botcheck.me" target="_blank">Botcheck.me Site</a>
+        </li>
+        <li>
+          <a href="https://medium.com/@robhat/identifying-propaganda-bots-on-twitter-5240e7cb81a9" target="_blank">How This Works</a>
+        </li>
+        <li>
+          <a href="http://twitter.com/theashbhat" target="_blank">Follow Us for Updates</a>
+        </li>
+        <li class="divider"></li>
+        <li>
+          <a href="#" v-on:click="openWhitelist">View Whitelist</a>
+        </li>
+      </ul>
+    </div>
+    <div id="whitelist-view" v-if="showWhitelistView">
+      <div>
+        <el-container>
+          <el-main>
+            <el-row>
+              <el-col :span="24">
+                <h3 class="header">Whitelisted Accounts</h3>
+              </el-col>
+            </el-row>
+            <el-row class="whitelist-row">
+              <el-col :span="24">
+                <div v-for="user in users" class="whitelist-item">
+                  <span class="realName">{{user.realname}}</span>
+                  <span class="screenName secondary-text">@{{user.username}}</span>
+                  &nbsp;
+                  <span class="remove-button" v-on:click=""><i class="el-icon-close"></i></span>
+                </div>
+              </el-col>
+            </el-row>
+            <el-button href="#" v-on:click="closeWhitelist">Back</el-button>
+          </el-main>
+        </el-container>
+      </div>
+    </div>
   </div>
   <script src="popup.js"></script>
 </body>
