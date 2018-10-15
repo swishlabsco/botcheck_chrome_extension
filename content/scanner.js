@@ -205,5 +205,16 @@ const botcheckScanner = {
     ) {
       return element.querySelector('[data-name]').dataset.name;
     }
+
+    // For the profile card, the real name cannot be found in a [data-name] attribute
+    const header = element.querySelector('h1.ProfileHeaderCard-name');
+
+    if (header) {
+      const anchor = header.querySelector('a.ProfileHeaderCard-nameLink');
+
+      if (anchor && anchor.innerHTML) {
+        return anchor.innerHTML;
+      }
+    }
   }
 };
