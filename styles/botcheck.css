@@ -61,6 +61,11 @@
   margin-top: 3px;
   font-size: 12px;
 }
+.botcheck.button.pull-up {
+  margin-top: 0;
+  margin-left: 0;
+  height: 24px;
+}
 .botcheck.inline {
   display: inline-block;
 }
