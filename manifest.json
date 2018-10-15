@@ -23,7 +23,6 @@
         "content/components/botcheck-status.js",
         "content/components/dialog-results.js",
         "content/components/dialog-thanks.js",
-        "content/components/dialog-whitelist.js",
         "content/store.js",
         "content/scanner.js",
         "content/index.js"

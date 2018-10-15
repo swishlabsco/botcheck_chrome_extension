@@ -17,9 +17,6 @@ const store = new Vuex.Store({
       thanks: {
         visible: false
       },
-      whitelist: {
-        visible: false
-      },
       auth: {
         screenName: '',
         visible: false
@@ -34,8 +31,7 @@ const store = new Vuex.Store({
         profile_image: ''
       }
     },
-    whitelist: {
-    }
+    whitelist: {}
   },
   mutations: {
     AUTH_APIKEY_SET(state, apiKey) {
@@ -45,9 +41,16 @@ const store = new Vuex.Store({
     WHITELIST_SET(state, payload) {
       console.log('(botcheck) mutation: WHITELIST_SET');
       if (payload.type === 'add') {
-        Vue.set(state.whitelist, payload.user.username, payload.user);
-      } else if (payload.type === 'delete') {
-        Vue.delete(state.whitelist, payload.username);
+        console.log(payload);
+        chrome.storage.sync.get(['whitelist'], (whitelist) => {
+          if (!whitelist[payload.user.username]) {
+            whitelist[payload.user.username] = payload.user.realname;
+            chrome.storage.sync.set({ whitelist });
+            console.log('setting whitelist to:');
+            console.log(whitelist);
+            state.whitelist = whitelist;
+          }
+        });
       } else if (payload.type === 'load') {
         state.whitelist = payload.whitelist;
       }
@@ -74,14 +77,6 @@ const store = new Vuex.Store({
     THANKS_CLOSE(state) {
       console.log('(botcheck) mutation: THANKS_CLOSE');
       state.dialogs.thanks.visible = false;
-    },
-    WHITELIST_OPEN(state) {
-      console.log('(botcheck) mutation: WHITELIST_OPEN');
-      state.dialogs.whitelist.visible = true;
-    },
-    WHITELIST_CLOSE(state) {
-      console.log('(botcheck) mutation: WHITELIST_CLOSE');
-      state.dialogs.whitelist.visible = false;
     },
     LEARN_MORE(context) {
       console.log('(botcheck) mutation: LEARN_MORE');
@@ -190,9 +185,6 @@ const store = new Vuex.Store({
     },
     ADD_TO_WHITELIST(context, args) {
       console.log('(botcheck) action: ADD_TO_WHITELIST');
-      if (!context.state.whitelist) {
-        context.state.whitelist = [];
-      }
 
       // add user to whitelist and save (if it's not already in the list)
       const existing = context.state.whitelist[args.screenName];

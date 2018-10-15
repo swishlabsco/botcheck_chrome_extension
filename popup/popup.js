@@ -9,22 +9,33 @@ const app = new Vue({
     return {
       showMainView: true,
       showWhitelistView: false,
-      users: [
-        {
-          realname: 'Marcos',
-          username: 'voxelbased'
-        }
-      ]
+      whitelist: {}
     };
   },
   methods: {
     openWhitelist() {
-      this.showMainView = false;
-      this.showWhitelistView = true;
+      // Load whitelist when opening
+      chrome.storage.sync.get(['whitelist'], (whitelist) => {
+        console.log('loading whitelist:');
+        console.log(whitelist);
+        this.whitelist = whitelist;
+        this.showMainView = false;
+        this.showWhitelistView = true;
+      });
     },
     closeWhitelist() {
       this.showWhitelistView = false;
       this.showMainView = true;
+    },
+    remove(username) {
+      // Update storage, client scripts should listen for changes
+      chrome.storage.sync.get(['whitelist'], (whitelist) => {
+        if (whitelist[username]) {
+          delete whitelist[username];
+          chrome.storage.sync.set(['whitelist'], whitelist);
+          this.whitelist = whitelist;
+        }
+      });
     }
   }
 });

@@ -39,11 +39,11 @@
             </el-row>
             <el-row class="whitelist-row">
               <el-col :span="24">
-                <div v-for="user in users" class="whitelist-item">
-                  <span class="realName">{{user.realname}}</span>
-                  <span class="screenName secondary-text">@{{user.username}}</span>
+                <div v-for="(username, realname) in whitelist.whitelist" class="whitelist-item">
+                  <span class="realName">{{realname}}</span>
+                  <span class="screenName secondary-text">@{{username}}</span>
                   &nbsp;
-                  <span class="remove-button" v-on:click=""><i class="el-icon-close"></i></span>
+                  <span class="remove-button" v-on:click="remove(user.username)"><i class="el-icon-close"></i></span>
                 </div>
               </el-col>
             </el-row>

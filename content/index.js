@@ -43,8 +43,13 @@ chrome.storage.sync.get(null, (state) => {
 });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (changes.apiKey.newValue) {
+  if (changes.apiKey && changes.apiKey.newValue) {
     console.log('(botcheck) Detected new API key in storage');
     begin(changes.apiKey.newValue);
+  }
+  if (changes.whitelist && changes.whitelist.newValue) {
+    store.commit('WHITELIST_SET', { type: 'load', whitelist: changes.whitelist.newValue });
+    console.log('(botcheck) Detected whitelist change in storage');
+    console.log(changes);
   }
 });
