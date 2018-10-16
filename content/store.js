@@ -24,15 +24,15 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
     },
     message: 'Scanning...',
     results: {
-      exampleUserName: {
+      exampleUsername: {
         realname: 'exampleRealName',
-        username: 'exampleUserName',
+        username: 'exampleUsername',
         prediction: false,
         profile_image: ''
       }
     },
     whitelist: {
-      exampleUserName: {
+      exampleUsername: {
         realName: 'exampleRealName'
       }
     }
@@ -42,25 +42,17 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       console.log('(botcheck) mutation: AUTH_APIKEY_SET');
       state.apiKey = apiKey;
     },
-    WHITELIST_SET(state, payload) {
-      console.log('(botcheck) mutation: WHITELIST_SET');
-      if (payload.type === 'add') {
-        console.log(payload);
-        chrome.storage.sync.get(['whitelist'], (whitelist) => {
-          if (!whitelist[payload.user.username]) {
-            whitelist[payload.user.username] = payload.user.realname;
-            chrome.storage.sync.set({ whitelist });
-            console.log('setting whitelist to:');
-            console.log(whitelist);
-            state.whitelist = whitelist;
-          }
-        });
-      } else if (payload.type === 'load') {
-        state.whitelist = payload.whitelist;
-      }
+    LOAD_WHITELIST(state, whitelist) {
+      console.log('(botcheck) mutation: LOAD_WHITELIST. Whitelist:');
+      console.log(whitelist);
+      state.whitelist = whitelist;
     },
     SCREEN_NAME_CHECK_DONE(state, result) {
-      console.log(`(botcheck) mutation: SCREEN_NAME_CHECK_DONE. Username: ${result.username} Prediction: ${result.prediction}`);
+      console.log(`
+        (botcheck) mutation: SCREEN_NAME_CHECK_DONE.
+        Username: ${result.username}
+        Prediction: ${result.prediction}
+      `);
       Vue.set(state.results, result.username, result);
       state.dialogs.results.loading = false;
     },
@@ -104,13 +96,14 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       // Now the background script auth-listener.js should see the login and trigger a response.
     },
     DEEP_SCAN(context, args) {
-      console.log('(botcheck) action: DEEP_SCAN');
+      console.log(`(botcheck) action: DEEP_SCAN. Username: ${args.screenName}`);
 
       if (!args.realName || !args.screenName) {
         console.error('(botcheck) Called deep scan without real name or screen name.');
         return;
       }
       if (!context.state.apiKey) {
+        console.error('(botcheck) Called deep scan but no API key found. Triggering auth...');
         context.dispatch('AUTH_TWITTER');
         return;
       }
@@ -123,7 +116,6 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       }
 
       // Don't check network again if we've already done the check
-      // This will reset on browser restart
       if (context.state.results[args.screenName]) {
         console.log(`${args.screenName} has already been deep scanned, returning previous result`);
         context.commit('SCREEN_NAME_CHECK_DONE', context.state.results[args.screenName]);
@@ -141,7 +133,7 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
             console.log(result);
             console.log(args.screenName);
 
-            result.data.realname = args.realName;
+            context.dispatch('STORE_RESULT', result);
             context.commit('SCREEN_NAME_CHECK_DONE', result.data);
             context.dispatch('LOG', result.data);
           }
@@ -208,15 +200,9 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
           console.error('Unable to run light scan.');
         });
     },
-    ADD_TO_WHITELIST(context, args) {
-      console.log(`(botcheck) action: ADD_TO_WHITELIST. Username: ${args.screenName}`);
-
-      // add user to whitelist and save (if it's not already in the list)
-      // TODO: modify this code to save to storage
-      const existing = context.state.whitelist[args.screenName];
-      if (!existing) {
-        context.commit('WHITELIST_SET', { type: 'add', user: args });
-      }
+    STORE_RESULT(context, result) {
+      console.log('trying to store result:');
+      console.log(result);
     },
     DISAGREE(context, prediction) {
       console.log(`

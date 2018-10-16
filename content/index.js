@@ -37,7 +37,7 @@ chrome.storage.sync.get(null, (state) => {
     return;
   }
   if (state.whitelist) {
-    store.commit('WHITELIST_SET', { type: 'load', whitelist: state.whitelist });
+    store.commit('LOAD_WHITELIST', state.whitelist);
   }
   begin(state.apiKey);
 });
@@ -53,8 +53,7 @@ chrome.storage.onChanged.addListener((changes /* , areaName */) => {
 // Listen for whitelist changes and update Vuex store
 chrome.storage.onChanged.addListener((changes /* , areaName */) => {
   if (changes.whitelist && changes.whitelist.newValue) {
-    store.commit('WHITELIST_SET', { type: 'load', whitelist: changes.whitelist.newValue });
     console.log('(botcheck) Detected whitelist change in storage');
-    console.log(changes);
+    store.commit('LOAD_WHITELIST', changes.whitelist.newValue);
   }
 });

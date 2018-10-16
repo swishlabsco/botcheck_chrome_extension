@@ -77,11 +77,9 @@ Vue.component('dialog-results', {
         this.$store.dispatch('DISAGREE', this.results.prediction);
         this.$store.commit('THANKS_OPEN');
       } else if (type === 'whitelist') {
-        const results = this.$store.state.results;
-        const dialogScreenName = this.$store.state.dialogs.results.screenName;
-
-        this.$store.commit('RESULTS_CLOSE');
-        this.$store.dispatch('ADD_TO_WHITELIST', results[dialogScreenName]);
+        const screenName = this.$store.state.dialogs.results.screenName;
+        const result = this.$store.state.results[screenName];
+        this.addToWhitelist(screenName, result.realName);
       } else if (type === 'report') {
         this.$store.commit('REPORT_TWEET');
       } else {
@@ -91,6 +89,30 @@ Vue.component('dialog-results', {
     share() {
       this.$store.commit('SHARE', { prediction: this.results.prediction, screenName: this.screenName });
       this.$store.commit('RESULTS_CLOSE');
+    },
+    // Updates whitelist on browser storage.
+    // Content scripts should pick up on the change
+    addToWhitelist(username, realName) {
+      chrome.storage.sync.get('whitelist', (whitelist) => {
+        if (chrome.runtime.lastError) {
+          console.error('(botcheck) Failed to update whitelist.');
+          console.error(chrome.runtime.lastError);
+          return;
+        }
+        if (!whitelist[username]) {
+          whitelist[username] = {
+            realName
+          };
+        }
+        chrome.storage.sync.set({ whitelist }, () => {
+          if (chrome.runtime.lastError) {
+            console.error('(botcheck) Failed to update whitelist.');
+            console.error(chrome.runtime.lastError);
+            return;
+          }
+          this.$store.commit('RESULTS_CLOSE');
+        });
+      });
     }
   }
 });
