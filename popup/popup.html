@@ -39,7 +39,10 @@
             </el-row>
             <el-row class="whitelist-row">
               <el-col :span="24">
-                <div v-for="(username, realname) in whitelist.whitelist" class="whitelist-item">
+                <div v-if="Object.keys(whitelist).length < 1">
+                  <p>No users have been added to the whitelist so far!</p>
+                </div>
+                <div v-for="(username, realname) in whitelist" class="whitelist-item">
                   <span class="realName">{{realname}}</span>
                   <span class="screenName secondary-text">@{{username}}</span>
                   &nbsp;
