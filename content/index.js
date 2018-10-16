@@ -50,8 +50,6 @@ chrome.storage.onChanged.addListener((changes /* , areaName */) => {
   }
 });
 
-// Testing slack integration
-
 // Listen for whitelist changes and update Vuex store
 chrome.storage.onChanged.addListener((changes /* , areaName */) => {
   if (changes.whitelist && changes.whitelist.newValue) {
