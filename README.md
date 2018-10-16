@@ -10,7 +10,17 @@ This extension uses [Vue.js](https://vuejs.org/) with [element](http://element.e
 
 The extension injects various Vue components into twitter, as well as one Vuex store. Mostly content scripts are used, with a single background script being used to listen for authentication.
 
-When the background script detects that the user was authenticated, it stores the API key, and the content scripts detect that change. This means at the moment there is no need for sending messages between content and background scripts.
+When the background script detects that the user was authenticated, it stores the API key and the content scripts detect that change. This means at the moment there is no need for sending messages between content and background scripts.
+
+The Vuex store is injected into the page, restricted to the current tab, and only used by the content scripts in that tab. For the interaction between content scripts, the backend, and the popup, the browser storage is used as the single source of truth.
+
+### Storing deep scan results locally
+
+When a deep scan is run, the result is stored locally so that if the user clicks "Run bot scan" on a tweet, the same message won't appear on other tweets of the same author.
+
+### Whitelist
+
+The whitelist is managed both on the Twitter interface as well as on the extension popup. Synchronization between these two parts is achieved by storing changes on the browser. Both sides use the browser storage as the source of truth for both fetching/updating the data and for listening for changes.
 
 ## Running Eslint
 
