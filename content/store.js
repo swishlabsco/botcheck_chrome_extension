@@ -6,7 +6,7 @@
 
 Vue.use(Vuex);
 
-const store = new Vuex.Store({
+const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
   state: {
     dialogs: {
       results: {
@@ -31,7 +31,11 @@ const store = new Vuex.Store({
         profile_image: ''
       }
     },
-    whitelist: {}
+    whitelist: {
+      exampleUserName: {
+        realName: 'exampleRealName'
+      }
+    }
   },
   mutations: {
     AUTH_APIKEY_SET(state, apiKey) {
@@ -56,7 +60,7 @@ const store = new Vuex.Store({
       }
     },
     SCREEN_NAME_CHECK_DONE(state, result) {
-      console.log('(botcheck) mutation: SCREEN_NAME_CHECK_DONE');
+      console.log(`(botcheck) mutation: SCREEN_NAME_CHECK_DONE. Username: ${result.username} Prediction: ${result.prediction}`);
       Vue.set(state.results, result.username, result);
       state.dialogs.results.loading = false;
     },
@@ -78,11 +82,11 @@ const store = new Vuex.Store({
       console.log('(botcheck) mutation: THANKS_CLOSE');
       state.dialogs.thanks.visible = false;
     },
-    LEARN_MORE(context) {
+    LEARN_MORE() {
       console.log('(botcheck) mutation: LEARN_MORE');
       window.open('https://botcheck.me');
     },
-    REPORT_TWEET(context) {
+    REPORT_TWEET() {
       console.log('(botcheck) mutation: REPORT_TWEET');
       window.open('https://help.twitter.com/en/rules-and-policies/twitter-report-violation');
     },
@@ -93,7 +97,7 @@ const store = new Vuex.Store({
     }
   },
   actions: {
-    AUTH_TWITTER(context) {
+    AUTH_TWITTER() {
       console.log('(botcheck) action: AUTH_TWITTER');
       const browserToken = botcheckUtils.generateBrowserToken();
       window.open(`${botcheckConfig.apiRoot}/ExtensionLogin?token=${browserToken}`);
@@ -113,6 +117,7 @@ const store = new Vuex.Store({
 
       // Don't do whitelisted accounts, return not a bot
       if (context.state.whitelist[args.screenName]) {
+        console.log(`${args.screenName} is whitelisted, returning prediction: false`);
         context.commit('SCREEN_NAME_CHECK_DONE', { realname: args.realName, username: args.screenName, prediction: false });
         return;
       }
@@ -120,6 +125,7 @@ const store = new Vuex.Store({
       // Don't check network again if we've already done the check
       // This will reset on browser restart
       if (context.state.results[args.screenName]) {
+        console.log(`${args.screenName} has already been deep scanned, returning previous result`);
         context.commit('SCREEN_NAME_CHECK_DONE', context.state.results[args.screenName]);
         return;
       }
@@ -131,6 +137,10 @@ const store = new Vuex.Store({
         })
         .then((result) => {
           if (result && result.data) {
+            console.log(`${args.screenName} has been deep scanned. Prediction: ${result.data.prediction}`);
+            console.log(result);
+            console.log(args.screenName);
+
             result.data.realname = args.realName;
             context.commit('SCREEN_NAME_CHECK_DONE', result.data);
             context.dispatch('LOG', result.data);
@@ -145,23 +155,34 @@ const store = new Vuex.Store({
       console.log('(botcheck) action: LIGHT_SCAN');
 
       if (!args.realName || !args.screenName) {
-        console.error('(botcheck) Called light scan without real name or screen name.');
+        console.error(`
+          (botcheck) Called light scan without real name or screen name.
+          Real name: ${args.realName} Screen name: ${args.screenName}
+        `);
         return;
       }
       if (!context.state.apiKey) {
+        console.log('(botcheck) Called light scan but store has no API key. Triggering authentication...');
         context.dispatch('AUTH_TWITTER');
         return;
       }
 
       // Don't do whitelisted accounts, return not a bot
       if (context.state.whitelist[args.screenName]) {
+        console.log(`
+          (botcheck) Called light scan but ${args.screenName} is whitelisted.
+          Returning prediction: false
+        `);
         context.commit('SCREEN_NAME_CHECK_DONE', { realname: args.realName, username: args.screenName, prediction: false });
         return;
       }
 
       // Don't check network again if we've already done the check
-      // This will reset on browser restart
       if (context.state.results[args.screenName]) {
+        console.log(`
+          (botcheck) Called light scan but ${args.screenName} has already been scanned.
+          Returning prediction: ${context.state.results[args.screenName].prediction}
+        `);
         context.commit('SCREEN_NAME_CHECK_DONE', context.state.results[args.screenName]);
         return;
       }
@@ -173,6 +194,10 @@ const store = new Vuex.Store({
         })
         .then((result) => {
           if (result && result.data) {
+            console.log(`
+              (botcheck) Received light scan result for ${args.screenName}.
+              Prediction: ${result.data.prediction}
+            `);
             result.data.realname = args.realName;
             context.commit('SCREEN_NAME_CHECK_DONE', result.data);
             context.dispatch('LOG', result.data);
@@ -184,25 +209,21 @@ const store = new Vuex.Store({
         });
     },
     ADD_TO_WHITELIST(context, args) {
-      console.log('(botcheck) action: ADD_TO_WHITELIST');
+      console.log(`(botcheck) action: ADD_TO_WHITELIST. Username: ${args.screenName}`);
 
       // add user to whitelist and save (if it's not already in the list)
+      // TODO: modify this code to save to storage
       const existing = context.state.whitelist[args.screenName];
       if (!existing) {
         context.commit('WHITELIST_SET', { type: 'add', user: args });
       }
     },
-    REMOVE_FROM_WHITELIST(context, screenName) {
-      console.log('(botcheck) action: REMOVE_FROM_WHITELIST');
-      if (!context.state.whitelist) {
-        context.state.whitelist = [];
-      }
-
-      // remove user from whitelist and save
-      context.commit('WHITELIST_SET', { type: 'delete', username: screenName });
-    },
     DISAGREE(context, prediction) {
-      console.log('(botcheck) action: DISAGREE');
+      console.log(`
+        (botcheck) action: DISAGREE.
+        Username: ${context.state.dialogs.results.screenName}
+        Prediction: ${prediction}
+      `);
       axios
         .post(`${botcheckConfig.apiRoot}/disagree`, {
           prediction,

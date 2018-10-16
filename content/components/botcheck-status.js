@@ -15,7 +15,6 @@ Vue.component('botcheck-status', {
       if (result && !result.prediction) {
         return chrome.extension.getURL('icons/happy_outline.svg');
       }
-
       return chrome.extension.getURL('icons/scanning.svg');
     },
     containerClass() {
@@ -54,7 +53,6 @@ Vue.component('botcheck-status', {
       if (result && !result.prediction) {
         return 'Not a Bot';
       }
-
       return 'Scanning...';
     }
   },
@@ -63,7 +61,6 @@ Vue.component('botcheck-status', {
       e.preventDefault();
       e.stopPropagation();
 
-      const result = this.$store.state.results[this.screenName];
       store.commit('RESULTS_OPEN', this.screenName);
     }
   }

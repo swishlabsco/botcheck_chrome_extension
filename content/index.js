@@ -42,11 +42,16 @@ chrome.storage.sync.get(null, (state) => {
   begin(state.apiKey);
 });
 
-chrome.storage.onChanged.addListener((changes, areaName) => {
+// Listen for API key from the tab used for authentication
+chrome.storage.onChanged.addListener((changes /* , areaName */) => {
   if (changes.apiKey && changes.apiKey.newValue) {
     console.log('(botcheck) Detected new API key in storage');
     begin(changes.apiKey.newValue);
   }
+});
+
+// Listen for whitelist changes and update Vuex store
+chrome.storage.onChanged.addListener((changes /* , areaName */) => {
   if (changes.whitelist && changes.whitelist.newValue) {
     store.commit('WHITELIST_SET', { type: 'load', whitelist: changes.whitelist.newValue });
     console.log('(botcheck) Detected whitelist change in storage');

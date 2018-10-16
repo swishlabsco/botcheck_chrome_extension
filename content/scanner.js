@@ -30,12 +30,10 @@ const botcheckScanner = {
   },
 
   injectButtons: () => {
-    // This first tries to inject the buttons on tweets/profiles already on the page
-    // Tweets
+    // Inject buttons on tweets/profiles already on the page
     document.querySelectorAll('.tweet.js-stream-tweet').forEach((tweet) => {
       botcheckScanner.processTweetEl(tweet, true);
     });
-    // Permalink tweets
     document.querySelectorAll('.tweet.permalink-tweet').forEach((tweet) => {
       botcheckScanner.processTweetEl(tweet, false);
     });
@@ -49,17 +47,17 @@ const botcheckScanner = {
           if (!addedNode.querySelectorAll) {
             return;
           }
-          // Retweet
+          // Retweet prompt
           if (addedNode.classList.contains('tweet') && addedNode.classList.contains('js-stream-tweet')) {
-            botcheckScanner.processTweetEl(addedNode, false, true);
+            botcheckScanner.processTweetEl(addedNode, { isRetweet: true });
           }
           // Tweets
           addedNode.querySelectorAll('.tweet.js-stream-tweet').forEach((tweet) => {
-            botcheckScanner.processTweetEl(tweet, true, false);
+            botcheckScanner.processTweetEl(tweet, { isFeed: true });
           });
           // Permalink tweets
           addedNode.querySelectorAll('.tweet.permalink-tweet').forEach((tweet) => {
-            botcheckScanner.processTweetEl(tweet, false, false);
+            botcheckScanner.processTweetEl(tweet);
           });
           // Profile pages
           addedNode.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach(botcheckScanner.processProfileEl);
@@ -79,7 +77,6 @@ const botcheckScanner = {
   injectDialogs: () => {
     const el = document.createElement('div');
     el.innerHTML = `
-      <dialog-whitelist></dialog-whitelist>
       <dialog-results></dialog-results>
       <dialog-thanks></dialog-thanks>
     `;
@@ -88,7 +85,7 @@ const botcheckScanner = {
   },
 
   // Process a Tweet and add the Botcheck button to it
-  processTweetEl: (tweetEl, isFeed, isRetweet) => {
+  processTweetEl: (tweetEl, { isFeed = false, isRetweet = false }) => {
     if (!tweetEl.dataset || !tweetEl.dataset.screenName || tweetEl.dataset.botcheckInjected) {
       return;
     }
@@ -96,8 +93,13 @@ const botcheckScanner = {
     tweetEl.dataset.botcheckInjected = true;
 
     const screenName = botcheckScanner.getScreenNameFromElement(tweetEl);
+    if (!screenName) {
+      console.error('(botcheck) Could not extract screenName from tweet.');
+    }
     const realName = botcheckScanner.getRealNameFromElement(tweetEl);
-    const isProfile = false;
+    if (!realName) {
+      console.error('(botcheck) Could not extract realName from tweet.');
+    }
 
     const el = document.createElement('div');
     el.classList = 'botcheck-feed-container';
@@ -118,10 +120,10 @@ const botcheckScanner = {
           screenName,
           isFeed,
           isRetweet,
-          isProfile
+          isProfile: false
         };
       },
-      mounted: function () { // eslint-disable-line object-shorthand
+      mounted() {
         store.dispatch('LIGHT_SCAN', { realName: this.realName, screenName: this.screenName });
       }
     });
@@ -139,7 +141,10 @@ const botcheckScanner = {
     const realName = botcheckScanner.getRealNameFromElement(profileEl);
     const isProfile = true;
 
-    if (!screenName) return;
+    if (!screenName) {
+      console.error('(botcheck) Tried processing profile element with no screenName.');
+      return;
+    }
 
     // Skip putting button on own profile
     if (screenName === botcheckScanner.getScreenName()) {
@@ -167,6 +172,7 @@ const botcheckScanner = {
         };
       },
       mounted: function () { // eslint-disable-line object-shorthand
+        console.log(`(botcheck) Finished mounting on profile element for user ${screenName}. Running deep scan...`);
         store.dispatch('DEEP_SCAN', { realName: this.realName, screenName: this.screenName });
       }
     });

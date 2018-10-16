@@ -28,7 +28,7 @@ const app = new Vue({
       this.showMainView = true;
     },
     remove(username) {
-      // Update storage, client scripts should listen for changes
+      // Update storage, content scripts should listen for changes
       chrome.storage.sync.get(['whitelist'], (whitelist) => {
         if (whitelist[username]) {
           delete whitelist[username];
