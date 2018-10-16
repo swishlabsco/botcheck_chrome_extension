@@ -2,11 +2,11 @@ html,
 body {
   margin: 0;
   padding: 0;
-  color: #303133;
-  min-width: 200px;
+  color: #303030;
+  width: 200px;
 }
 .secondary-text {
-  color: #909399;
+  color: #666;
 }
 ul {
   list-style-type: none;
@@ -17,11 +17,11 @@ ul li:not(.divider) {
   display: block;
 }
 ul li:not(.divider):hover {
-  background-color: rgb(236, 245, 255);
+  background-color: #ebfbff;
 }
 ul li:not(.divider) a {
   font-size: 13px;
-  color: #303133;
+  color: #666;
   text-decoration: none;
   display: block;
   padding: 8px 15px;
@@ -51,11 +51,9 @@ ul li.divider {
   color: #F56C6C;
   border-radius: 999px;
 }
-
 .whitelist-row .remove-button:hover {
   background-color: #DCDFE6;
 }
-
 .whitelist-row .remove-button i {
   padding: 3px;
 }

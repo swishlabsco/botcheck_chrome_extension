@@ -1,44 +1,77 @@
-@textColor: #666;
+@textColor: #303030;
+@secondaryTextColor: #666;
 @lightGrey: #E5E5E5;
+@lightBlue: #ebfbff;
 
 html, body {
-	margin: 0;
-	padding: 0;
-	color: @textColor;
-	width: 200px;
+  margin: 0;
+  padding: 0;
+  color: @textColor;
+  width: 200px;
+}
+
+.secondary-text {
+  color: @secondaryTextColor;
 }
 
 ul {
-	list-style-type: none;
-	padding: 10px 0 0 0;
-	margin-left: 0;
+  list-style-type: none;
+  padding: 10px 0 0 0;
+  margin-left: 0;
 
-	li:not(.divider) {
-		display: block;
+  li:not(.divider) {
+    display: block;
 
-		a {
-			font-size: 13px;
-			color: @textColor;
-			text-decoration: none;
-			display: block;
-			padding: 8px 15px;
+    &:hover {
+      background-color: @lightBlue;
+    }
 
-			&:hover {
-				text-decoration: none;
-			}
-		}
+    a {
+      font-size: 13px;
+      color: @secondaryTextColor;
+      text-decoration: none;
+      display: block;
+      padding: 8px 15px;
 
-		&:last-of-type {
-			a {
-				padding: 7px 15px 0 15px;
-			}
-		}
-	}
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
 
-	li.divider {
-		display: block;
-		height: 1px;
-		background: @lightGrey;
-		margin: 8px 0;
-	}
+  li.divider {
+    display: block;
+    height: 1px;
+    background: @lightGrey;
+    margin: 8px 0;
+  }
+}
+
+.whitelist-row {
+  margin-bottom: 16px;
+  min-height: 50px;
+}
+.whitelist-item {
+  display: inline-block;
+
+  span {
+    vertical-align: middle;
+  }
+}
+.whitelist-row {
+
+  .remove-button {
+    font-weight: bold;
+    font-size: 20px;
+    color: #F56C6C;
+    border-radius: 999px;
+  }
+}
+
+.whitelist-row .remove-button:hover {
+  background-color: #DCDFE6;
+}
+
+.whitelist-row .remove-button i {
+  padding: 3px;
 }

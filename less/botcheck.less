@@ -21,7 +21,7 @@
 }
 
 .botcheck {
-	color: @twitterTextGrey;
+    color: @twitterTextGrey;
     font-size: 14px;
     line-height: 1;
     margin-bottom: 8px;
@@ -29,10 +29,10 @@
     cursor: pointer;
 
     .icon {
-    	width: 18px;
+        width: 18px;
         height: 18px;
-	    position: absolute;
-	    bottom: 0;
+        position: absolute;
+        bottom: 0;
         background-image: none;
         display: inline-block;
 
@@ -42,26 +42,29 @@
         }
     }
 
-	.status-text {
-		padding-left: 22px;
-		line-height: 1;
-		color: @twitterTextGrey;
-    	vertical-align: middle;
-    	box-decoration-break: clone;
-    	-webkit-box-decoration-break: clone;
-    	font-size: 14px;
+    .status-text {
+        padding-left: 22px;
+        line-height: 1;
+        color: @twitterTextGrey;
+        vertical-align: middle;
+        box-decoration-break: clone;
+        -webkit-box-decoration-break: clone;
+        font-size: 14px;
         display: inline-block;
 
         &.bot {
             color: @botcheckRed;
         }
-	}
+    }
 
     &.button {
         border-radius: 25px;
         background: @botcheckLightRed;
         user-select: none;
         cursor: pointer;
+        margin-top: 0;
+        margin-left: 0;
+        height: 24px;
 
         .icon {
             position: relative;
