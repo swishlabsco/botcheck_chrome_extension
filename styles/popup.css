@@ -52,10 +52,10 @@ ul li.divider {
 }
 .whitelist-table .whitelist-item {
   display: inline-block;
-  min-width: 100%;
-  margin: 6px 0 6px 0;
   white-space: nowrap;
-  border-bottom: 1px solid #E5E5E5;
+  background-color: #f9f9f9;
+  padding: 6px 18px 6px 10px;
+  border-radius: 999px;
 }
 .whitelist-table .whitelist-item .realName {
   font-size: 14px;

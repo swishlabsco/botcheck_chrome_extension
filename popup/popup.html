@@ -40,7 +40,7 @@
                   <p>No users have been whitelisted so far!</p>
                 </div>
                 <div v-for="(value, key) in whitelist" class="whitelist-item">
-                  <span class="remove-button" v-on:click="remove(key)"><i class="el-icon-close"></i></span>
+                  <span class="remove-button" v-on:click="removeFromWhitelist(key)"><i class="el-icon-close"></i></span>
                   <span class="realName">{{value.realName}}</span>
                   <span class="screenName secondary-text">
                     <a href="#" @click="openTwitterProfile(key)">@{{key}}</a>

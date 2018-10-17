@@ -11,9 +11,9 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
     dialogs: {
       results: {
         visible: false,
-        loading: false,
         username: '',
-        realName: ''
+        realName: '',
+        whitelisted: false
       },
       thanks: {
         visible: false
@@ -22,10 +22,9 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
     message: 'Scanning...',
     results: {
       exampleUsername: {
-        realName: 'exampleRealName',
-        username: 'exampleUsername',
         prediction: false,
-        profile_image: ''
+        realName: 'exampleRealName',
+        username: 'exampleUsername'
       }
     },
     whitelist: {
@@ -52,14 +51,15 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
         Prediction: ${prediction}
       `);
       Vue.set(state.results, username, { prediction, realName, username });
-      state.dialogs.results.loading = false;
-      console.log(state.results);
     },
-    RESULTS_OPEN(state, { username, realName }) {
+    RESULTS_OPEN(state, { username, realName, whitelisted }) {
       console.log('(botcheck) mutation: RESULTS_OPEN');
-      state.dialogs.results.visible = true;
-      state.dialogs.results.username = username;
-      state.dialogs.results.realName = realName;
+      state.dialogs.results = {
+        visible: true,
+        username,
+        realName,
+        whitelisted
+      };
     },
     RESULTS_CLOSE(state) {
       console.log('(botcheck) mutation: RESULTS_CLOSE');
@@ -141,6 +141,7 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
             console.log(`${username} has been deep scanned. Prediction: ${result.data.prediction}`);
 
             context.dispatch('STORE_DEEPSCAN_RESULT', result);
+
             context.commit('SCREEN_NAME_CHECK_DONE', {
               prediction: result.data.prediction,
               realName,

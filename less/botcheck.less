@@ -148,19 +148,16 @@
         font-size: 16px;
         line-height: 1.5;
         letter-spacing: 0.4px;
+    }
 
-        &.status-text {
-            margin-bottom: 3rem;
-            display: inline-block;
-        }
+    button.remove-from-whitelist {
+        margin-top: 24px;
     }
 
     .share-link {
         cursor: pointer;
-        display: inline-block;
-        position: absolute;
-        bottom: 15px;
-        right: 20px;
+        text-align: right;
+        margin-top: 16px;
 
         i {
             font-size: 18px;
@@ -184,71 +181,6 @@
 
             span {
                 color: @botcheckGreen;
-            }
-        }
-    }
-
-    &.whitelist {
-        .el-dialog {
-            width: 325px;
-            height: 260px;
-        }
-
-        .el-dialog__body {
-            padding: 0;
-        }
-
-        .el-main {
-            padding: 15px 0 0 0;
-        }
-
-        .el-row {
-            width: 100%;
-        }
-
-        .header {
-            color: @lightBlack;
-            font-weight: 400;
-            font-size: 16px;
-            margin-bottom: 0;
-        }
-
-        .item {
-            display: flex;
-            width: 100%;
-            padding: 10px 0;
-            align-items: center;
-
-            &:after {
-                content: '';
-                display: block;
-                clear: both;
-            }
-
-            .name {
-                flex: 1;
-
-                .realName {
-                    color: @lightBlack;
-                    font-size: 15px;
-                    font-weight: bold;
-                    display: block;
-                }
-
-                .screenName {
-                    color: @lightGrey;
-                    font-size: 13px;
-                }
-            }
-
-            .delete {
-                cursor: pointer;
-
-                i {
-                    color: @lightBlack;
-                    font-size: 24px;
-                    font-weight: bold;
-                }
             }
         }
     }

@@ -9,18 +9,27 @@ Vue.component('botcheck-status', {
   computed: {
     prediction() {
       const results = this.$store.state.results;
-      if (results) {
-        const result = results[this.username];
-        if (result) {
-          return result.prediction;
-        }
+      if (!results) {
+        return null;
       }
+      const result = results[this.username];
+      if (result) {
+        return result.prediction;
+      }
+      return null;
+    },
+    whitelisted() {
+      const whitelist = this.$store.state.whitelist;
+      if (!whitelist) {
+        return false;
+      }
+      return !!whitelist[this.username]; // cast to boolean
     },
     icon() {
-      if (this.prediction) {
+      if (this.prediction === true) {
         return chrome.extension.getURL('icons/mad.svg');
       }
-      if (!this.prediction) {
+      if (this.prediction === false) {
         return chrome.extension.getURL('icons/happy_outline.svg');
       }
       return chrome.extension.getURL('icons/scanning.svg');
@@ -48,10 +57,12 @@ Vue.component('botcheck-status', {
       if (this.prediction === false) {
         return 'status-text';
       }
-
       return 'status-text';
     },
     message() {
+      if (this.whitelisted) {
+        return 'Whitelisted';
+      }
       if (this.prediction) {
         return 'Likely a Bot';
       }
@@ -66,7 +77,11 @@ Vue.component('botcheck-status', {
       e.preventDefault();
       e.stopPropagation();
 
-      store.commit('RESULTS_OPEN', { username: this.username, realName: this.realName });
+      store.commit('RESULTS_OPEN', {
+        username: this.username,
+        realName: this.realName,
+        whitelisted: this.whitelisted
+      });
     }
   }
 });
