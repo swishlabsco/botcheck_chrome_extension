@@ -33,7 +33,7 @@ Vue.component('botcheck-status', {
       return !!whitelist[this.username]; // cast to boolean
     },
     clickToScan() {
-      // Status should be "Click here to scan" when a light scan
+      // Status should be "Run Bot Scan" when a light scan
       // has been run with a result of false
       return (this.prediction === false && !this.result.deepScan);
     },
@@ -85,7 +85,7 @@ Vue.component('botcheck-status', {
         return 'Whitelisted';
       }
       if (this.clickToScan) {
-        return 'Click here to scan';
+        return 'Run Bot Scan';
       }
       if (this.prediction === true) {
         return 'Likely a Bot';
