@@ -166,11 +166,11 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
             console.log(`${username} has been${(deepScan ? ' deep ' : ' light ')}scanned. Prediction: ${result.data.prediction}`);
 
             if (result.data.error) {
-              let logType = console.log;
-              if (result.data.error !== 'This user does not exist.') {
-                logType = console.error;
+              let logType = console.error;
+              if (result.data.error === 'This user does not exist.') {
+                // Happens on private profiles
+                logType = console.log;
               }
-              // Happens on private profiles
               logType('(botcheck) Error while running scan:');
               logType(result.data.error);
             }
@@ -190,28 +190,38 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
         });
     },
     STORE_RESULT(context, result) {
-      // Update browser storage instead of just this store
-      // Every twitter tab should see the change and update its store
-      chrome.storage.sync.get('results', ({ results }) => {
-        if (chrome.runtime.lastError) {
-          console.error('(botcheck) Failed to get results.');
-          console.error(chrome.runtime.lastError);
-          return;
-        }
-        if (!results) {
-          results = {};
-        }
-        if (results[result.username]) {
-          console.log(`(botcheck) Overwriting result for user ${result.username}`);
-        }
-        results[result.username] = result;
+      // A result is a response from the API after a user is scanned.
+      //
+      // First we store the result in this Vuex store,
+      // then we queue a browser storage update.
+      // This way, when a lot of storage requests are made at the same time,
+      // they are all up to date.
+      // If we didn't first store the result in the Vuex store, consequent updates
+      // could be missing previous updates. But this is not enough:
+      // If we didn't queue the update, chrome could be inconsistent with the storage
+      // ordering and create a race condition.
 
-        chrome.storage.sync.set({ results }, () => {
-          if (chrome.runtime.lastError) {
-            console.error('(botcheck) Failed to save results.');
-            console.error(chrome.runtime.lastError);
-          }
-        });
+      const previousResult = context.state.results[result.username];
+      if (previousResult && previousResult.deepScan && !result.deepScan) {
+        console.log(`
+          (botcheck) Tried storing light scan result for ${result.username},
+          but deep scan result was already stored. Aborting.
+        `);
+        return;
+      }
+      if (previousResult) {
+        console.log(`(botcheck) Overwriting result for user ${result.username}`);
+      }
+      context.state.results[result.username] = result;
+
+      // Send message to backend script
+      // Queueing storage updates avoids race condition
+      chrome.runtime.sendMessage({
+        type: 'botcheck-queue-storage-update',
+        info: result.username,
+        update: {
+          results: context.state.results
+        }
       });
     },
     DISAGREE(context, prediction) {

@@ -55,6 +55,7 @@ function begin(apiKey) {
     }
     if (changes.results && changes.results.newValue) {
       console.log('(botcheck) Detected results change in storage');
+      console.log(changes.results.newValue);
       store.commit('LOAD_RESULTS', changes.results.newValue);
     }
   });

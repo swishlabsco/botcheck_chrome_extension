@@ -8,6 +8,8 @@ Vue.component('botcheck-status', {
   props: ['realName', 'username', 'isFeed', 'isRetweet', 'isProfile'],
   computed: {
     prediction() {
+      // Null means we haven't scanned yet
+      // Undefined means result is unknown
       const results = this.$store.state.results;
       if (!results) {
         return null;
@@ -80,7 +82,6 @@ Vue.component('botcheck-status', {
       }
       if (
         this.prediction === undefined
-        || this.prediction === null
       ) {
         // Happens for private profiles
         return 'Unknown';

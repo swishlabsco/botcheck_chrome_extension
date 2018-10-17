@@ -31,7 +31,10 @@
     }
   ],
   "background": {
-    "scripts": ["background/auth-listener.js"]
+    "scripts": [
+      "background/auth-listener.js",
+      "background/storage.js"
+    ]
   },
   "browser_action": {
     "default_popup": "popup/popup.html"
