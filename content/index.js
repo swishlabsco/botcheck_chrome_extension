@@ -20,22 +20,34 @@ Vue.config.errorHandler = (error, vm, info) => {
 };
 
 // Called when an API key is retrieved
+let begun = false;
 function begin(apiKey) {
+  // Always commit new API key
   store.commit('AUTH_APIKEY_SET', apiKey);
+
+  // But only mount extension once
+  if (begun) {
+    return;
+  }
+  begun = true;
 
   // Load whitelist and stored results
   chrome.storage.sync.get(null, (state) => {
-    if (state.whitelist) {
-      store.dispatch('LOAD_WHITELIST', state.whitelist);
+    if (!state.whitelist) {
+      state.whitelist = {};
     }
-    if (state.results) {
-      store.commit('LOAD_RESULTS', state.results);
+    store.dispatch('LOAD_WHITELIST', state.whitelist);
+
+    if (!state.results) {
+      state.results = {};
     }
+    store.commit('LOAD_RESULTS', state.results);
+
     botcheckScanner.injectButtons();
     botcheckScanner.injectDialogs();
   });
 
-  // Listen for whitelist and result changes and update Vuex store
+  // Listen for whitelist/results changes and update Vuex store
   chrome.storage.onChanged.addListener((changes /* , areaName */) => {
     if (changes.whitelist && changes.whitelist.newValue) {
       console.log('(botcheck) Detected whitelist change in storage');

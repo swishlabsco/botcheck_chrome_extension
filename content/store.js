@@ -141,14 +141,15 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
         return;
       }
 
-      // Don't check network again if we've already done the check
-      if (context.state.results[username]) {
-        console.log(`Found a result for ${username}, aborting scan`);
+      // Don't check network again if this is a light scan
+      // and we already have a result (from a deep scan or not)
+      const previousResult = context.state.results[username];
+      if (!deepScan && previousResult) {
+        console.log(`(botcheck) Light scan requested for ${username}, but result found. Aborting scan.`);
         return;
       }
 
       let endpoint;
-
       if (deepScan) {
         endpoint = '/DeepScan';
       } else {
