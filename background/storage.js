@@ -1,8 +1,5 @@
 /**
  * Listen for storage requests and handle a queue in order to avoid race conditions.
- * Before having a queue, chrome was being inconsistent with the order of storage which meant
- * we had a race condition, especially when a lot of requests were sent at the same time
- * (such as when the user scrolled the Twitter feed and triggered a lot of light scans)
  *
  * storageQueue items are in the format { key: newValue },
  * which is identical to the chrome.storage API.

@@ -11,9 +11,7 @@ This extension uses [Vue.js](https://vuejs.org/) with [element](http://element.e
 The extension injects various Vue components into twitter, as well as one Vuex store.
 A background script is used to listen for authentication, and another as a centralized point for interacting with the browser's storage.
 
-The Vuex store is injected into the page and is only accessible by the content scripts in that tab.
-For the interaction between content scripts, the backend, and the popup, mainly in terms of storing the whitelist and previous results,
-the browser storage is used as the main source of truth.
+The Vuex store is only accessible by the content scripts that have been injected into the same tab.
 
 ### Whitelist
 

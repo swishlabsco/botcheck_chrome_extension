@@ -212,17 +212,7 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       if (previousResult) {
         console.log(`(botcheck) Overwriting result for user ${result.username}`);
       }
-      context.state.results[result.username] = result;
-
-      // Send message to backend script
-      // Queueing storage updates avoids race condition
-      chrome.runtime.sendMessage({
-        type: 'botcheck-queue-storage-update',
-        info: result.username,
-        update: {
-          results: context.state.results
-        }
-      });
+      Vue.set(context.state.results, result.username, result);
     },
     DISAGREE(context, prediction) {
       console.log(`
