@@ -222,7 +222,9 @@ const botcheckScanner = {
       const anchor = header.querySelector('a.ProfileHeaderCard-nameLink');
 
       if (anchor && anchor.innerHTML) {
-        return anchor.innerHTML;
+        const html = anchor.innerHTML;
+        const name = botcheckUtils.extractTextFromHTML(html);
+        return name;
       }
     }
   }

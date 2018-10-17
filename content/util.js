@@ -4,7 +4,7 @@
  * Utility object.
  */
 
-const botcheckUtils = {
+const botcheckUtils = { // eslint-disable-line no-unused-vars
   generateBrowserToken: () => {
     let text = '';
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -23,5 +23,9 @@ const botcheckUtils = {
         .substring(1);
     }
     return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
+  },
+  extractTextFromHTML: (string) => {
+    const doc = new DOMParser().parseFromString(string, 'text/html');
+    return doc.body.textContent || '';
   }
 };
