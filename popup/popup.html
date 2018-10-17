@@ -30,27 +30,25 @@
       </ul>
     </div>
     <div id="whitelist-view" v-if="showWhitelistView">
-      <div>
-        <el-container>
-          <el-main>
-            <h1 class="header">Whitelisted Accounts</h1>
-            <div class="whitelist-table">
-              <div class="whitelist-table-inner">
-                <div v-if="Object.keys(whitelist).length < 1">
-                  <p>No users have been whitelisted so far!</p>
-                </div>
-                <div v-for="(value, key) in whitelist" class="whitelist-item">
-                  <span class="remove-button" v-on:click="removeFromWhitelist(key)"><i class="el-icon-close"></i></span>
-                  <span class="realName">{{value.realName}}</span>
-                  <span class="screenName secondary-text">
-                    <a href="#" @click="openTwitterProfile(key)">@{{key}}</a>
-                  </span>
-                </div>
-              </div>
+      <div class="whitelist-header">
+        <div class="whitelist-header-text">Whitelisted Accounts</div>
+        <div class="whitelist-go-back" v-on:click="closeWhitelist">
+          <i class="el-icon-back"></i>
+        </div>
+      </div>
+      <div class="whitelist-table">
+        <div class="whitelist-table-inner">
+          <div class="whitelist-empty" v-if="Object.keys(whitelist).length < 1">
+            No users have been whitelisted so far!
+          </div>
+          <div v-for="(value, key) in whitelist" class="whitelist-item">
+            <div class="whitelist-item-real-name">{{value.realName}}</div>
+            <div class="whitelist-item-handle">@{{key}}</div>
+            <div class="un-whitelist-item" v-on:click="removeFromWhitelist(key)">
+              <i class="el-icon-close"></i>
             </div>
-            <el-button href="#" v-on:click="closeWhitelist">Back</el-button>
-          </el-main>
-        </el-container>
+          </div>
+        </div>
       </div>
     </div>
   </div>
