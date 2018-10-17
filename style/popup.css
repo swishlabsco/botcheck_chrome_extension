@@ -1,0 +1,79 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  color: #303030;
+}
+.secondary-text {
+  color: #666;
+}
+a {
+  text-decoration: none;
+  color: #00aced;
+}
+ul {
+  list-style-type: none;
+  padding: 6px 0 6px 0;
+  margin: 0;
+}
+ul li:not(.divider) {
+  display: block;
+}
+ul li:not(.divider):hover {
+  background-color: #ebfbff;
+}
+ul li:not(.divider) a {
+  font-size: 13px;
+  color: #666;
+  text-decoration: none;
+  display: block;
+  padding: 8px 15px;
+}
+ul li:not(.divider) a:hover {
+  text-decoration: none;
+}
+ul li.divider {
+  display: block;
+  height: 1px;
+  background: #E5E5E5;
+  margin: 8px 0;
+}
+#main-view {
+  width: 250px;
+}
+#whitelist-view {
+  width: 300px;
+}
+.whitelist-table {
+  margin-bottom: 16px;
+  height: 200px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+.whitelist-table .whitelist-item {
+  display: inline-block;
+  margin-bottom: 6px;
+  padding: 6px 18px 6px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  background-color: #f9f9f9;
+}
+.whitelist-table .whitelist-item .realName {
+  font-size: 14px;
+}
+.whitelist-table .whitelist-item span {
+  vertical-align: middle;
+}
+.whitelist-table .whitelist-item .remove-button {
+  font-weight: bold;
+  font-size: 20px;
+  color: #FB0015;
+  border-radius: 999px;
+}
+.whitelist-table .whitelist-item .remove-button:hover {
+  cursor: pointer;
+  background-color: #E5E5E5;
+}
+.whitelist-table .whitelist-item .remove-button i {
+  padding: 3px;
+}

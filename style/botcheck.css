@@ -144,16 +144,3 @@
 .botcheck-dialog .share-link.positive span {
   color: #00D68C;
 }
-
-.remove-from-whitelist {
-  text-align: right;
-  margin-top: 16px;
-}
-
-.remove-from-whitelist span {
-  font-size: 13px;
-  margin-left: 4px;
-  vertical-align: middle;
-  margin-top: 2px;
-  cursor: pointer;
-}

@@ -13,7 +13,11 @@ Vue.component('dialog-results', {
                 <strong>@{{ result.username }}</strong> has been whitelisted, which means their scan results are being ignored.
               </span>
               <br>
-              <el-button class="remove-from-whitelist" @click="removeFromWhitelist(result.username)">Remove @{{ result.username }} from whitelist</el-button>
+              <div
+                @click="removeFromWhitelist(result.username)"
+                class="remove-from-whitelist"
+              ><span>Un-Whitelist</span>
+              </div>
             </el-col>
           </el-row>
         </el-main>
