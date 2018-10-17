@@ -127,7 +127,11 @@ const botcheckScanner = {
         };
       },
       mounted() {
-        store.dispatch('LIGHT_SCAN', { realName: this.realName, username: this.username });
+        store.dispatch('SCAN', {
+          deepScan: false,
+          realName: this.realName,
+          username: this.username
+        });
       }
     });
   },
@@ -176,7 +180,11 @@ const botcheckScanner = {
       },
       mounted: function () { // eslint-disable-line object-shorthand
         console.log(`(botcheck) Finished mounting on profile element for user ${username}. Running deep scan...`);
-        store.dispatch('DEEP_SCAN', { realName: this.realName, username: this.username });
+        store.dispatch('SCAN', {
+          deepScan: true,
+          realName: this.realName,
+          username: this.username
+        });
       }
     });
   },

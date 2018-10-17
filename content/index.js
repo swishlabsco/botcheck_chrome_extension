@@ -22,11 +22,33 @@ Vue.config.errorHandler = (error, vm, info) => {
 // Called when an API key is retrieved
 function begin(apiKey) {
   store.commit('AUTH_APIKEY_SET', apiKey);
-  botcheckScanner.injectButtons();
-  botcheckScanner.injectDialogs();
+
+  // Load whitelist and stored results
+  chrome.storage.sync.get(null, (state) => {
+    if (state.whitelist) {
+      store.dispatch('LOAD_WHITELIST', state.whitelist);
+    }
+    if (state.results) {
+      store.commit('LOAD_RESULTS', state.results);
+    }
+    botcheckScanner.injectButtons();
+    botcheckScanner.injectDialogs();
+  });
+
+  // Listen for whitelist and result changes and update Vuex store
+  chrome.storage.onChanged.addListener((changes /* , areaName */) => {
+    if (changes.whitelist && changes.whitelist.newValue) {
+      console.log('(botcheck) Detected whitelist change in storage');
+      store.dispatch('LOAD_WHITELIST', changes.whitelist.newValue);
+    }
+    if (changes.results && changes.results.newValue) {
+      console.log('(botcheck) Detected results change in storage');
+      store.commit('LOAD_RESULTS', changes.results.newValue);
+    }
+  });
 }
 
-// Load api key and whitelist from chrome storage
+// Try to load API key from browser storage
 chrome.storage.sync.get(null, (state) => {
   console.log('(botcheck) Starting... Got state:');
   console.log(state);
@@ -36,9 +58,6 @@ chrome.storage.sync.get(null, (state) => {
     store.dispatch('AUTH_TWITTER');
     return;
   }
-  if (state.whitelist) {
-    store.commit('LOAD_WHITELIST', state.whitelist);
-  }
   begin(state.apiKey);
 });
 
@@ -47,13 +66,5 @@ chrome.storage.onChanged.addListener((changes /* , areaName */) => {
   if (changes.apiKey && changes.apiKey.newValue) {
     console.log('(botcheck) Detected new API key in storage');
     begin(changes.apiKey.newValue);
-  }
-});
-
-// Listen for whitelist changes and update Vuex store
-chrome.storage.onChanged.addListener((changes /* , areaName */) => {
-  if (changes.whitelist && changes.whitelist.newValue) {
-    console.log('(botcheck) Detected whitelist change in storage');
-    store.commit('LOAD_WHITELIST', changes.whitelist.newValue);
   }
 });

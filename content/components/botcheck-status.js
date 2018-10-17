@@ -26,23 +26,32 @@ Vue.component('botcheck-status', {
       return !!whitelist[this.username]; // cast to boolean
     },
     icon() {
+      if (this.whitelisted || this.prediction === false) {
+        return chrome.extension.getURL('icons/happy_outline.svg');
+      }
       if (this.prediction === true) {
         return chrome.extension.getURL('icons/mad.svg');
-      }
-      if (this.prediction === false) {
-        return chrome.extension.getURL('icons/happy_outline.svg');
       }
       return chrome.extension.getURL('icons/scanning.svg');
     },
     containerClass() {
       let className = 'botcheck';
-      if (!this.isFeed && !this.isProfile && this.prediction === true) {
+      if (
+        !this.whitelisted
+        && !this.isFeed
+        && !this.isProfile
+        && this.prediction === true
+      ) {
         className += ' button';
       }
       if (!this.isFeed && !this.isProfile && this.prediction === false) {
         className += ' retweet';
       }
-      if (this.isRetweet && this.prediction === true) {
+      if (
+        !this.whitelisted
+        && this.isRetweet
+        && this.prediction === true
+      ) {
         className += ' pull-up';
       }
       if (this.isProfile) {
@@ -51,11 +60,11 @@ Vue.component('botcheck-status', {
       return className;
     },
     messageClass() {
+      if (this.prediction === false || this.whitelisted) {
+        return 'status-text';
+      }
       if (this.prediction === true) {
         return 'status-text bot';
-      }
-      if (this.prediction === false) {
-        return 'status-text';
       }
       return 'status-text';
     },
@@ -63,11 +72,18 @@ Vue.component('botcheck-status', {
       if (this.whitelisted) {
         return 'Whitelisted';
       }
-      if (this.prediction) {
+      if (this.prediction === true) {
         return 'Likely a Bot';
       }
-      if (!this.prediction) {
+      if (this.prediction === false) {
         return 'Not a Bot';
+      }
+      if (
+        this.prediction === undefined
+        || this.prediction === null
+      ) {
+        // Happens for private profiles
+        return 'Unknown';
       }
       return 'Scanning...';
     }
