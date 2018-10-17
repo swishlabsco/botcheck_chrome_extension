@@ -44,14 +44,16 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       console.log(whitelist);
       state.whitelist = whitelist;
     },
-    SCREEN_NAME_CHECK_DONE(state, result) {
+    SCREEN_NAME_CHECK_DONE(state, { prediction, realName, username }) {
       console.log(`
         (botcheck) mutation: SCREEN_NAME_CHECK_DONE.
-        Username: ${result.username}
-        Prediction: ${result.prediction}
+        Username: ${username}
+        RealName: ${realName}
+        Prediction: ${prediction}
       `);
-      Vue.set(state.results, result.username, result);
+      Vue.set(state.results, username, { prediction, realName, username });
       state.dialogs.results.loading = false;
+      console.log(state.results);
     },
     RESULTS_OPEN(state, { username, realName }) {
       console.log('(botcheck) mutation: RESULTS_OPEN');
@@ -94,11 +96,15 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       window.open(`${botcheckConfig.apiRoot}/ExtensionLogin?token=${browserToken}`);
       // Now the background script auth-listener.js should see the login and trigger a response.
     },
-    DEEP_SCAN(context, args) {
-      console.log(`(botcheck) action: DEEP_SCAN. Username: ${args.username}`);
+    DEEP_SCAN(context, { username, realName }) {
+      console.log(`(botcheck) action: DEEP_SCAN. Username: ${username}`);
 
-      if (!args.realName || !args.username) {
-        console.error('(botcheck) Called deep scan without real name or screen name.');
+      if (!realName || !username) {
+        console.error(`
+          (botcheck) Called deep scan without real name or username.
+          realName: ${realName}
+          username: ${username}
+        `);
         return;
       }
       if (!context.state.apiKey) {
@@ -108,32 +114,38 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       }
 
       // Don't do whitelisted accounts, return not a bot
-      if (context.state.whitelist[args.username]) {
-        console.log(`${args.username} is whitelisted, returning prediction: false`);
-        context.commit('SCREEN_NAME_CHECK_DONE', { realname: args.realName, username: args.username, prediction: false });
+      if (context.state.whitelist[username]) {
+        console.log(`${username} is whitelisted, returning prediction: false`);
+        context.commit('SCREEN_NAME_CHECK_DONE', {
+          realName,
+          username,
+          prediction: false
+        });
         return;
       }
 
       // Don't check network again if we've already done the check
-      if (context.state.results[args.username]) {
-        console.log(`${args.username} has already been deep scanned, returning previous result`);
-        context.commit('SCREEN_NAME_CHECK_DONE', context.state.results[args.username]);
+      if (context.state.results[username]) {
+        console.log(`${username} has already been deep scanned, returning previous result`);
+        context.commit('SCREEN_NAME_CHECK_DONE', context.state.results[username]);
         return;
       }
 
       axios
         .post(`${botcheckConfig.apiRoot}/DeepScan`, {
-          username: args.username,
+          username,
           apikey: context.state.apiKey
         })
         .then((result) => {
           if (result && result.data) {
-            console.log(`${args.username} has been deep scanned. Prediction: ${result.data.prediction}`);
-            console.log(result);
-            console.log(args.username);
+            console.log(`${username} has been deep scanned. Prediction: ${result.data.prediction}`);
 
-            context.dispatch('STORE_RESULT', result);
-            context.commit('SCREEN_NAME_CHECK_DONE', result.data);
+            context.dispatch('STORE_DEEPSCAN_RESULT', result);
+            context.commit('SCREEN_NAME_CHECK_DONE', {
+              prediction: result.data.prediction,
+              realName,
+              username: result.data.username
+            });
             context.dispatch('LOG', result.data);
           }
         })
@@ -142,13 +154,14 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
           console.error('Unable to run deep scan.');
         });
     },
-    LIGHT_SCAN(context, args) {
+    LIGHT_SCAN(context, { username, realName }) {
       console.log('(botcheck) action: LIGHT_SCAN');
 
-      if (!args.realName || !args.username) {
+      if (!realName || !username) {
         console.error(`
-          (botcheck) Called light scan without real name or screen name.
-          Real name: ${args.realName} Screen name: ${args.username}
+          (botcheck) Called light scan without real name or username.
+          realName: ${realName}
+          username: ${username}
         `);
         return;
       }
@@ -159,38 +172,45 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       }
 
       // Don't do whitelisted accounts, return not a bot
-      if (context.state.whitelist[args.username]) {
+      if (context.state.whitelist[username]) {
         console.log(`
-          (botcheck) Called light scan but ${args.username} is whitelisted.
+          (botcheck) Called light scan but ${username} is whitelisted.
           Returning prediction: false
         `);
-        context.commit('SCREEN_NAME_CHECK_DONE', { realname: args.realName, username: args.username, prediction: false });
+        context.commit('SCREEN_NAME_CHECK_DONE', {
+          realName,
+          username,
+          prediction: false
+        });
         return;
       }
 
       // Don't check network again if we've already done the check
-      if (context.state.results[args.username]) {
+      if (context.state.results[username]) {
         console.log(`
-          (botcheck) Called light scan but ${args.username} has already been scanned.
-          Returning prediction: ${context.state.results[args.username].prediction}
+          (botcheck) Called light scan but ${username} has already been scanned.
+          Returning prediction: ${context.state.results[username].prediction}
         `);
-        context.commit('SCREEN_NAME_CHECK_DONE', context.state.results[args.username]);
+        context.commit('SCREEN_NAME_CHECK_DONE', context.state.results[username]);
         return;
       }
 
       axios
         .post(`${botcheckConfig.apiRoot}/LightScan`, {
-          username: args.username,
+          username,
           apikey: context.state.apiKey
         })
         .then((result) => {
           if (result && result.data) {
             console.log(`
-              (botcheck) Received light scan result for ${args.username}.
+              (botcheck) Received light scan result for ${username}.
               Prediction: ${result.data.prediction}
             `);
-            result.data.realname = args.realName;
-            context.commit('SCREEN_NAME_CHECK_DONE', result.data);
+            context.commit('SCREEN_NAME_CHECK_DONE', {
+              prediction: result.data.prediction,
+              realName,
+              username: result.data.username
+            });
             context.dispatch('LOG', result.data);
           }
         })
@@ -199,7 +219,7 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
           console.error('Unable to run light scan.');
         });
     },
-    STORE_RESULT(context, result) {
+    STORE_DEEPSCAN_RESULT(context, result) {
       console.log('trying to store result:');
       console.log(result);
     },

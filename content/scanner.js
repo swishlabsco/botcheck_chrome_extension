@@ -150,7 +150,7 @@ const botcheckScanner = {
     }
 
     // Skip putting button on own profile
-    if (username === botcheckScanner.getScreenName()) {
+    if (username === botcheckScanner.getUsername()) {
       return;
     }
 
