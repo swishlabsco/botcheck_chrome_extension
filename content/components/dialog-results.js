@@ -10,10 +10,10 @@ Vue.component('dialog-results', {
             <el-col :span="19">
               <span class="header">This user has been whitelisted</span>
               <span class="status-text">
-                <strong>@{{ results.username }}</strong> has been whitelisted, which means their scan results are being ignored.
+                <strong>@{{ result.username }}</strong> has been whitelisted, which means their scan results are being ignored.
               </span>
               <br>
-              <el-button class="remove-from-whitelist" @click="removeFromWhitelist(results.username)">Remove @{{ results.username }} from whitelist</el-button>
+              <el-button class="remove-from-whitelist" @click="removeFromWhitelist(result.username)">Remove @{{ result.username }} from whitelist</el-button>
             </el-col>
           </el-row>
         </el-main>
@@ -23,20 +23,33 @@ Vue.component('dialog-results', {
               <img :src="icon" class="botcheck-modal-image">
             </el-col>
             <el-col :span="19">
-              <span class="header" v-if="results.prediction === true">Propaganda Bot-like Patterns Detected!</span>
-              <span class="status-text" v-if="results.prediction === true">
+              <span class="header" v-if="prediction === true">Propaganda Bot-like Patterns Detected!</span>
+              <span class="status-text" v-if="prediction === true">
                 Our model has classified
-                <strong>@{{ results.username }}</strong> to exhibit patterns conducive to a political bot or highly moderated account. This account is likely a bot.
+                <strong>@{{ result.username }}</strong> to exhibit patterns conducive to a political bot or highly moderated account. This account is likely a bot.
               </span>
-              <span class="header" v-if="results.prediction === false">Propaganda Bot-like Patterns Not Detected!</span>
-              <span class="status-text" v-if="results.prediction === false">
+              <span class="header" v-if="prediction === false">Propaganda Bot-like Patterns Not Detected!</span>
+              <span class="status-text" v-if="prediction === false">
                 Our model finds that
-                <strong>@{{ results.username }}</strong> does not exhibit patterns conducive to propaganda bots or moderated behavior conducive
+                <strong>@{{ result.username }}</strong> does not exhibit patterns conducive to propaganda bots or moderated behavior conducive
                 to political propaganda accounts.
               </span>
-              <div @click="share" :class="{ 'share-link': true, 'positive': results.prediction === false }">
+              <div
+                v-if="prediction === false || prediction === true"
+                @click="share"
+                :class="{ 'share-link': true, 'positive': prediction === false }"
+              >
                 <i class="Icon Icon--bird"></i><span>Share Result</span>
               </div>
+              <span class="header" v-if="prediction === null || prediction === undefined">
+                Unknown result
+              </span>
+              <span class="status-text" v-if="prediction === null || prediction === undefined">
+                We couldn't tell whether
+                <strong>@{{ result.username }}</strong> is likely to be a bot.
+                <br>
+                This usually happens when an account is protected, which means only followers have access to its tweets.
+              </span>
             </el-col>
           </el-row>
           <el-dropdown trigger="click" @command="actionCommand">
@@ -44,10 +57,31 @@ Vue.component('dialog-results', {
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="disagree">Disagree</el-dropdown-item>
-              <el-dropdown-item command="whitelist">Whitelist</el-dropdown-item>
-              <el-dropdown-item divided command="report">Report to Twitter</el-dropdown-item>
-              <el-dropdown-item divided command="learn-more">Learn More</el-dropdown-item>
+              <el-dropdown-item
+                command="disagree"
+                v-if="prediction === true || prediction === false"
+              >
+                Disagree
+              </el-dropdown-item>
+              <el-dropdown-item
+                command="whitelist"
+                v-if="prediction === true || prediction === false"
+              >
+                Whitelist
+              </el-dropdown-item>
+              <el-dropdown-item
+                divided
+                command="report"
+                v-if="prediction === true || prediction === false"
+              >
+                Report to Twitter
+              </el-dropdown-item>
+              <el-dropdown-item
+                v-bind:divided="prediction === true || prediction === false"
+                command="learn-more"
+              >
+                Learn More
+              </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </el-main>
@@ -55,30 +89,36 @@ Vue.component('dialog-results', {
     </el-dialog>
   `,
   computed: {
-    results() {
+    username() {
+      return this.$store.state.dialogs.results.username;
+    },
+    realName() {
+      return this.result.realName;
+    },
+    whitelisted() {
+      return this.$store.state.dialogs.results.whitelisted;
+    },
+    result() {
       const results = this.$store.state.results;
       if (results && results[this.username]) {
         return results[this.username];
       }
       return {};
     },
+    prediction() {
+      return this.result.prediction;
+    },
     icon() {
       if (this.whitelisted) {
         return chrome.extension.getURL('icons/Happy@128-gray.png');
       }
-      if (this.results.prediction === true) {
+      if (this.prediction === true) {
         return chrome.extension.getURL('icons/Mad@128.png');
       }
-      return chrome.extension.getURL('icons/Happy@128.png');
-    },
-    username() {
-      return this.$store.state.dialogs.results.username;
-    },
-    realName() {
-      return this.$store.state.dialogs.results.realName;
-    },
-    whitelisted() {
-      return this.$store.state.dialogs.results.whitelisted;
+      if (this.prediction === false) {
+        return chrome.extension.getURL('icons/Happy@128.png');
+      }
+      return chrome.extension.getURL('icons/scanning@128.png');
     },
     dialogVisible: {
       get() {
@@ -93,11 +133,11 @@ Vue.component('dialog-results', {
     actionCommand(type) {
       if (type === 'disagree') {
         this.$store.commit('RESULTS_CLOSE');
-        this.$store.dispatch('DISAGREE', this.results.prediction);
+        this.$store.dispatch('DISAGREE', this.prediction);
         this.$store.commit('THANKS_OPEN');
       } else if (type === 'whitelist') {
-        const username = this.results.username;
-        const realName = this.results.realName;
+        const username = this.result.username;
+        const realName = this.result.realName;
         this.addToWhitelist(username, realName);
       } else if (type === 'report') {
         this.$store.commit('REPORT_TWEET');
@@ -106,7 +146,7 @@ Vue.component('dialog-results', {
       }
     },
     share() {
-      this.$store.commit('SHARE', { prediction: this.results.prediction, username: this.username });
+      this.$store.commit('SHARE', { prediction: this.prediction, username: this.username });
       this.$store.commit('RESULTS_CLOSE');
     },
     // Updates whitelist on browser storage.
