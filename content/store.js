@@ -166,13 +166,9 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
             console.log(`${username} has been${(deepScan ? ' deep ' : ' light ')}scanned. Prediction: ${result.data.prediction}`);
 
             if (result.data.error) {
-              let logType = console.error;
-              if (result.data.error === 'This user does not exist.') {
-                // Happens on private profiles
-                logType = console.log;
-              }
-              logType('(botcheck) Error while running scan:');
-              logType(result.data.error);
+              console.log('(botcheck) Error while running scan:');
+              console.log(result.data.error);
+              result.data.prediction = null; // null means unknown
             }
 
             context.dispatch('STORE_RESULT', {
@@ -187,9 +183,18 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
         .catch((e) => {
           console.error(e);
           console.error('Unable to run scan.');
+
+          // Store unknown result
+          context.dispatch('STORE_RESULT', {
+            deepScan,
+            realName,
+            username,
+            prediction: null // null means unknown
+          });
         });
     },
     STORE_RESULT(context, result) {
+      console.log(`(botcheck) action: STORE_RESULT. Username: ${result.username} prediction: ${result.prediction}`);
       // A result is a response from the API after a user is scanned.
       //
       // First we store the result in this Vuex store,
@@ -213,6 +218,17 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
         console.log(`(botcheck) Overwriting result for user ${result.username}`);
       }
       Vue.set(context.state.results, result.username, result);
+
+      // Store results in browser on deep scan
+      if (result.deepScan) {
+        chrome.runtime.sendMessage({
+          type: 'botcheck-queue-storage-update',
+          info: result.username,
+          update: {
+            results: context.state.results
+          }
+        });
+      }
     },
     DISAGREE(context, prediction) {
       console.log(`

@@ -8,17 +8,17 @@ Vue.component('botcheck-status', {
   props: ['realName', 'username', 'isFeed', 'isRetweet', 'isProfile'],
   computed: {
     prediction() {
-      // Null means we haven't scanned yet
-      // Undefined means result is unknown
+      // Null means result is unknown
+      // Undefined means we haven't scanned yet
       const results = this.$store.state.results;
       if (!results) {
-        return null;
+        return undefined;
       }
       const result = results[this.username];
       if (result) {
         return result.prediction;
       }
-      return null;
+      return undefined;
     },
     whitelisted() {
       const whitelist = this.$store.state.whitelist;
@@ -80,10 +80,9 @@ Vue.component('botcheck-status', {
       if (this.prediction === false) {
         return 'Not a Bot';
       }
-      if (
-        this.prediction === undefined
-      ) {
-        // Happens for private profiles
+      if (this.prediction === null) {
+        // Happens for private profiles,
+        // or when server returns error
         return 'Unknown';
       }
       return 'Scanning...';
