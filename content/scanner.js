@@ -4,15 +4,15 @@
  * Utility object for handling the Twitter DOM.
  */
 
-let botcheckCacheScreenName;
+let botcheckCacheUsername;
 
 const botcheckScanner = {
 
   // This is a big serialized JSON object twitter puts onto the page
   // We are just using it to get the current user's screen name
-  getScreenName: () => {
-    if (botcheckCacheScreenName) {
-      return botcheckCacheScreenName;
+  getUsername: () => {
+    if (botcheckCacheUsername) {
+      return botcheckCacheUsername;
     }
     if (!document.querySelector('#init-data')) {
       return;
@@ -25,8 +25,8 @@ const botcheckScanner = {
       botcheckUtils.errorHandler(ex);
     }
 
-    botcheckCacheScreenName = jsonData.screenName;
-    return botcheckCacheScreenName;
+    botcheckCacheUsername = jsonData.screenName;
+    return botcheckCacheUsername;
   },
 
   injectButtons: () => {
@@ -87,14 +87,17 @@ const botcheckScanner = {
   // Process a Tweet and add the Botcheck button to it
   processTweetEl: (tweetEl, { isFeed = false, isRetweet = false }) => {
     if (!tweetEl.dataset || !tweetEl.dataset.screenName || tweetEl.dataset.botcheckInjected) {
+      console.log(`
+        (botcheck) Tried to process tweet element but it either had no dataset, no screenName, or already had been injected.
+      `);
       return;
     }
 
     tweetEl.dataset.botcheckInjected = true;
 
-    const screenName = botcheckScanner.getScreenNameFromElement(tweetEl);
-    if (!screenName) {
-      console.error('(botcheck) Could not extract screenName from tweet.');
+    const username = botcheckScanner.getScreenNameFromElement(tweetEl);
+    if (!username) {
+      console.error('(botcheck) Could not extract username from tweet.');
     }
     const realName = botcheckScanner.getRealNameFromElement(tweetEl);
     if (!realName) {
@@ -103,7 +106,7 @@ const botcheckScanner = {
 
     const el = document.createElement('div');
     el.classList = 'botcheck-feed-container';
-    el.innerHTML = '<botcheck-status :real-name="realName" :screen-name="screenName" :is-feed="isFeed" :is-retweet="isRetweet" :is-profile="isProfile"></botcheck-status>';
+    el.innerHTML = '<botcheck-status :real-name="realName" :screen-name="username" :is-feed="isFeed" :is-retweet="isRetweet" :is-profile="isProfile"></botcheck-status>';
 
     if (isRetweet) {
       tweetEl.querySelector('.stream-item-header').appendChild(el);
@@ -117,14 +120,14 @@ const botcheckScanner = {
       data() {
         return {
           realName,
-          screenName,
+          username,
           isFeed,
           isRetweet,
           isProfile: false
         };
       },
       mounted() {
-        store.dispatch('LIGHT_SCAN', { realName: this.realName, screenName: this.screenName });
+        store.dispatch('LIGHT_SCAN', { realName: this.realName, username: this.username });
       }
     });
   },
@@ -137,23 +140,23 @@ const botcheckScanner = {
 
     profileEl.dataset.botcheckInjected = true;
 
-    const screenName = botcheckScanner.getScreenNameFromElement(profileEl);
+    const username = botcheckScanner.getScreenNameFromElement(profileEl);
     const realName = botcheckScanner.getRealNameFromElement(profileEl);
     const isProfile = true;
 
-    if (!screenName) {
-      console.error('(botcheck) Tried processing profile element with no screenName.');
+    if (!username) {
+      console.error('(botcheck) Tried processing profile element with no username.');
       return;
     }
 
     // Skip putting button on own profile
-    if (screenName === botcheckScanner.getScreenName()) {
+    if (username === botcheckScanner.getScreenName()) {
       return;
     }
 
     // Insert with other metadata
     const el = document.createElement('div');
-    el.innerHTML = '<botcheck-status :real-name="realName" :screen-name="screenName" :is-profile="isProfile"></botcheck-status>';
+    el.innerHTML = '<botcheck-status :real-name="realName" :screen-name="username" :is-profile="isProfile"></botcheck-status>';
 
     // Get bio and insert after if it exists
     const bio = profileEl.querySelector('.ProfileHeaderCard-bio');
@@ -167,13 +170,13 @@ const botcheckScanner = {
       data() {
         return {
           realName,
-          screenName,
+          username,
           isProfile
         };
       },
       mounted: function () { // eslint-disable-line object-shorthand
-        console.log(`(botcheck) Finished mounting on profile element for user ${screenName}. Running deep scan...`);
-        store.dispatch('DEEP_SCAN', { realName: this.realName, screenName: this.screenName });
+        console.log(`(botcheck) Finished mounting on profile element for user ${username}. Running deep scan...`);
+        store.dispatch('DEEP_SCAN', { realName: this.realName, username: this.username });
       }
     });
   },

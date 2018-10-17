@@ -5,10 +5,10 @@ Vue.component('botcheck-status', {
       <span :class="messageClass">{{message}}</span>
     </div>
   `,
-  props: ['realName', 'screenName', 'isFeed', 'isRetweet', 'isProfile'],
+  props: ['realName', 'username', 'isFeed', 'isRetweet', 'isProfile'],
   computed: {
     icon() {
-      const result = this.$store.state.results[this.screenName];
+      const result = this.$store.state.results[this.username];
       if (result && result.prediction) {
         return chrome.extension.getURL('icons/mad.svg');
       }
@@ -19,7 +19,7 @@ Vue.component('botcheck-status', {
     },
     containerClass() {
       let className = 'botcheck';
-      const result = this.$store.state.results[this.screenName];
+      const result = this.$store.state.results[this.username];
       if (!this.isFeed && !this.isProfile && result && result.prediction === true) {
         className += ' button';
       }
@@ -35,7 +35,7 @@ Vue.component('botcheck-status', {
       return className;
     },
     messageClass() {
-      const result = this.$store.state.results[this.screenName];
+      const result = this.$store.state.results[this.username];
       if (result && result.prediction === true) {
         return 'status-text bot';
       }
@@ -46,7 +46,7 @@ Vue.component('botcheck-status', {
       return 'status-text';
     },
     message() {
-      const result = this.$store.state.results[this.screenName];
+      const result = this.$store.state.results[this.username];
       if (result && result.prediction) {
         return 'Likely a Bot';
       }
@@ -61,7 +61,7 @@ Vue.component('botcheck-status', {
       e.preventDefault();
       e.stopPropagation();
 
-      store.commit('RESULTS_OPEN', this.screenName);
+      store.commit('RESULTS_OPEN', { username: this.username, realName: this.realName });
     }
   }
 });

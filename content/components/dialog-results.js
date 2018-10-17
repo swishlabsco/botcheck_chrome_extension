@@ -41,23 +41,26 @@ Vue.component('dialog-results', {
   `,
   computed: {
     icon() {
-      const dialogScreenName = this.$store.state.dialogs.results.screenName;
-      const result = this.$store.state.results[dialogScreenName];
-
-      if (result && result.prediction === true) {
+      const results = this.$store.state.results;
+      if (
+        results
+        && results[this.username]
+        && results[this.username].prediction === true
+      ) {
         return chrome.extension.getURL('icons/mad@128.png');
       }
-
       return chrome.extension.getURL('icons/happy@128.png');
     },
-    screenName() {
-      return this.$store.state.dialogs.results.screenName;
+    username() {
+      return this.$store.state.dialogs.results.username;
+    },
+    realName() {
+      return this.$store.state.dialogs.results.realName;
     },
     results() {
       const results = this.$store.state.results;
-      const dialogScreenName = this.$store.state.dialogs.results.screenName;
-      if (results && results[dialogScreenName]) {
-        return results[dialogScreenName];
+      if (results && results[this.username]) {
+        return results[this.username];
       }
       return {};
     },
@@ -87,7 +90,7 @@ Vue.component('dialog-results', {
       }
     },
     share() {
-      this.$store.commit('SHARE', { prediction: this.results.prediction, screenName: this.screenName });
+      this.$store.commit('SHARE', { prediction: this.results.prediction, username: this.username });
       this.$store.commit('RESULTS_CLOSE');
     },
     // Updates whitelist on browser storage.
