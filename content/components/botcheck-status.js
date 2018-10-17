@@ -1,24 +1,29 @@
 Vue.component('botcheck-status', {
   template: `
-    <div :class="containerClass" @click="openModal">
+    <div :class="containerClass" @click="onClick">
       <span class="icon"><img :src="icon"/></span>
       <span :class="messageClass">{{message}}</span>
     </div>
   `,
   props: ['realName', 'username', 'isFeed', 'isRetweet', 'isProfile'],
   computed: {
-    prediction() {
-      // Null means result is unknown
-      // Undefined means we haven't scanned yet
+    result() {
       const results = this.$store.state.results;
       if (!results) {
+        return;
+      }
+      return results[this.username];
+    },
+    prediction() {
+      // Undefined means we haven't scanned yet
+      // Null means result is unknown
+      if (
+        !this.result
+        && this.result !== null
+      ) {
         return undefined;
       }
-      const result = results[this.username];
-      if (result) {
-        return result.prediction;
-      }
-      return undefined;
+      return this.result.prediction;
     },
     whitelisted() {
       const whitelist = this.$store.state.whitelist;
@@ -26,6 +31,11 @@ Vue.component('botcheck-status', {
         return false;
       }
       return !!whitelist[this.username]; // cast to boolean
+    },
+    clickToScan() {
+      // Status should be "Click here to scan" when a light scan
+      // has been run with a result of false
+      return (this.prediction === false && !this.result.deepScan);
     },
     icon() {
       if (this.whitelisted || this.prediction === false) {
@@ -74,6 +84,9 @@ Vue.component('botcheck-status', {
       if (this.whitelisted) {
         return 'Whitelisted';
       }
+      if (this.clickToScan) {
+        return 'Click here to scan';
+      }
       if (this.prediction === true) {
         return 'Likely a Bot';
       }
@@ -89,15 +102,27 @@ Vue.component('botcheck-status', {
     }
   },
   methods: {
-    openModal(e) {
+    onClick(e) {
       e.preventDefault();
       e.stopPropagation();
 
-      store.commit('RESULTS_OPEN', {
-        username: this.username,
-        realName: this.realName,
-        whitelisted: this.whitelisted
-      });
+      if (this.clickToScan) {
+        Vue.delete(this.$store.state.results, this.username);
+
+        this.$store.dispatch('SCAN', {
+          username: this.username,
+          realName: this.realName,
+          ignoreWhitelist: false,
+          deepScan: true
+        });
+      } else {
+        // Open modal
+        this.$store.commit('RESULTS_OPEN', {
+          username: this.username,
+          realName: this.realName,
+          whitelisted: this.whitelisted
+        });
+      }
     }
   }
 });

@@ -116,8 +116,8 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
     SCAN(context, {
       username,
       realName,
-      ignoreWhitelist,
-      deepScan
+      ignoreWhitelist = false,
+      deepScan = false
     }) {
       console.log(`(botcheck) action: SCAN. Username: ${username} deepScan: ${deepScan}`);
 
@@ -144,7 +144,10 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       // Don't check network again if this is a light scan
       // and we already have a result (from a deep scan or not)
       const previousResult = context.state.results[username];
-      if (!deepScan && previousResult) {
+      if (
+        !deepScan
+        && (previousResult === true || previousResult === false)
+      ) {
         console.log(`(botcheck) Light scan requested for ${username}, but result found. Aborting scan.`);
         return;
       }
@@ -207,7 +210,12 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       // ordering and create a race condition.
 
       const previousResult = context.state.results[result.username];
-      if (previousResult && previousResult.deepScan && !result.deepScan) {
+      if (
+        previousResult
+        && previousResult.deepScan
+        && !result.deepScan
+        && (previousResult === true || previousResult === false)
+      ) {
         console.log(`
           (botcheck) Tried storing light scan result for ${result.username},
           but deep scan result was already stored. Aborting.
