@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -32,24 +33,21 @@
       <div>
         <el-container>
           <el-main>
-            <el-row>
-              <el-col :span="24">
-                <h3 class="header">Whitelisted Accounts</h3>
-              </el-col>
-            </el-row>
-            <el-row class="whitelist-row">
-              <el-col :span="24">
+            <h1 class="header">Whitelisted Accounts</h1>
+            <div class="whitelist-table">
+              <div class="whitelist-table-inner">
                 <div v-if="Object.keys(whitelist).length < 1">
-                  <p>No users have been added to the whitelist so far!</p>
+                  <p>No users have been whitelisted so far!</p>
                 </div>
-                <div v-for="(username, realname) in whitelist" class="whitelist-item">
-                  <span class="realName">{{realname}}</span>
-                  <span class="screenName secondary-text">@{{username}}</span>
-                  &nbsp;
-                  <span class="remove-button" v-on:click="remove(user.username)"><i class="el-icon-close"></i></span>
+                <div v-for="(value, key) in whitelist" class="whitelist-item">
+                  <span class="remove-button" v-on:click="remove(key)"><i class="el-icon-close"></i></span>
+                  <span class="realName">{{value.realName}}</span>
+                  <span class="screenName secondary-text">
+                    <a href="#" @click="openTwitterProfile(key)">@{{key}}</a>
+                  </span>
                 </div>
-              </el-col>
-            </el-row>
+              </div>
+            </div>
             <el-button href="#" v-on:click="closeWhitelist">Back</el-button>
           </el-main>
         </el-container>

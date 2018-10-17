@@ -22,6 +22,8 @@ When a deep scan is run, the result is stored locally so that if the user clicks
 
 The whitelist is managed both on the Twitter interface as well as on the extension popup. Synchronization between these two parts is achieved by storing changes on the browser. Both sides use the browser storage as the source of truth for both fetching/updating the data and for listening for changes.
 
+The content scripts keep an up to date version of the whitelist in the Vuex store, in order to quickly be able to check for the presence of a username.
+
 ## Running Eslint
 
 The simplest way to set up eslint for this project is to use VSCode with the [eslint plugin](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).

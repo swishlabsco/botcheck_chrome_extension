@@ -2,22 +2,28 @@
 @secondaryTextColor: #666;
 @lightGrey: #E5E5E5;
 @lightBlue: #ebfbff;
+@botcheckRed: #FB0015;
+@blue: #00aced;
 
 html, body {
   margin: 0;
   padding: 0;
   color: @textColor;
-  width: 200px;
 }
 
 .secondary-text {
   color: @secondaryTextColor;
 }
 
+a {
+  text-decoration: none;
+  color: @blue;
+}
+
 ul {
   list-style-type: none;
-  padding: 10px 0 0 0;
-  margin-left: 0;
+  padding: 6px 0 6px 0;
+  margin: 0;
 
   li:not(.divider) {
     display: block;
@@ -47,31 +53,49 @@ ul {
   }
 }
 
-.whitelist-row {
+#main-view {
+  width: 250px;
+}
+
+#whitelist-view {
+  width: 300px;
+}
+
+.whitelist-table {
   margin-bottom: 16px;
-  min-height: 50px;
-}
-.whitelist-item {
-  display: inline-block;
+  height: 200px;
+  overflow-y: auto;
+  overflow-x: auto;
 
-  span {
-    vertical-align: middle;
+  .whitelist-item {
+    display: inline-block;
+    min-width: 100%;
+    margin: 6px 0 6px 0;
+    white-space: nowrap;
+    border-bottom: 1px solid @lightGrey;
+
+    .realName {
+      font-size: 14px;
+    }
+
+    span {
+      vertical-align: middle;
+    }
+
+    .remove-button {
+      font-weight: bold;
+      font-size: 20px;
+      color: @botcheckRed;
+      border-radius: 999px;
+
+      &:hover {
+        cursor: pointer;
+        background-color: @lightGrey;
+      }
+
+      i {
+        padding: 3px;
+      }
+    }
   }
-}
-.whitelist-row {
-
-  .remove-button {
-    font-weight: bold;
-    font-size: 20px;
-    color: #F56C6C;
-    border-radius: 999px;
-  }
-}
-
-.whitelist-row .remove-button:hover {
-  background-color: #DCDFE6;
-}
-
-.whitelist-row .remove-button i {
-  padding: 3px;
 }

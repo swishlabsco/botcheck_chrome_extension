@@ -20,7 +20,7 @@ const app = new Vue({ // eslint-disable-line no-unused-vars
   methods: {
     openWhitelist() {
       // Load whitelist when opening
-      chrome.storage.sync.get('whitelist', (whitelist) => {
+      chrome.storage.sync.get('whitelist', ({ whitelist }) => {
         if (chrome.runtime.lastError) {
           console.error('(botcheck) Failed to get whitelist.');
           console.error(chrome.runtime.lastError);
@@ -39,7 +39,7 @@ const app = new Vue({ // eslint-disable-line no-unused-vars
     },
     remove(username) {
       // Update storage, content scripts should listen for changes
-      chrome.storage.sync.get('whitelist', (whitelist) => {
+      chrome.storage.sync.get('whitelist', ({ whitelist }) => {
         if (chrome.runtime.lastError) {
           console.error('(botcheck) Failed to get whitelist.');
           console.error(chrome.runtime.lastError);
@@ -47,6 +47,9 @@ const app = new Vue({ // eslint-disable-line no-unused-vars
         }
         if (whitelist[username]) {
           delete whitelist[username];
+
+          // Update UI
+          this.whitelist = whitelist;
 
           chrome.storage.sync.set({ whitelist }, () => {
             if (chrome.runtime.lastError) {
@@ -56,6 +59,9 @@ const app = new Vue({ // eslint-disable-line no-unused-vars
           });
         }
       });
+    },
+    openTwitterProfile(username) {
+      window.open(`https://twitter.com/${username}`);
     }
   }
 });

@@ -77,9 +77,9 @@ Vue.component('dialog-results', {
         this.$store.dispatch('DISAGREE', this.results.prediction);
         this.$store.commit('THANKS_OPEN');
       } else if (type === 'whitelist') {
-        const screenName = this.$store.state.dialogs.results.screenName;
-        const result = this.$store.state.results[screenName];
-        this.addToWhitelist(screenName, result.realName);
+        const username = this.results.username;
+        const realName = this.results.realname;
+        this.whitelist(username, realName);
       } else if (type === 'report') {
         this.$store.commit('REPORT_TWEET');
       } else {
@@ -92,12 +92,15 @@ Vue.component('dialog-results', {
     },
     // Updates whitelist on browser storage.
     // Content scripts should pick up on the change
-    addToWhitelist(username, realName) {
-      chrome.storage.sync.get('whitelist', (whitelist) => {
+    whitelist(username, realName) {
+      chrome.storage.sync.get('whitelist', ({ whitelist }) => {
         if (chrome.runtime.lastError) {
           console.error('(botcheck) Failed to update whitelist.');
           console.error(chrome.runtime.lastError);
           return;
+        }
+        if (!whitelist) {
+          whitelist = {};
         }
         if (!whitelist[username]) {
           whitelist[username] = {
