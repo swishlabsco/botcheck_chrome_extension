@@ -47,7 +47,7 @@ function begin(apiKey) {
     botcheckScanner.injectDialogs();
   });
 
-  // Listen for whitelist/results changes and update Vuex store
+  // Listen for whitelist/results changes and send updates to Vuex store
   chrome.storage.onChanged.addListener((changes /* , areaName */) => {
     if (changes.whitelist && changes.whitelist.newValue) {
       console.log('(botcheck) Detected whitelist change in storage');
@@ -55,8 +55,29 @@ function begin(apiKey) {
     }
     if (changes.results && changes.results.newValue) {
       console.log('(botcheck) Detected results change in storage');
-      console.log(changes.results.newValue);
-      store.commit('LOAD_RESULTS', changes.results.newValue);
+
+      // Merge in new results to make sure that even if updates arrive
+      // out of order (looking at you chrome) no entries are missed
+      const incoming = changes.results.newValue;
+      const newResults = {};
+      Object.keys(incoming).forEach((key) => {
+        if (
+          incoming[key].prediction !== true
+          && incoming[key].prediction !== false
+        ) {
+          // New result doesn't say anything,
+          // Account is private or server errored
+          return;
+        }
+        if (
+          !store.state.results[key] // If new result
+          || !store.state.results[key].deepScan // or if old result is light scan
+          || incoming[key].deepScan // or if new result is deep scan
+        ) {
+          newResults[key] = incoming[key];
+        }
+      });
+      store.commit('LOAD_RESULTS', Object.assign(store.state.results, newResults));
     }
   });
 }

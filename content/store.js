@@ -226,6 +226,15 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
         console.log(`(botcheck) Overwriting result for user ${result.username}`);
       }
       Vue.set(context.state.results, result.username, result);
+
+      // Queue save on browser storage
+      chrome.runtime.sendMessage({
+        type: 'botcheck-queue-storage-update',
+        info: result.username,
+        update: {
+          results: context.state.results
+        }
+      });
     },
     DISAGREE(context, prediction) {
       console.log(`
