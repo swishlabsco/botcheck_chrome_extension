@@ -32,10 +32,10 @@ const botcheckScanner = {
   injectButtons: () => {
     // Inject buttons on tweets/profiles already on the page
     document.querySelectorAll('.tweet.js-stream-tweet').forEach((tweet) => {
-      botcheckScanner.processTweetEl(tweet, true);
+      botcheckScanner.processTweetEl(tweet, { isFeed: true });
     });
     document.querySelectorAll('.tweet.permalink-tweet').forEach((tweet) => {
-      botcheckScanner.processTweetEl(tweet, false);
+      botcheckScanner.processTweetEl(tweet);
     });
     document.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach(botcheckScanner.processProfileEl);
 
@@ -106,7 +106,7 @@ const botcheckScanner = {
 
     const el = document.createElement('div');
     el.classList = 'botcheck-feed-container';
-    el.innerHTML = '<botcheck-status :real-name="realName" :screen-name="username" :is-feed="isFeed" :is-retweet="isRetweet" :is-profile="isProfile"></botcheck-status>';
+    el.innerHTML = '<botcheck-status :real-name="realName" :username="username" :is-feed="isFeed" :is-retweet="isRetweet" :is-profile="isProfile"></botcheck-status>';
 
     if (isRetweet) {
       tweetEl.querySelector('.stream-item-header').appendChild(el);
