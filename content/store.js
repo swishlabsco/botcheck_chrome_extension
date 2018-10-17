@@ -189,8 +189,18 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
           console.error('Unable to run scan.');
         });
     },
-    // Stores the result of a scan
     STORE_RESULT(context, result) {
+      // A result is a response from the API after a user is scanned.
+      //
+      // First we store the result in this Vuex store,
+      // then we queue a browser storage update.
+      // This way, when a lot of storage requests are made at the same time,
+      // they are all up to date.
+      // If we didn't first store the result in the Vuex store, consequent updates
+      // could be missing previous updates. But this is not enough:
+      // If we didn't queue the update, chrome could be inconsistent with the storage
+      // ordering and create a race condition.
+
       const previousResult = context.state.results[result.username];
       if (previousResult && previousResult.deepScan && !result.deepScan) {
         console.log(`
@@ -202,12 +212,17 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       if (previousResult) {
         console.log(`(botcheck) Overwriting result for user ${result.username}`);
       }
-      // Here we only update the local Vuex store.
-      // Another script should be syncing it with the browser.
-      // We used to update browser storage directly here,
-      // but the ordering was inconsistent on chrome and that led
-      // to race conditions.
       context.state.results[result.username] = result;
+
+      // Send message to backend script
+      // Queueing storage updates avoids race condition
+      chrome.runtime.sendMessage({
+        type: 'botcheck-queue-storage-update',
+        info: result.username,
+        update: {
+          results: context.state.results
+        }
+      });
     },
     DISAGREE(context, prediction) {
       console.log(`
