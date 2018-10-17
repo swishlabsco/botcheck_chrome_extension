@@ -156,7 +156,7 @@ const botcheckScanner = {
 
     // Insert with other metadata
     const el = document.createElement('div');
-    el.innerHTML = '<botcheck-status :real-name="realName" :screen-name="username" :is-profile="isProfile"></botcheck-status>';
+    el.innerHTML = '<botcheck-status :real-name="realName" :username="username" :is-profile="isProfile"></botcheck-status>';
 
     // Get bio and insert after if it exists
     const bio = profileEl.querySelector('.ProfileHeaderCard-bio');
