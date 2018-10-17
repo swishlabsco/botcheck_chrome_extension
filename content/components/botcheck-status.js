@@ -7,26 +7,33 @@ Vue.component('botcheck-status', {
   `,
   props: ['realName', 'username', 'isFeed', 'isRetweet', 'isProfile'],
   computed: {
+    prediction() {
+      const results = this.$store.state.results;
+      if (results) {
+        const result = results[this.username];
+        if (result) {
+          return result.prediction;
+        }
+      }
+    },
     icon() {
-      const result = this.$store.state.results[this.username];
-      if (result && result.prediction) {
+      if (this.prediction) {
         return chrome.extension.getURL('icons/mad.svg');
       }
-      if (result && !result.prediction) {
+      if (!this.prediction) {
         return chrome.extension.getURL('icons/happy_outline.svg');
       }
       return chrome.extension.getURL('icons/scanning.svg');
     },
     containerClass() {
       let className = 'botcheck';
-      const result = this.$store.state.results[this.username];
-      if (!this.isFeed && !this.isProfile && result && result.prediction === true) {
+      if (!this.isFeed && !this.isProfile && this.prediction === true) {
         className += ' button';
       }
-      if (!this.isFeed && !this.isProfile && result && result.prediction === false) {
+      if (!this.isFeed && !this.isProfile && this.prediction === false) {
         className += ' retweet';
       }
-      if (this.isRetweet && result.prediction === true) {
+      if (this.isRetweet && this.prediction === true) {
         className += ' pull-up';
       }
       if (this.isProfile) {
@@ -35,22 +42,20 @@ Vue.component('botcheck-status', {
       return className;
     },
     messageClass() {
-      const result = this.$store.state.results[this.username];
-      if (result && result.prediction === true) {
+      if (this.prediction === true) {
         return 'status-text bot';
       }
-      if (result && result.prediction === false) {
+      if (this.prediction === false) {
         return 'status-text';
       }
 
       return 'status-text';
     },
     message() {
-      const result = this.$store.state.results[this.username];
-      if (result && result.prediction) {
+      if (this.prediction) {
         return 'Likely a Bot';
       }
-      if (result && !result.prediction) {
+      if (!this.prediction) {
         return 'Not a Bot';
       }
       return 'Scanning...';
