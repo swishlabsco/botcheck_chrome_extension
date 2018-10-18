@@ -32,7 +32,7 @@ function begin(apiKey) {
   begun = true;
 
   // Load whitelist and stored results
-  chrome.storage.sync.get(null, (state) => {
+  chrome.storage.local.get(null, (state) => {
     if (!state.whitelist) {
       state.whitelist = {};
     }
@@ -60,7 +60,7 @@ function begin(apiKey) {
   // but then the same tab would be sending a lot of updates to itself)
   document.addEventListener('visibilitychange', () => {
     if (document.hidden === false) {
-      chrome.storage.sync.get('results', ({ results }) => {
+      chrome.storage.local.get('results', ({ results }) => {
         console.log('(botcheck) Detected page focus. Loading results.');
         store.commit('LOAD_RESULTS', results);
       });
@@ -69,7 +69,7 @@ function begin(apiKey) {
 }
 
 // Try to load API key from browser storage
-chrome.storage.sync.get(null, (state) => {
+chrome.storage.local.get(null, (state) => {
   console.log('(botcheck) Starting... Got state:');
   console.log(state);
   if (!state.apiKey) {

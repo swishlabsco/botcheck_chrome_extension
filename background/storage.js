@@ -37,7 +37,7 @@ function processQueue() {
 
   const firstBaseKey = storageQueue[0].key[0];
 
-  chrome.storage.sync.get(firstBaseKey, (result) => {
+  chrome.storage.local.get(firstBaseKey, (result) => {
     if (chrome.runtime.lastError) {
       console.error('(botcheck) Failed to get item from browser storage.');
       console.error(chrome.runtime.lastError);
@@ -63,7 +63,7 @@ function processQueue() {
     console.log(Object.keys(obj).length);
     console.log(JSON.stringify(Object.keys(obj)));
 
-    chrome.storage.sync.set({ [firstBaseKey]: obj }, () => {
+    chrome.storage.local.set({ [firstBaseKey]: obj }, () => {
       if (chrome.runtime.lastError) {
         console.error('(botcheck) Failed to get item from browser storage.');
         console.error(chrome.runtime.lastError);

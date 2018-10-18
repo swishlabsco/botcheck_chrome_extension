@@ -190,7 +190,7 @@ Vue.component('dialog-results', {
       });
     },
     getWhitelist(callback) {
-      chrome.storage.sync.get('whitelist', ({ whitelist }) => {
+      chrome.storage.local.get('whitelist', ({ whitelist }) => {
         if (chrome.runtime.lastError) {
           console.error('(botcheck) Failed to update whitelist.');
           console.error(chrome.runtime.lastError);
@@ -203,7 +203,7 @@ Vue.component('dialog-results', {
       });
     },
     setWhitelist(whitelist, callback) {
-      chrome.storage.sync.set({ whitelist }, () => {
+      chrome.storage.local.set({ whitelist }, () => {
         if (chrome.runtime.lastError) {
           console.error('(botcheck) Failed to update whitelist.');
           console.error(chrome.runtime.lastError);
