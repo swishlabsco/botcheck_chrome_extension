@@ -58,10 +58,14 @@ function begin(apiKey) {
   // When tab goes into focus, load results from storage
   // (We could listen for results changes like we do for the whitelist,
   // but then the same tab would be sending a lot of updates to itself)
-  /* if (changes.results && changes.results.newValue) {
-    console.log('(botcheck) Detected results change in storage');
-    store.dispatch('LOAD_RESULTS', changes.results.newValue);
-  } */
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden === false) {
+      chrome.storage.sync.get('results', ({ results }) => {
+        console.log('(botcheck) Detected page focus. Loading results.');
+        store.commit('LOAD_RESULTS', results);
+      });
+    }
+  });
 }
 
 // Try to load API key from browser storage

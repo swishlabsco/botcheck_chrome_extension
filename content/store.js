@@ -44,6 +44,7 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       state.apiKey = apiKey;
     },
     LOAD_RESULTS(state, results) {
+      console.log('(botcheck) mutation: LOAD_RESULTS');
       // This should be called when we detect a change to browser storage
       state.results = results;
     },
