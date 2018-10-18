@@ -39,16 +39,17 @@ Vue.component('dialog-results', {
                 to political propaganda accounts.
               </span>
               <div
-                v-if="prediction === false || prediction === true"
-                @click="share"
+                v-if="prediction !== null"
                 :class="{ 'share-link': true, 'positive': prediction === false }"
               >
-                <i class="Icon Icon--bird"></i><span>Share Result</span>
+                <a href="#" @click="share">
+                  <i class="Icon Icon--bird"></i><span>Share Result</span>
+                </a>
               </div>
-              <span class="header" v-if="prediction === null || prediction === undefined">
+              <span class="header" v-if="prediction === null">
                 Unknown result
               </span>
-              <span class="status-text" v-if="prediction === null || prediction === undefined">
+              <span class="status-text" v-if="prediction === null">
                 We couldn't tell whether
                 <strong>@{{ result.username }}</strong> is likely to be a bot.
                 <br>
@@ -63,25 +64,25 @@ Vue.component('dialog-results', {
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item
                 command="disagree"
-                v-if="prediction === true || prediction === false"
+                v-if="prediction !== null"
               >
                 Disagree
               </el-dropdown-item>
               <el-dropdown-item
                 command="whitelist"
-                v-if="prediction === true || prediction === false"
+                v-if="prediction !== null"
               >
                 Whitelist
               </el-dropdown-item>
               <el-dropdown-item
                 divided
                 command="report"
-                v-if="prediction === true || prediction === false"
+                v-if="prediction !== null"
               >
                 Report to Twitter
               </el-dropdown-item>
               <el-dropdown-item
-                v-bind:divided="prediction === true || prediction === false"
+                v-bind:divided="prediction !== null"
                 command="learn-more"
               >
                 Learn More
