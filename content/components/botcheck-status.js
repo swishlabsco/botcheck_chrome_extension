@@ -9,21 +9,14 @@ Vue.component('botcheck-status', {
   computed: {
     result() {
       const results = this.$store.state.results;
-      if (!results) {
-        return;
+      if (results && results[this.username]) {
+        return results[this.username];
       }
-      return results[this.username];
     },
     prediction() {
-      // Undefined means we haven't scanned yet
-      // Null means result is unknown
-      if (
-        !this.result
-        && this.result !== null
-      ) {
-        return undefined;
+      if (this.result) {
+        return this.result.prediction;
       }
-      return this.result.prediction;
     },
     whitelisted() {
       const whitelist = this.$store.state.whitelist;
