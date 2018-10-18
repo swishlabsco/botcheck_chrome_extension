@@ -42,7 +42,7 @@ function processQueue() {
       console.error('(botcheck) Failed to get item from browser storage.');
       console.error(chrome.runtime.lastError);
     }
-    const obj = result[firstBaseKey];
+    const obj = result[firstBaseKey] || {};
 
     console.log('(botcheck) Old storage size:');
     console.log(Object.keys(obj).length);
@@ -69,26 +69,13 @@ function processQueue() {
         console.error(chrome.runtime.lastError);
       }
 
-      onQueueItemProcessed(); // eslint-disable-line no-use-before-define
+      if (storageQueue.length > 0) {
+        processQueue();
+      } else {
+        isQueueBeingProcessed = false;
+      }
     });
   });
-}
-
-function onQueueItemProcessed() {
-  // Chrome sync storage has a limit of 1800 operations per hour,
-  // which is one every 2 seconds.
-  // (https://developer.chrome.com/apps/storage#property-sync)
-  // We try to stay under that limit by setting a timeout
-  // before processing the next queue item.
-  setTimeout(() => {
-    if (storageQueue.length < 1) {
-      // If queue is empty, we want to lock it for 5 seconds anyway
-      // otherwise processing could start again right away
-      isQueueBeingProcessed = false;
-    } else {
-      processQueue();
-    }
-  }, 5000);
 }
 
 // Updates a nested key in a object,
