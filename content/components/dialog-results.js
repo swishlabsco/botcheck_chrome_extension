@@ -52,7 +52,7 @@ Vue.component('dialog-results', {
                 We couldn't tell whether
                 <strong>@{{ result.username }}</strong> is likely to be a bot.
                 <br>
-                This may happen when an account is set to private, or if something went wrong on our end.
+                This may happen if an account is set to private, or if something went wrong on our end.
               </span>
             </el-col>
           </el-row>
