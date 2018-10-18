@@ -43,13 +43,15 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       console.log('(botcheck) mutation: AUTH_APIKEY_SET');
       state.apiKey = apiKey;
     },
-    LOAD_RESULTS(state, results) {
+    // Loads deepscan results coming from browser storage
+    LOAD_DEEPSCAN_RESULTS(state, results) {
       console.log('(botcheck) mutation: LOAD_RESULTS');
-      // This should be called when we detect a change to browser storage
-      state.results = results || {};
+      // We use Object.assign to merge the deep scan results in
+      // We don't want to erase our own, including the light scan results
+      state.results = Object.assign({}, state.results, results);
     },
+    // This mutation should only be called by the LOAD_WHITELIST action
     DONOTCALLDIRECTLY_LOAD_WHITELIST(state, whitelist) {
-      // This mutation should only be called by the LOAD_WHITELIST action
       state.whitelist = whitelist || {};
     },
     RESULTS_OPEN(state, { username, realName, whitelisted }) {
@@ -224,13 +226,15 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
 
       Vue.set(context.state.results, result.username, result);
 
-      // Send update to storage script
-      chrome.runtime.sendMessage({
-        type: 'botcheck-storage-queue-update',
-        // results['username'] is the key
-        key: ['results', result.username],
-        value: result
-      });
+      // Only send deep scans to browser storage
+      if (result.deepScan) {
+        chrome.runtime.sendMessage({
+          type: 'botcheck-storage-queue-update',
+          // results['username'] is the key
+          key: ['results', result.username],
+          value: result
+        });
+      }
     },
     DISAGREE(context, prediction) {
       console.log(`

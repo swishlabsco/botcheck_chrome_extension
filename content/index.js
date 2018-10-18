@@ -41,7 +41,7 @@ function begin(apiKey) {
     if (!state.results) {
       state.results = {};
     }
-    store.commit('LOAD_RESULTS', state.results);
+    store.commit('LOAD_DEEPSCAN_RESULTS', state.results);
 
     botcheckScanner.injectButtons();
     botcheckScanner.injectDialogs();
@@ -61,8 +61,8 @@ function begin(apiKey) {
   document.addEventListener('visibilitychange', () => {
     if (document.hidden === false) {
       chrome.storage.local.get('results', ({ results }) => {
-        console.log('(botcheck) Detected page focus. Loading results.');
-        store.commit('LOAD_RESULTS', results);
+        console.log('(botcheck) Detected page focus. Loading deepscan results.');
+        store.commit('LOAD_DEEPSCAN_RESULTS', results);
       });
     }
   });
@@ -75,10 +75,14 @@ chrome.storage.local.get(null, (state) => {
   if (!state.apiKey) {
     // No API key found, ask user to login
     // and do nothing until API key is received
-    store.dispatch('AUTH_TWITTER');
-    return;
+    // setTimeout because Twitter redirects to itself for some reason,
+    // and we don't want to open two auth tabs.
+    setTimeout(() => {
+      store.dispatch('AUTH_TWITTER');
+    }, 1000);
+  } else {
+    begin(state.apiKey);
   }
-  begin(state.apiKey);
 });
 
 // Listen for API key from the tab used for authentication

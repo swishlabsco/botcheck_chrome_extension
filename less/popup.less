@@ -60,6 +60,7 @@ ul {
 
 #whitelist-view {
   width: 300px;
+  height: fit-content;
 }
 
 .whitelist-table {
@@ -69,20 +70,6 @@ ul {
   overflow-x: auto;
 
   .whitelist-item {
-    display: inline-block;
-    margin-bottom: 6px;
-    padding: 6px 18px 6px 10px;
-    border-radius: 999px;
-    white-space: nowrap;
-    background-color: @almostWhite;
-
-    .realName {
-      font-size: 14px;
-    }
-
-    span {
-      vertical-align: middle;
-    }
 
     .remove-button {
       font-weight: bold;
@@ -92,7 +79,7 @@ ul {
 
       &:hover {
         cursor: pointer;
-        background-color: @lightGrey;
+        background-color: #E5E5E5;
       }
 
       i {
@@ -100,4 +87,78 @@ ul {
       }
     }
   }
+}
+
+.whitelist-header-text {
+  color: #666666;
+  font-size: 16px;
+  letter-spacing: -0.2px;
+  padding: 10px;
+  margin-left: 28px;
+}
+
+.whitelist-header {
+  position: relative;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.whitelist-item {
+  position: relative;
+  height: 52px;
+}
+
+.whitelist-item:hover {
+  background-color: #F6F6F6;
+}
+
+.un-whitelist-item {
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  margin-right: -124px;
+  margin-top: -10px;
+  font-size: 19px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.whitelist-item-real-name {
+  color: #666666;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: -0.17px;
+  line-height: 16px;
+  padding-top: 8px;
+  padding-left: 16px;
+}
+
+.whitelist-item-handle {
+  color: #B3B3B3;
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: -0.15px;
+  line-height: 16px;
+  padding-top: 4px;
+  padding-left: 16px;
+  padding-bottom: 8px;
+}
+
+.whitelist-go-back {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -135px;
+  margin-top: -10px;
+  font-size: 19px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.whitelist-empty {
+  color: #666666;
+  font-size: 13px;
+  font-weight: 300;
+  letter-spacing: -0.15px;
+  line-height: 16px;
+  padding: 15px;
 }

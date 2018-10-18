@@ -51,7 +51,6 @@ ul li.divider {
   overflow-y: auto;
   overflow-x: auto;
 }
-
 .whitelist-table .whitelist-item .remove-button {
   font-weight: bold;
   font-size: 20px;
@@ -65,7 +64,6 @@ ul li.divider {
 .whitelist-table .whitelist-item .remove-button i {
   padding: 3px;
 }
-
 .whitelist-header-text {
   color: #666666;
   font-size: 16px;
@@ -73,21 +71,17 @@ ul li.divider {
   padding: 10px;
   margin-left: 28px;
 }
-
 .whitelist-header {
   position: relative;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
-
 .whitelist-item {
   position: relative;
   height: 52px;
 }
-
 .whitelist-item:hover {
   background-color: #F6F6F6;
 }
-
 .un-whitelist-item {
   position: absolute;
   top: 50%;
@@ -98,8 +92,6 @@ ul li.divider {
   font-weight: bold;
   cursor: pointer;
 }
-
-
 .whitelist-item-real-name {
   color: #666666;
   font-size: 14px;
@@ -109,18 +101,16 @@ ul li.divider {
   padding-top: 8px;
   padding-left: 16px;
 }
-
 .whitelist-item-handle {
-	color: #B3B3B3;
-	font-size: 12px;
-	font-weight: 300;
-	letter-spacing: -0.15px;
-	line-height: 16px;
+  color: #B3B3B3;
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: -0.15px;
+  line-height: 16px;
   padding-top: 4px;
   padding-left: 16px;
   padding-bottom: 8px;
 }
-
 .whitelist-go-back {
   position: absolute;
   top: 50%;
@@ -131,7 +121,6 @@ ul li.divider {
   font-weight: bold;
   cursor: pointer;
 }
-
 .whitelist-empty {
   color: #666666;
   font-size: 13px;

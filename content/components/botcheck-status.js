@@ -25,7 +25,7 @@ Vue.component('botcheck-status', {
       }
       return !!whitelist[this.username]; // cast to boolean
     },
-    clickToScan() {
+    isClickToScan() {
       // Status should be "Run Bot Scan" when a light scan
       // has been run with a result of false
       return (this.prediction === false && !this.result.deepScan);
@@ -77,7 +77,7 @@ Vue.component('botcheck-status', {
       if (this.whitelisted) {
         return 'Whitelisted';
       }
-      if (this.clickToScan) {
+      if (this.isClickToScan) {
         return 'Run Bot Scan';
       }
       if (this.prediction === true) {
@@ -99,7 +99,7 @@ Vue.component('botcheck-status', {
       e.preventDefault();
       e.stopPropagation();
 
-      if (this.clickToScan) {
+      if (this.isClickToScan) {
         Vue.delete(this.$store.state.results, this.username);
 
         this.$store.dispatch('SCAN', {
@@ -108,8 +108,8 @@ Vue.component('botcheck-status', {
           ignoreWhitelist: false,
           deepScan: true
         });
-      } else {
-        // Open modal
+      } else if (this.result) {
+        // Open modal if not "Scanning..."
         this.$store.commit('RESULTS_OPEN', {
           username: this.username,
           realName: this.realName,
