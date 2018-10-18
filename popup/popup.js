@@ -20,7 +20,7 @@ const app = new Vue({ // eslint-disable-line no-unused-vars
   methods: {
     openWhitelist() {
       // Load whitelist when opening
-      chrome.storage.sync.get('whitelist', ({ whitelist }) => {
+      chrome.storage.local.get('whitelist', ({ whitelist }) => {
         if (chrome.runtime.lastError) {
           console.error('(botcheck) Failed to get whitelist.');
           console.error(chrome.runtime.lastError);
@@ -40,7 +40,7 @@ const app = new Vue({ // eslint-disable-line no-unused-vars
     // Updates browser storage,
     // content scripts should listen for changes
     removeFromWhitelist(username) {
-      chrome.storage.sync.get('whitelist', ({ whitelist }) => {
+      chrome.storage.local.get('whitelist', ({ whitelist }) => {
         if (chrome.runtime.lastError) {
           console.error('(botcheck) Failed to get whitelist.');
           console.error(chrome.runtime.lastError);
@@ -58,7 +58,7 @@ const app = new Vue({ // eslint-disable-line no-unused-vars
         // Update UI
         this.whitelist = whitelist;
 
-        chrome.storage.sync.set({ whitelist }, () => {
+        chrome.storage.local.set({ whitelist }, () => {
           if (chrome.runtime.lastError) {
             console.error('(botcheck) Failed to set whitelist.');
             console.error(chrome.runtime.lastError);
