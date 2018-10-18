@@ -85,7 +85,7 @@ const botcheckScanner = {
   },
 
   // Process a Tweet and add the Botcheck button to it
-  processTweetEl: (tweetEl, { isFeed = false, isRetweet = false }) => {
+  processTweetEl: (tweetEl, { isFeed = false, isRetweet = false } = {}) => {
     if (!tweetEl.dataset || !tweetEl.dataset.screenName || tweetEl.dataset.botcheckInjected) {
       console.log(`
         (botcheck) Tried to process tweet element but it either had no dataset, no screenName, or already had been injected.
