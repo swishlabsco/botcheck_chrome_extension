@@ -61,8 +61,8 @@ function begin(apiKey) {
   document.addEventListener('visibilitychange', () => {
     if (document.hidden === false) {
       chrome.storage.local.get('results', ({ results }) => {
-        console.log('(botcheck) Detected page focus. Loading results.');
-        store.commit('LOAD_RESULTS', results);
+        console.log('(botcheck) Detected page focus. Loading deepscan results.');
+        store.commit('LOAD_DEEPSCAN_RESULTS', results);
       });
     }
   });
