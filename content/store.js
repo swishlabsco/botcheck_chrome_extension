@@ -13,7 +13,8 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
         visible: false,
         username: '',
         realName: '',
-        whitelisted: false
+        whitelisted: false,
+        tweetElement: null
       },
       thanks: {
         visible: false
@@ -54,13 +55,19 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
     DONOTCALLDIRECTLY_LOAD_WHITELIST(state, whitelist) {
       state.whitelist = whitelist || {};
     },
-    RESULTS_OPEN(state, { username, realName, whitelisted }) {
+    RESULTS_OPEN(state, {
+      username,
+      realName,
+      whitelisted,
+      tweetElement
+    }) {
       console.log('(botcheck) mutation: RESULTS_OPEN');
       state.dialogs.results = {
         visible: true,
         username,
         realName,
-        whitelisted
+        whitelisted,
+        tweetElement
       };
     },
     RESULTS_CLOSE(state) {
@@ -80,10 +87,6 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
     LEARN_MORE() {
       console.log('(botcheck) mutation: LEARN_MORE');
       window.open('https://botcheck.me');
-    },
-    REPORT_TWEET() {
-      console.log('(botcheck) mutation: REPORT_TWEET');
-      window.open('https://help.twitter.com/en/rules-and-policies/twitter-report-violation');
     },
     SHARE(state, { username, prediction }) {
       console.log('(botcheck) mutation: SHARE');

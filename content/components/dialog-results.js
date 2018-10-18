@@ -103,6 +103,9 @@ Vue.component('dialog-results', {
     whitelisted() {
       return this.$store.state.dialogs.results.whitelisted;
     },
+    tweetElement() {
+      return this.$store.state.dialogs.results.tweetElement;
+    },
     result() {
       const results = this.$store.state.results;
       if (results && results[this.username]) {
@@ -145,7 +148,7 @@ Vue.component('dialog-results', {
         const realName = this.result.realName;
         this.addToWhitelist(username, realName);
       } else if (type === 'report') {
-        this.$store.commit('REPORT_TWEET');
+        this.reportTweet();
       } else {
         this.$store.commit('LEARN_MORE');
       }
@@ -155,7 +158,7 @@ Vue.component('dialog-results', {
       this.$store.commit('RESULTS_CLOSE');
     },
     // Updates whitelist on browser storage.
-    // Content scripts should pick up on the change
+    // Other content scripts should pick up on the change
     addToWhitelist(username, realName) {
       if (!username || !realName) {
         console.error(`
@@ -175,7 +178,7 @@ Vue.component('dialog-results', {
       });
     },
     // Updates whitelist on browser storage.
-    // Content scripts should pick up on the change
+    // Other content scripts should pick up on the change
     removeFromWhitelist(username) {
       this.getWhitelist((whitelist) => {
         if (whitelist[username]) {
@@ -214,6 +217,14 @@ Vue.component('dialog-results', {
           callback();
         }
       });
+    },
+    reportTweet() {
+      this.$store.commit('RESULTS_CLOSE');
+      if (!this.tweetElement) {
+        console.log('(botcheck) Tried to report tweet but couldn\'t find tweetElement');
+        return;
+      }
+      this.tweetElement.querySelector('.report-link.js-actionReport button').click();
     }
   }
 });
