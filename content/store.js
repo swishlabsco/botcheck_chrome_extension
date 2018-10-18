@@ -201,7 +201,10 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
     STORE_RESULT(context, result) {
       console.log(`(botcheck) action: STORE_RESULT. Username: ${result.username} Prediction: ${result.prediction}`);
 
-      const previousResult = context.state.results[result.username];
+      let previousResult;
+      if (context.state.results && context.state.results[result.username]) {
+        previousResult = context.state.results[result.username];
+      }
 
       // Refuse new result if
       if (
