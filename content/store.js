@@ -196,25 +196,17 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
           });
         });
     },
+    // Stores the result of a user being scanned
     STORE_RESULT(context, result) {
-      console.log(`(botcheck) action: STORE_RESULT. Username: ${result.username} prediction: ${result.prediction}`);
-      // A result is a response from the API after a user is scanned.
-      //
-      // First we store the result in this Vuex store,
-      // then we queue a browser storage update.
-      // This way, when a lot of storage requests are made at the same time,
-      // they are all up to date.
-      // If we didn't first store the result in the Vuex store, consequent updates
-      // could be missing previous updates. But this is not enough:
-      // If we didn't queue the update, chrome could be inconsistent with the storage
-      // ordering and create a race condition.
+      console.log(`(botcheck) action: STORE_RESULT. Username: ${result.username} Prediction: ${result.prediction}`);
 
       const previousResult = context.state.results[result.username];
+
+      // Refuse new result if
       if (
-        previousResult
-        && previousResult.deepScan
-        && !result.deepScan
-        && (previousResult === true || previousResult === false)
+        previousResult // A previous result exists
+        && !result.deepScan // AND new result is light scan
+        && previousResult.deepScan // AND previous result is deep scan
       ) {
         console.log(`
           (botcheck) Tried storing light scan result for ${result.username},
@@ -222,18 +214,15 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
         `);
         return;
       }
-      if (previousResult) {
-        console.log(`(botcheck) Overwriting result for user ${result.username}`);
-      }
+
       Vue.set(context.state.results, result.username, result);
 
-      // Queue save on browser storage
+      // Send update to storage script
       chrome.runtime.sendMessage({
-        type: 'botcheck-queue-storage-update',
-        info: result.username,
-        update: {
-          results: context.state.results
-        }
+        type: 'botcheck-storage-queue-update',
+        // results['username'] is the key
+        key: ['results', result.username],
+        value: result
       });
     },
     DISAGREE(context, prediction) {
