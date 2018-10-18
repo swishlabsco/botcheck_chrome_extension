@@ -20,13 +20,55 @@ Vue.config.errorHandler = (error, vm, info) => {
 };
 
 // Called when an API key is retrieved
+let begun = false;
 function begin(apiKey) {
+  // Always commit new API key
   store.commit('AUTH_APIKEY_SET', apiKey);
-  botcheckScanner.injectButtons();
-  botcheckScanner.injectDialogs();
+
+  // But only mount extension once
+  if (begun) {
+    return;
+  }
+  begun = true;
+
+  // Load whitelist and stored results
+  chrome.storage.sync.get(null, (state) => {
+    if (!state.whitelist) {
+      state.whitelist = {};
+    }
+    store.dispatch('LOAD_WHITELIST', state.whitelist);
+
+    if (!state.results) {
+      state.results = {};
+    }
+    store.commit('LOAD_RESULTS', state.results);
+
+    botcheckScanner.injectButtons();
+    botcheckScanner.injectDialogs();
+  });
+
+  // Listen for whitelist changes and send updates to Vuex store
+  chrome.storage.onChanged.addListener((changes /* , areaName */) => {
+    if (changes.whitelist && changes.whitelist.newValue) {
+      console.log('(botcheck) Detected whitelist change in storage');
+      store.dispatch('LOAD_WHITELIST', changes.whitelist.newValue);
+    }
+  });
+
+  // When tab goes into focus, load results from storage
+  // (We could listen for results changes like we do for the whitelist,
+  // but then the same tab would be sending a lot of updates to itself)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden === false) {
+      chrome.storage.sync.get('results', ({ results }) => {
+        console.log('(botcheck) Detected page focus. Loading results.');
+        store.commit('LOAD_RESULTS', results);
+      });
+    }
+  });
 }
 
-// Load api key and whitelist from chrome storage
+// Try to load API key from browser storage
 chrome.storage.sync.get(null, (state) => {
   console.log('(botcheck) Starting... Got state:');
   console.log(state);
@@ -36,9 +78,6 @@ chrome.storage.sync.get(null, (state) => {
     store.dispatch('AUTH_TWITTER');
     return;
   }
-  if (state.whitelist) {
-    store.commit('LOAD_WHITELIST', state.whitelist);
-  }
   begin(state.apiKey);
 });
 
@@ -47,13 +86,5 @@ chrome.storage.onChanged.addListener((changes /* , areaName */) => {
   if (changes.apiKey && changes.apiKey.newValue) {
     console.log('(botcheck) Detected new API key in storage');
     begin(changes.apiKey.newValue);
-  }
-});
-
-// Listen for whitelist changes and update Vuex store
-chrome.storage.onChanged.addListener((changes /* , areaName */) => {
-  if (changes.whitelist && changes.whitelist.newValue) {
-    console.log('(botcheck) Detected whitelist change in storage');
-    store.commit('LOAD_WHITELIST', changes.whitelist.newValue);
   }
 });

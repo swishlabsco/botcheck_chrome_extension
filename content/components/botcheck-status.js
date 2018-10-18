@@ -1,22 +1,29 @@
 Vue.component('botcheck-status', {
   template: `
-    <div :class="containerClass" @click="openModal">
+    <div :class="containerClass" @click="onClick">
       <span class="icon"><img :src="icon"/></span>
       <span :class="messageClass">{{message}}</span>
     </div>
   `,
   props: ['realName', 'username', 'isFeed', 'isRetweet', 'isProfile'],
   computed: {
-    prediction() {
+    result() {
       const results = this.$store.state.results;
       if (!results) {
-        return null;
+        return;
       }
-      const result = results[this.username];
-      if (result) {
-        return result.prediction;
+      return results[this.username];
+    },
+    prediction() {
+      // Undefined means we haven't scanned yet
+      // Null means result is unknown
+      if (
+        !this.result
+        && this.result !== null
+      ) {
+        return undefined;
       }
-      return null;
+      return this.result.prediction;
     },
     whitelisted() {
       const whitelist = this.$store.state.whitelist;
@@ -25,24 +32,38 @@ Vue.component('botcheck-status', {
       }
       return !!whitelist[this.username]; // cast to boolean
     },
+    clickToScan() {
+      // Status should be "Run Bot Scan" when a light scan
+      // has been run with a result of false
+      return (this.prediction === false && !this.result.deepScan);
+    },
     icon() {
+      if (this.whitelisted || this.prediction === false) {
+        return chrome.extension.getURL('icons/happy_outline.svg');
+      }
       if (this.prediction === true) {
         return chrome.extension.getURL('icons/mad.svg');
-      }
-      if (this.prediction === false) {
-        return chrome.extension.getURL('icons/happy_outline.svg');
       }
       return chrome.extension.getURL('icons/scanning.svg');
     },
     containerClass() {
       let className = 'botcheck';
-      if (!this.isFeed && !this.isProfile && this.prediction === true) {
+      if (
+        !this.whitelisted
+        && !this.isFeed
+        && !this.isProfile
+        && this.prediction === true
+      ) {
         className += ' button';
       }
       if (!this.isFeed && !this.isProfile && this.prediction === false) {
         className += ' retweet';
       }
-      if (this.isRetweet && this.prediction === true) {
+      if (
+        !this.whitelisted
+        && this.isRetweet
+        && this.prediction === true
+      ) {
         className += ' pull-up';
       }
       if (this.isProfile) {
@@ -51,11 +72,11 @@ Vue.component('botcheck-status', {
       return className;
     },
     messageClass() {
+      if (this.prediction === false || this.whitelisted) {
+        return 'status-text';
+      }
       if (this.prediction === true) {
         return 'status-text bot';
-      }
-      if (this.prediction === false) {
-        return 'status-text';
       }
       return 'status-text';
     },
@@ -63,25 +84,45 @@ Vue.component('botcheck-status', {
       if (this.whitelisted) {
         return 'Whitelisted';
       }
-      if (this.prediction) {
+      if (this.clickToScan) {
+        return 'Run Bot Scan';
+      }
+      if (this.prediction === true) {
         return 'Likely a Bot';
       }
-      if (!this.prediction) {
+      if (this.prediction === false) {
         return 'Not a Bot';
+      }
+      if (this.prediction === null) {
+        // Happens for private profiles,
+        // or when server returns error
+        return 'Unknown';
       }
       return 'Scanning...';
     }
   },
   methods: {
-    openModal(e) {
+    onClick(e) {
       e.preventDefault();
       e.stopPropagation();
 
-      store.commit('RESULTS_OPEN', {
-        username: this.username,
-        realName: this.realName,
-        whitelisted: this.whitelisted
-      });
+      if (this.clickToScan) {
+        Vue.delete(this.$store.state.results, this.username);
+
+        this.$store.dispatch('SCAN', {
+          username: this.username,
+          realName: this.realName,
+          ignoreWhitelist: false,
+          deepScan: true
+        });
+      } else {
+        // Open modal
+        this.$store.commit('RESULTS_OPEN', {
+          username: this.username,
+          realName: this.realName,
+          whitelisted: this.whitelisted
+        });
+      }
     }
   }
 });

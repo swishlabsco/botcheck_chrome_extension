@@ -21,16 +21,21 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
     },
     message: 'Scanning...',
     results: {
+      /*
       exampleUsername: {
+        deepScan: false, // Wether the result is from a deep scan
         prediction: false,
         realName: 'exampleRealName',
         username: 'exampleUsername'
       }
+      */
     },
     whitelist: {
+      /*
       exampleUsername: {
         realName: 'exampleRealName'
       }
+      */
     }
   },
   mutations: {
@@ -38,19 +43,14 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       console.log('(botcheck) mutation: AUTH_APIKEY_SET');
       state.apiKey = apiKey;
     },
-    LOAD_WHITELIST(state, whitelist) {
-      console.log('(botcheck) mutation: LOAD_WHITELIST. Whitelist:');
-      console.log(whitelist);
-      state.whitelist = whitelist;
+    LOAD_RESULTS(state, results) {
+      console.log('(botcheck) mutation: LOAD_RESULTS');
+      // This should be called when we detect a change to browser storage
+      state.results = results;
     },
-    SCREEN_NAME_CHECK_DONE(state, { prediction, realName, username }) {
-      console.log(`
-        (botcheck) mutation: SCREEN_NAME_CHECK_DONE.
-        Username: ${username}
-        RealName: ${realName}
-        Prediction: ${prediction}
-      `);
-      Vue.set(state.results, username, { prediction, realName, username });
+    DONOTCALLDIRECTLY_LOAD_WHITELIST(state, whitelist) {
+      // This mutation should only be called by the LOAD_WHITELIST action
+      state.whitelist = whitelist;
     },
     RESULTS_OPEN(state, { username, realName, whitelisted }) {
       console.log('(botcheck) mutation: RESULTS_OPEN');
@@ -83,7 +83,7 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       console.log('(botcheck) mutation: REPORT_TWEET');
       window.open('https://help.twitter.com/en/rules-and-policies/twitter-report-violation');
     },
-    SHARE(context, { username, prediction }) {
+    SHARE(state, { username, prediction }) {
       console.log('(botcheck) mutation: SHARE');
       const msg = prediction === true ? 'likely' : 'not+likely';
       window.open(`https://twitter.com/intent/tweet/?text=I+just+found+out+@${username}+is+${msg}+a+propaganda+account%2C+by+using+the+botcheck+browser+extension%21+You+can+download+it+from+https%3A%2F%2Fbotcheck.me+and+check+for+yourself.`);
@@ -96,133 +96,135 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       window.open(`${botcheckConfig.apiRoot}/ExtensionLogin?token=${browserToken}`);
       // Now the background script auth-listener.js should see the login and trigger a response.
     },
-    DEEP_SCAN(context, { username, realName }) {
-      console.log(`(botcheck) action: DEEP_SCAN. Username: ${username}`);
+    LOAD_WHITELIST(context, newWhitelist) {
+      console.log('(botcheck) action: LOAD_WHITELIST. Whitelist:');
+      console.log(newWhitelist);
+
+      // Get list of users removed from whitelist
+      // and if no status is found locally, run deep scan
+      Object.keys(context.state.whitelist).forEach((username) => {
+        if (!newWhitelist[username]) {
+          context.dispatch('SCAN', {
+            deepScan: true,
+            username,
+            realName: context.state.whitelist[username].realName,
+            ignoreWhitelist: true
+          });
+        }
+      });
+      context.commit('DONOTCALLDIRECTLY_LOAD_WHITELIST', newWhitelist);
+    },
+    SCAN(context, {
+      username,
+      realName,
+      ignoreWhitelist = false,
+      deepScan = false
+    }) {
+      console.log(`(botcheck) action: SCAN. Username: ${username} deepScan: ${deepScan}`);
 
       if (!realName || !username) {
         console.error(`
-          (botcheck) Called deep scan without real name or username.
+          (botcheck) Called scan without real name or username.
           realName: ${realName}
           username: ${username}
         `);
         return;
       }
       if (!context.state.apiKey) {
-        console.error('(botcheck) Called deep scan but no API key found. Triggering auth...');
+        console.log('(botcheck) Called scan but store has no API key. Triggering authentication...');
         context.dispatch('AUTH_TWITTER');
         return;
       }
 
-      // Don't do whitelisted accounts, return not a bot
-      if (context.state.whitelist[username]) {
-        console.log(`${username} is whitelisted, returning prediction: false`);
-        context.commit('SCREEN_NAME_CHECK_DONE', {
-          realName,
-          username,
-          prediction: false
-        });
+      // Don't check whitelisted accounts
+      if (!ignoreWhitelist && context.state.whitelist[username]) {
+        console.log(`${username} is whitelisted, aborting scan`);
         return;
       }
 
-      // Don't check network again if we've already done the check
-      if (context.state.results[username]) {
-        console.log(`${username} has already been deep scanned, returning previous result`);
-        context.commit('SCREEN_NAME_CHECK_DONE', context.state.results[username]);
+      // Don't check network again if this is a light scan
+      // and we already have a result (from a deep scan or not)
+      const previousResult = context.state.results[username];
+      if (
+        !deepScan
+        && (previousResult === true || previousResult === false)
+      ) {
+        console.log(`(botcheck) Light scan requested for ${username}, but result found. Aborting scan.`);
         return;
+      }
+
+      let endpoint;
+      if (deepScan) {
+        endpoint = '/DeepScan';
+      } else {
+        endpoint = '/LightScan';
       }
 
       axios
-        .post(`${botcheckConfig.apiRoot}/DeepScan`, {
+        .post(`${botcheckConfig.apiRoot}${endpoint}`, {
           username,
           apikey: context.state.apiKey
         })
         .then((result) => {
           if (result && result.data) {
-            console.log(`${username} has been deep scanned. Prediction: ${result.data.prediction}`);
+            console.log(`${username} has been${(deepScan ? ' deep ' : ' light ')}scanned. Prediction: ${result.data.prediction}`);
 
-            context.dispatch('STORE_DEEPSCAN_RESULT', result);
+            if (result.data.error) {
+              console.log('(botcheck) Error while running scan:');
+              console.log(result.data.error);
+              result.data.prediction = null; // null means unknown
+            }
 
-            context.commit('SCREEN_NAME_CHECK_DONE', {
-              prediction: result.data.prediction,
+            context.dispatch('STORE_RESULT', {
+              deepScan,
               realName,
-              username: result.data.username
+              username: result.data.username,
+              prediction: result.data.prediction
             });
             context.dispatch('LOG', result.data);
           }
         })
         .catch((e) => {
           console.error(e);
-          console.error('Unable to run deep scan.');
+          console.error('Unable to run scan.');
+
+          // Store unknown result
+          context.dispatch('STORE_RESULT', {
+            deepScan,
+            realName,
+            username,
+            prediction: null // null means unknown
+          });
         });
     },
-    LIGHT_SCAN(context, { username, realName }) {
-      console.log('(botcheck) action: LIGHT_SCAN');
+    // Stores the result of a user being scanned
+    STORE_RESULT(context, result) {
+      console.log(`(botcheck) action: STORE_RESULT. Username: ${result.username} Prediction: ${result.prediction}`);
 
-      if (!realName || !username) {
-        console.error(`
-          (botcheck) Called light scan without real name or username.
-          realName: ${realName}
-          username: ${username}
-        `);
-        return;
-      }
-      if (!context.state.apiKey) {
-        console.log('(botcheck) Called light scan but store has no API key. Triggering authentication...');
-        context.dispatch('AUTH_TWITTER');
-        return;
-      }
+      const previousResult = context.state.results[result.username];
 
-      // Don't do whitelisted accounts, return not a bot
-      if (context.state.whitelist[username]) {
+      // Refuse new result if
+      if (
+        previousResult // A previous result exists
+        && !result.deepScan // AND new result is light scan
+        && previousResult.deepScan // AND previous result is deep scan
+      ) {
         console.log(`
-          (botcheck) Called light scan but ${username} is whitelisted.
-          Returning prediction: false
+          (botcheck) Tried storing light scan result for ${result.username},
+          but deep scan result was already stored. Aborting.
         `);
-        context.commit('SCREEN_NAME_CHECK_DONE', {
-          realName,
-          username,
-          prediction: false
-        });
         return;
       }
 
-      // Don't check network again if we've already done the check
-      if (context.state.results[username]) {
-        console.log(`
-          (botcheck) Called light scan but ${username} has already been scanned.
-          Returning prediction: ${context.state.results[username].prediction}
-        `);
-        context.commit('SCREEN_NAME_CHECK_DONE', context.state.results[username]);
-        return;
-      }
+      Vue.set(context.state.results, result.username, result);
 
-      axios
-        .post(`${botcheckConfig.apiRoot}/LightScan`, {
-          username,
-          apikey: context.state.apiKey
-        })
-        .then((result) => {
-          if (result && result.data) {
-            console.log(`
-              (botcheck) Received light scan result for ${username}.
-              Prediction: ${result.data.prediction}
-            `);
-            context.commit('SCREEN_NAME_CHECK_DONE', {
-              prediction: result.data.prediction,
-              realName,
-              username: result.data.username
-            });
-            context.dispatch('LOG', result.data);
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          console.error('Unable to run light scan.');
-        });
-    },
-    STORE_DEEPSCAN_RESULT(context, result) {
-      console.log('trying to store result:');
-      console.log(result);
+      // Send update to storage script
+      chrome.runtime.sendMessage({
+        type: 'botcheck-storage-queue-update',
+        // results['username'] is the key
+        key: ['results', result.username],
+        value: result
+      });
     },
     DISAGREE(context, prediction) {
       console.log(`
