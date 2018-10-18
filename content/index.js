@@ -41,7 +41,7 @@ function begin(apiKey) {
     if (!state.results) {
       state.results = {};
     }
-    store.commit('LOAD_RESULTS', state.results);
+    store.commit('LOAD_DEEPSCAN_RESULTS', state.results);
 
     botcheckScanner.injectButtons();
     botcheckScanner.injectDialogs();
