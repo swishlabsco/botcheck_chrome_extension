@@ -35,7 +35,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     // The content scripts should be monitoring the storage and notice the change
     chrome.storage.local.set({
       apiKey: query.apikey
-    }, (check) => {
+    }, () => {
       if (chrome.runtime.lastError) {
         console.error('Failed to store API key in sync storage.');
         console.error(chrome.runtime.lastError);
