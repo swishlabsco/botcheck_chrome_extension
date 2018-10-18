@@ -113,7 +113,10 @@ Vue.component('botcheck-status', {
         this.$store.commit('RESULTS_OPEN', {
           username: this.username,
           realName: this.realName,
-          whitelisted: this.whitelisted
+          whitelisted: this.whitelisted,
+          // Send tweet element for things like programatically
+          // opening twitter report dialog
+          tweetElement: e.target.closest('.tweet')
         });
       }
     }
