@@ -121,7 +121,6 @@
   margin-top: 24px;
 }
 .botcheck-dialog .share-link {
-  cursor: pointer;
   text-align: right;
   margin-top: 16px;
 }
@@ -144,12 +143,10 @@
 .botcheck-dialog .share-link.positive span {
   color: #00D68C;
 }
-
 .remove-from-whitelist {
   text-align: right;
   margin-top: 16px;
 }
-
 .remove-from-whitelist span {
   font-size: 13px;
   margin-left: 4px;
