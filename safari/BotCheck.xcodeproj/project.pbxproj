@@ -18,6 +18,7 @@
 		0D8ADAE4217765500086D6AD /* script.js in Resources */ = {isa = PBXBuildFile; fileRef = 0D8ADAE3217765500086D6AD /* script.js */; };
 		0D8ADAE6217765500086D6AD /* ToolbarItemIcon.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 0D8ADAE5217765500086D6AD /* ToolbarItemIcon.pdf */; };
 		0D8ADAEA217765500086D6AD /* BotCheck for Twitter.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 0D8ADAD6217765500086D6AD /* BotCheck for Twitter.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		0DB090112178A89F00E9B3F9 /* build in Resources */ = {isa = PBXBuildFile; fileRef = 0DB090102178A89F00E9B3F9 /* build */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +62,8 @@
 		0D8ADAE3217765500086D6AD /* script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = script.js; sourceTree = "<group>"; };
 		0D8ADAE5217765500086D6AD /* ToolbarItemIcon.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = ToolbarItemIcon.pdf; sourceTree = "<group>"; };
 		0D8ADAE7217765500086D6AD /* BotCheck_for_Twitter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BotCheck_for_Twitter.entitlements; sourceTree = "<group>"; };
+		0DA7302D217A037D00F0E6FE /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
+		0DB090102178A89F00E9B3F9 /* build */ = {isa = PBXFileReference; lastKnownFileType = folder; path = build; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,10 +128,12 @@
 		0D8ADADA217765500086D6AD /* BotCheck for Twitter */ = {
 			isa = PBXGroup;
 			children = (
+				0DB090102178A89F00E9B3F9 /* build */,
 				0D8ADADB217765500086D6AD /* SafariExtensionHandler.swift */,
 				0D8ADADD217765500086D6AD /* SafariExtensionViewController.swift */,
 				0D8ADADF217765500086D6AD /* SafariExtensionViewController.xib */,
 				0D8ADAE2217765500086D6AD /* Info.plist */,
+				0DA7302D217A037D00F0E6FE /* icon.png */,
 				0D8ADAE3217765500086D6AD /* script.js */,
 				0D8ADAE5217765500086D6AD /* ToolbarItemIcon.pdf */,
 				0D8ADAE7217765500086D6AD /* BotCheck_for_Twitter.entitlements */,
@@ -227,6 +232,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0D8ADAE6217765500086D6AD /* ToolbarItemIcon.pdf in Resources */,
+				0DB090112178A89F00E9B3F9 /* build in Resources */,
 				0D8ADAE1217765500086D6AD /* SafariExtensionViewController.xib in Resources */,
 				0D8ADAE4217765500086D6AD /* script.js in Resources */,
 			);

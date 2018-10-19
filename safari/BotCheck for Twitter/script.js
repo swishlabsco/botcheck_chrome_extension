@@ -1,6 +1,8 @@
 
+let runID = Math.random();
+
 const log = function(...args) {
-    console.log('BotCheck', ...args);
+    console.log('BotCheck', runID, ...args);
 }
 
 // Dont run inside iframes
@@ -14,6 +16,4 @@ if (window.top === window) {
 else {
     log('skipped because not top frame')
 }
-
-
 
