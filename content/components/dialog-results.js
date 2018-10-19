@@ -263,7 +263,7 @@ function clickRelevantReportButton(e, username, lastInteractedTweetEl) {
   const closestTweet = e.target.closest('.tweet');
   if (closestTweet) {
     // Ignore full screen tweets
-    // TODO: Move this tweet processing logic to utils
+    // TODO: Move this tweet processing logic to its own module
 
     let parentIsModal = false;
     const classList = closestTweet.parentElement.classList;
@@ -274,7 +274,6 @@ function clickRelevantReportButton(e, username, lastInteractedTweetEl) {
     }
 
     if (!parentIsModal) {
-      console.log('(TODO: remove) 1');
       return clickReportButtonOfTweet(closestTweet);
     }
   }
@@ -304,14 +303,8 @@ function clickRelevantReportButton(e, username, lastInteractedTweetEl) {
     // Check that the stored tweet is of the current user
     const tweetUser = tweet.querySelector('a.account-group span.username');
 
-    console.log('tweetUser');
-    console.log(tweetUser);
-    console.log(username);
-    console.log(tweetUser.innerHTML);
-    console.log(tweetUser.innerHTML.includes(username));
-
     if (tweetUser && tweetUser.innerHTML.includes(username)) {
-      console.log('(TODO: remove) 2');
+      console.log('(botcheck) Reporting the last tweet user clicked reply/retweet on.');
       return clickReportButtonOfTweet(tweet);
     }
   }

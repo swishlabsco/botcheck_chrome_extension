@@ -28,7 +28,7 @@ function registerListeners() {
     }
   });
 
-  // When tab goes into focus, load results from storage
+  // When the current tab goes into focus, load results from storage
   // (We could listen for results changes like we do for the whitelist,
   // but then the same tab would be sending a lot of updates to itself)
   document.addEventListener('visibilitychange', () => {
@@ -91,10 +91,9 @@ chrome.storage.local.get(null, (state) => {
   console.log('(botcheck) Starting... Got state:');
   console.log(state);
   if (!state.apiKey) {
-    // No API key found, ask user to login
-    // and do nothing until API key is received
-    // setTimeout because Twitter redirects to itself for some reason,
-    // and we don't want to open two auth tabs.
+    // No API key found, ask user to login and do nothing until API key is received.
+    // We use setTimeout because Twitter redirects to itself
+    // for some reason, and we don't want to open two auth tabs.
     setTimeout(() => {
       store.dispatch('AUTH_TWITTER');
     }, 1000);
