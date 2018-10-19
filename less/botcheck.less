@@ -1,0 +1,199 @@
+@twitterTextGrey: #657786;
+@lightGrey: #BFBFBF;
+@botcheckRed: #FB0015;
+@botcheckLightRed: #FFD6D7;
+@botcheckGreen: #00D68C;
+@black: #333333;
+@lightBlack: #666666;
+
+.botcheck-feed-container {
+	display: inline-block;
+}
+
+// .el-dropdown-menu is appended to body,
+// so it sits outside .botcheck
+.el-dropdown-menu {
+	z-index: 5001 !important;
+}
+
+.el-dropdown-item {
+	font-size: 13px;
+}
+
+.botcheck {
+	color: @twitterTextGrey;
+	font-size: 14px;
+	line-height: 1;
+	margin-bottom: 8px;
+	position: relative;
+	cursor: pointer;
+
+	.icon {
+		width: 18px;
+		height: 18px;
+		position: absolute;
+		bottom: 0;
+		background-image: none;
+		display: inline-block;
+
+		img {
+			width: 18px;
+			display: inline-block;
+		}
+	}
+
+	.status-text {
+		padding-left: 22px;
+		line-height: 1;
+		color: @twitterTextGrey;
+		vertical-align: middle;
+		box-decoration-break: clone;
+		-webkit-box-decoration-break: clone;
+		font-size: 14px;
+		display: inline-block;
+
+		&.bot {
+			color: @botcheckRed;
+		}
+	}
+
+	&.button {
+		border-radius: 25px;
+		background: @botcheckLightRed;
+		user-select: none;
+		cursor: pointer;
+		margin-top: 0;
+		margin-left: 0;
+		height: 24px;
+
+		.icon {
+			position: relative;
+			vertical-align: middle;
+			padding-left: 10px;
+			padding-top: 3px;
+			width: 18px;
+			display: inline-block;
+		}
+
+		.status-text {
+			padding-left: 4px;
+			padding-right: 10px;
+			vertical-align: middle;
+			margin-top: 3px;
+			font-size: 12px;
+		}
+	}
+
+	&.inline {
+		display: inline-block;
+	}
+
+	&.pull-up {
+		margin-top: -4px;
+		margin-left: 4px;
+	}
+
+	&.retweet {
+		margin-top: 3px;
+		margin-left: 3px;
+	}
+}
+
+.botcheck-dialog {
+	z-index: 5000 !important;
+
+	.el-dialog {
+		width: 640px;
+	}
+
+	.el-container {
+		padding: 0 20px;
+	}
+
+	.el-main {
+		padding-top: 10px;
+		padding-bottom: 0;
+	}
+
+	.el-dropdown {
+		position: absolute;
+		top: 15px;
+		right: 20px;
+	}
+
+	.el-icon-arrow-down {
+		font-weight: bold;
+		cursor: pointer;
+	}
+
+	img {
+		width: 80px;
+		display: inline-block;
+	}
+
+	.header {
+		font-size: 17px;
+		font-weight: bold;
+		display: block;
+		margin-bottom: 10px;
+		letter-spacing: 0.4px;
+		color: @black;
+	}
+
+	strong {
+		color: @black;
+	}
+
+	span:not(.header) {
+		font-size: 16px;
+		line-height: 1.5;
+		letter-spacing: 0.4px;
+	}
+
+	button.remove-from-whitelist {
+		margin-top: 24px;
+	}
+
+	.share-link {
+		text-align: right;
+		margin-top: 16px;
+
+		i {
+			font-size: 18px;
+			color: @botcheckRed;
+			vertical-align: middle;
+		}
+
+		span {
+			font-size: 13px;
+			display: inline-block;
+			margin-left: 4px;
+			color: @botcheckRed;
+			vertical-align: middle;
+			margin-top: 2px;
+		}
+
+		&.positive {
+			i {
+				color: @botcheckGreen;
+			}
+
+			span {
+				color: @botcheckGreen;
+			}
+		}
+	}
+}
+
+.remove-from-whitelist {
+	text-align: right;
+	margin-top: 16px;
+	}
+
+.remove-from-whitelist span {
+	font-size: 13px;
+	margin-left: 4px;
+	vertical-align: middle;
+	margin-top: 2px;
+	cursor: pointer;
+}

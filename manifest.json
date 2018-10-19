@@ -2,49 +2,49 @@
   "manifest_version": 2,
   "name": "Botcheck.me",
   "short_name": "Botcheck.me",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Use machine learning techniques to detect propaganda accounts on Twitter.",
   "icons": {
-    "32": "icons/icon32.png",
-    "64": "icons/icon64.png",
-    "128": "icons/icon128.png"
+    "16": "icons/default@16-gray.png",
+    "48": "icons/default@48-gray.png",
+    "128": "icons/default@128-gray.png"
   },
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "content_scripts": [
     {
-      "css": ["styles/element.css", "styles/style.css"],
+      "css": ["styles/element.css", "styles/style.css", "styles/botcheck.css"],
       "js": [
-        "lib/vue.min.js",
-        "lib/vuex.min.js",
-        "lib/element.js",
-        "lib/util.js",
-        "lib/errors.js",
-        "content/components/button-check.js",
-        "content/components/dialog-auth.js",
+        "config/config.js",
+        "vendor/vue.js",
+        "vendor/vuex.js",
+        "vendor/element.js",
+        "vendor/axios.js",
+        "content/util.js",
+        "content/components/botcheck-status.js",
         "content/components/dialog-results.js",
         "content/components/dialog-thanks.js",
-        "content/storeClient.js",
-        "content/injectButtons.js",
-        "content/injectDialogs.js"
+        "content/store.js",
+        "content/scanner.js",
+        "content/index.js"
       ],
       "matches": ["https://twitter.com/*"]
     }
   ],
   "background": {
     "scripts": [
-      "lib/vue.min.js",
-      "lib/vuex.min.js",
-      "lib/axios.js",
-      "lib/util.js",
-      "lib/errors.js",
-      "background/store.js",
-      "background/storePersist.js",
-      "background/storeServer.js"
+      "background/auth-listener.js",
+      "background/storage.js",
+      "background/reload-twitter-on-load.js"
     ]
   },
   "browser_action": {
     "default_popup": "popup/popup.html"
   },
-  "permissions": ["storage"],
-  "web_accessible_resources": ["*.ttf", "*.woff"]
+  "permissions": [
+    "storage",
+    "tabs",
+    "https://botcheck2-dot-surfsafe-rbl.appspot.com/*",
+    "https://log.declaredintent.com/*"
+  ],
+  "web_accessible_resources": ["*.ttf", "*.woff","*.png","*.svg"]
 }

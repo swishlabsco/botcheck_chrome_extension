@@ -1,26 +1,25 @@
 Vue.component('dialog-thanks', {
-  template: html`
+  template: `
     <el-dialog :visible.sync="dialogVisible" class="botcheck-dialog">
-      <el-header height="auto">
-        <h1>Thanks for the feedback!</h1>
-      </el-header>
       <el-main>
-        <p>Our model currently has ~90% accuracy and does make mistakes. Thank you for your response.</p>
+        <el-container>
+          <el-row>
+            <el-col :span="24">
+              <span class="header">Thank You for Your Feedback!</span>
+              <span>Our model currently has about 90% accuracy but occasionally makes mistakes. Thank you for your input.</span>
+            </el-col>
+          </el-row>
+        </el-container>
       </el-main>
-      <el-footer height="auto" class="text-right">
-        <el-button type="primary" round @click="dialogVisible = false" class="u-bgUserColor u-borderUserColor u-bgUserColorDarkHover">
-          Close
-        </el-button>
-      </el-footer>
-      </el-dialog>
-  `(),
+    </el-dialog>
+  `,
   computed: {
     dialogVisible: {
       get() {
-        return this.$store.state.synced.dialogs.thanks.visible;
+        return this.$store.state.dialogs.thanks.visible;
       },
       set() {
-        this.$store.broadcastMutation('THANKS_CLOSE');
+        this.$store.commit('THANKS_CLOSE');
       }
     }
   }
