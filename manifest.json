@@ -33,7 +33,8 @@
   "background": {
     "scripts": [
       "background/auth-listener.js",
-      "background/storage.js"
+      "background/storage.js",
+      "background/reload-twitter-on-load.js"
     ]
   },
   "browser_action": {
