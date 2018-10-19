@@ -12,27 +12,14 @@
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "content_scripts": [
     {
-      "css": ["styles/element.css", "styles/style.css", "styles/botcheck.css"],
-      "js": [
-        "config/config.js",
-        "vendor/vue.js",
-        "vendor/vuex.js",
-        "vendor/element.js",
-        "vendor/axios.js",
-        "content/util.js",
-        "content/components/botcheck-status.js",
-        "content/components/dialog-results.js",
-        "content/components/dialog-thanks.js",
-        "content/store.js",
-        "content/scanner.js",
-        "content/index.js"
-      ],
+      "css": ["build/css/injected.css"],
+      "js": ["build/js/injected.js"],
       "matches": ["https://twitter.com/*"]
     }
   ],
   "background": {
     "scripts": [
-      "background/auth-listener.js",
+      "vendor/browser-polyfill.js",
       "background/storage.js"
     ]
   },

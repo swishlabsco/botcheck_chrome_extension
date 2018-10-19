@@ -118,15 +118,15 @@ Vue.component('dialog-results', {
     },
     icon() {
       if (this.whitelisted) {
-        return chrome.extension.getURL('icons/Happy@128-gray.png');
+        return BC.xbrowser.extension.getURL('icons/Happy@128-gray.png');
       }
       if (this.prediction === true) {
-        return chrome.extension.getURL('icons/Mad@128.png');
+        return BC.xbrowser.extension.getURL('icons/Mad@128.png');
       }
       if (this.prediction === false) {
-        return chrome.extension.getURL('icons/Happy@128.png');
+        return BC.xbrowser.extension.getURL('icons/Happy@128.png');
       }
-      return chrome.extension.getURL('icons/scanning@128.png');
+      return BC.xbrowser.extension.getURL('icons/scanning@128.png');
     },
     dialogVisible: {
       get() {

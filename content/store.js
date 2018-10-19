@@ -96,10 +96,16 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
   },
   actions: {
     AUTH_TWITTER() {
-      console.log('(botcheck) action: AUTH_TWITTER');
-      const browserToken = botcheckUtils.generateBrowserToken();
-      window.open(`${botcheckConfig.apiRoot}/ExtensionLogin?token=${browserToken}`);
-      // Now the background script auth-listener.js should see the login and trigger a response.
+      if (window.top === window) {
+        console.log('(botcheck) action: AUTH_TWITTER');
+
+        const browserToken = botcheckUtils.generateBrowserToken();
+        BC.xbrowser.tabs.open(`${botcheckConfig.apiRoot}/ExtensionLogin?token=${browserToken}`);
+        // Now the background script auth-listener.js should see the login and trigger a response.
+      }
+      else {
+        console.log('(botcheck) action: AUTH_TWITTER - skipping because not top window.');
+      }
     },
     LOAD_WHITELIST(context, newWhitelist) {
       console.log('(botcheck) action: LOAD_WHITELIST. Whitelist:');
@@ -231,12 +237,7 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
 
       // Only send deep scans to browser storage
       if (result.deepScan) {
-        chrome.runtime.sendMessage({
-          type: 'botcheck-storage-queue-update',
-          // results['username'] is the key
-          key: ['results', result.username],
-          value: result
-        });
+        BC.xbrowser.storage.queueSet(['results', result.username], result);
       }
     },
     DISAGREE(context, prediction) {

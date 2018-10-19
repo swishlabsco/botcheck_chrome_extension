@@ -32,12 +32,12 @@ Vue.component('botcheck-status', {
     },
     icon() {
       if (this.whitelisted || this.prediction === false) {
-        return chrome.extension.getURL('icons/happy_outline.svg');
+        return BC.xbrowser.extension.getURL('icons/happy_outline.svg');
       }
       if (this.prediction === true) {
-        return chrome.extension.getURL('icons/mad.svg');
+        return BC.xbrowser.extension.getURL('icons/mad.svg');
       }
-      return chrome.extension.getURL('icons/scanning.svg');
+      return BC.xbrowser.extension.getURL('icons/scanning.svg');
     },
     containerClass() {
       let className = 'botcheck';
