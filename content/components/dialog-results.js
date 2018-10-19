@@ -245,8 +245,6 @@ function clickReportButtonOfTweet(tweet) {
     console.log('(botcheck) Clicking report button of tweet.');
     console.log('Tweet:');
     console.log(tweet);
-    console.log('Button:');
-    console.log(button);
 
     button.click();
     return true;
@@ -280,19 +278,21 @@ function clickRelevantReportButton(e, username, lastInteractedTweetEl) {
 
   // Attempt to extract report button from
   // the dropdown present in profile pages
-  const li = document.querySelector('li.report-text');
-  if (li) {
-    const button = li.querySelector('button.dropdown-link');
+  if (document.querySelector('div.ProfileHeaderCard')) {
+    const li = document.querySelector('li.report-text');
+    if (li) {
+      const button = li.querySelector('button.dropdown-link');
 
-    if (button) {
-      // We have to open the dropdown first, or report dialog won't open
-      const dropdownToggle = document.querySelector('button.user-dropdown.dropdown-toggle');
-      dropdownToggle.click();
+      if (button) {
+        // We have to open the dropdown first, or report dialog won't open
+        const dropdownToggle = document.querySelector('button.user-dropdown.dropdown-toggle');
+        dropdownToggle.click();
 
-      console.log('(botcheck) Clicking report button of profile.');
-      console.log(button);
-      button.click();
-      return true;
+        console.log('(botcheck) Clicking report button of profile.');
+        console.log(button);
+        button.click();
+        return true;
+      }
     }
   }
 
