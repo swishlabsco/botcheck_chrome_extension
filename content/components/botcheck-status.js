@@ -114,9 +114,7 @@ Vue.component('botcheck-status', {
           username: this.username,
           realName: this.realName,
           whitelisted: this.whitelisted,
-          // Send tweet element for things like programatically
-          // opening twitter report dialog
-          tweetElement: e.target.closest('.tweet')
+          clickEvent: e
         });
       }
     }

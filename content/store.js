@@ -8,6 +8,9 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
   state: {
+    // Stores the last tweet the user interacted with,
+    // useful if later we want to e.g. trigger a report
+    lastInteractedTweetEl: null,
     dialogs: {
       results: {
         visible: false,
@@ -20,7 +23,6 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
         visible: false
       }
     },
-    message: 'Scanning...',
     results: {
       /*
       exampleUsername: {
@@ -53,13 +55,19 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
     },
     // This mutation should only be called by the LOAD_WHITELIST action
     DONOTCALLDIRECTLY_LOAD_WHITELIST(state, whitelist) {
+      console.log('(botcheck) mutation: LOAD_WHITELIST');
       state.whitelist = whitelist || {};
+    },
+    SET_LAST_TWEET_INTERACTED_WITH(state, tweetElement) {
+      console.log('(botcheck) mutation: SET_LAST_TWEET_INTERACTED_WITH');
+      console.log(tweetElement);
+      state.lastInteractedTweetEl = tweetElement;
     },
     RESULTS_OPEN(state, {
       username,
       realName,
       whitelisted,
-      tweetElement
+      clickEvent
     }) {
       console.log('(botcheck) mutation: RESULTS_OPEN');
       state.dialogs.results = {
@@ -67,14 +75,16 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
         username,
         realName,
         whitelisted,
-        tweetElement
+        clickEvent
       };
     },
     RESULTS_CLOSE(state) {
       console.log('(botcheck) mutation: RESULTS_CLOSE');
-      state.dialogs.results.visible = false;
-      state.dialogs.results.username = '';
-      state.dialogs.results.realName = '';
+      state.dialogs.results = {
+        visible: false,
+        username: '',
+        realName: ''
+      };
     },
     THANKS_OPEN(state) {
       console.log('(botcheck) mutation: THANKS_OPEN');

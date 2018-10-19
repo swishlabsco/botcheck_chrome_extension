@@ -103,8 +103,8 @@ Vue.component('dialog-results', {
     whitelisted() {
       return this.$store.state.dialogs.results.whitelisted;
     },
-    tweetElement() {
-      return this.$store.state.dialogs.results.tweetElement;
+    lastInteractedTweetEl() {
+      return this.$store.state.lastInteractedTweetEl;
     },
     result() {
       const results = this.$store.state.results;
@@ -219,12 +219,101 @@ Vue.component('dialog-results', {
       });
     },
     reportTweet() {
+      // Store click event and username before they get erased
+      const clickEvent = this.$store.state.dialogs.results.clickEvent;
+      const username = this.$store.state.dialogs.results.username;
+
+      // Close botcheck results dialog
       this.$store.commit('RESULTS_CLOSE');
-      if (!this.tweetElement) {
-        console.log('(botcheck) Tried to report tweet but couldn\'t find tweetElement');
+
+      if (!clickEvent) {
+        console.log('(botcheck) Tried to report after clicking status but couldn\'t find clickEvent.');
         return;
       }
-      this.tweetElement.querySelector('.report-link.js-actionReport button').click();
+      // eslint-disable-next-line no-use-before-define
+      const clicked = clickRelevantReportButton(clickEvent, username, this.lastInteractedTweetEl);
+      if (!clicked) {
+        window.open('https://help.twitter.com/en/rules-and-policies/twitter-report-violation');
+      }
     }
   }
 });
+
+function clickReportButtonOfTweet(tweet) {
+  const button = tweet.querySelector('.report-link.js-actionReport button');
+  if (button) {
+    console.log('(botcheck) Clicking report button of tweet.');
+    console.log('Tweet:');
+    console.log(tweet);
+    console.log('Button:');
+    console.log(button);
+
+    button.click();
+    return true;
+  }
+  return false;
+}
+
+// Returns the relevant report button related to
+// a given click event
+// (the event is from when the user clicked the botcheck status)
+// Returns true if clicked successfully, false otherwise
+function clickRelevantReportButton(e, username, lastInteractedTweetEl) {
+  // Attempt to extract report button from closest tweet
+  const closestTweet = e.target.closest('.tweet');
+  if (closestTweet) {
+    // Ignore full screen tweets
+    // TODO: Move this tweet processing logic to utils
+
+    let parentIsModal = false;
+    const classList = closestTweet.parentElement.classList;
+    for (const c of classList) { // eslint-disable-line no-restricted-syntax
+      if (c === 'modal-tweet' || c === 'modal-body') {
+        parentIsModal = true;
+      }
+    }
+
+    if (!parentIsModal) {
+      console.log('(TODO: remove) 1');
+      return clickReportButtonOfTweet(closestTweet);
+    }
+  }
+
+  // Attempt to extract report button from
+  // the dropdown present in profile pages
+  const li = document.querySelector('li.report-text');
+  if (li) {
+    const button = li.querySelector('button.dropdown-link');
+
+    if (button) {
+      // We have to open the dropdown first, or report dialog won't open
+      const dropdownToggle = document.querySelector('button.user-dropdown.dropdown-toggle');
+      dropdownToggle.click();
+
+      console.log('(botcheck) Clicking report button of profile.');
+      console.log(button);
+      button.click();
+      return true;
+    }
+  }
+
+  // Attempt to extract report button from the last tweet
+  // the user clicked reply/retweet on
+  const tweet = lastInteractedTweetEl;
+  if (tweet) {
+    // Check that the stored tweet is of the current user
+    const tweetUser = tweet.querySelector('a.account-group span.username');
+
+    console.log('tweetUser');
+    console.log(tweetUser);
+    console.log(username);
+    console.log(tweetUser.innerHTML);
+    console.log(tweetUser.innerHTML.includes(username));
+
+    if (tweetUser && tweetUser.innerHTML.includes(username)) {
+      console.log('(TODO: remove) 2');
+      return clickReportButtonOfTweet(tweet);
+    }
+  }
+  return false;
+}

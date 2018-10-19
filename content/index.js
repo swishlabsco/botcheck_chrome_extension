@@ -19,6 +19,42 @@ Vue.config.errorHandler = (error, vm, info) => {
   });
 };
 
+function registerListeners() {
+  // Listen for whitelist changes and send updates to Vuex store
+  chrome.storage.onChanged.addListener((changes /* , areaName */) => {
+    if (changes.whitelist && changes.whitelist.newValue) {
+      console.log('(botcheck) Detected whitelist change in storage');
+      store.dispatch('LOAD_WHITELIST', changes.whitelist.newValue);
+    }
+  });
+
+  // When tab goes into focus, load results from storage
+  // (We could listen for results changes like we do for the whitelist,
+  // but then the same tab would be sending a lot of updates to itself)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden === false) {
+      chrome.storage.local.get('results', ({ results }) => {
+        console.log('(botcheck) Detected page focus. Loading deepscan results.');
+        store.commit('LOAD_DEEPSCAN_RESULTS', results);
+      });
+    }
+  });
+
+  // Listen for clicks on reply/retweet buttons and register the tweet element clicked
+  // We might need it later if the user chooses to report that tweet
+  document.addEventListener('click', (e) => {
+    const replyButton = e.target.closest('div.ProfileTweet-action.ProfileTweet-action--reply');
+    const retweetButton = e.target.closest('div.ProfileTweet-action.ProfileTweet-action--retweet');
+
+    if (replyButton || retweetButton) {
+      const tweet = e.target.closest('.tweet.js-stream-tweet');
+      if (tweet) {
+        store.commit('SET_LAST_TWEET_INTERACTED_WITH', tweet);
+      }
+    }
+  });
+}
+
 // Called when an API key is retrieved
 let begun = false;
 function begin(apiKey) {
@@ -47,25 +83,7 @@ function begin(apiKey) {
     botcheckScanner.injectDialogs();
   });
 
-  // Listen for whitelist changes and send updates to Vuex store
-  chrome.storage.onChanged.addListener((changes /* , areaName */) => {
-    if (changes.whitelist && changes.whitelist.newValue) {
-      console.log('(botcheck) Detected whitelist change in storage');
-      store.dispatch('LOAD_WHITELIST', changes.whitelist.newValue);
-    }
-  });
-
-  // When tab goes into focus, load results from storage
-  // (We could listen for results changes like we do for the whitelist,
-  // but then the same tab would be sending a lot of updates to itself)
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden === false) {
-      chrome.storage.local.get('results', ({ results }) => {
-        console.log('(botcheck) Detected page focus. Loading deepscan results.');
-        store.commit('LOAD_DEEPSCAN_RESULTS', results);
-      });
-    }
-  });
+  registerListeners();
 }
 
 // Try to load API key from browser storage
