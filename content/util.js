@@ -1,11 +1,11 @@
 /**
  * /content/util.js
  *
- * Utility object.
+ * Utility methods.
  */
 
-const botcheckUtils = { // eslint-disable-line no-unused-vars
-  generateBrowserToken: () => {
+BC.util = {
+  generateBrowserToken() {
     let text = '';
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
@@ -15,8 +15,10 @@ const botcheckUtils = { // eslint-disable-line no-unused-vars
 
     return text;
   },
-  // https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
-  generateUuid: () => {
+  generateUuid() {
+    /**
+     * https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+     */
     function s4() {
       return Math.floor((1 + Math.random()) * 0x10000)
         .toString(16)
@@ -24,13 +26,10 @@ const botcheckUtils = { // eslint-disable-line no-unused-vars
     }
     return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
   },
-  extractTextFromHTML: (string) => {
+  extractTextFromHTML(string) {
     const doc = new DOMParser().parseFromString(string, 'text/html');
     return doc.body.textContent || '';
-  }
-};
-
-BC.util = {
+  },
   parseQueryString(queryString) {
     const query = {};
     const pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
@@ -47,15 +46,10 @@ BC.util = {
      * Because `DOMContentLoaded` only fires once, and in safari we need the page to be ready before doing any html.
      * This function will also fire even if the event already happened.
      */
-    if (document.readyState != 'loading') {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
       fn();
-    } else if (document.addEventListener) {
-      document.addEventListener('DOMContentLoaded', fn);
     } else {
-      document.attachEvent('onreadystatechange', function () {
-        if (document.readyState != 'loading')
-          fn();
-      });
+      document.addEventListener('DOMContentLoaded', fn);
     }
   }
 };

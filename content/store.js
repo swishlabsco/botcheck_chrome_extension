@@ -109,7 +109,7 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       if (window.top === window) {
         console.log('(botcheck) action: AUTH_TWITTER');
 
-        const browserToken = botcheckUtils.generateBrowserToken();
+        const browserToken = BC.util.generateBrowserToken();
         BC.xbrowser.tabs.open(`${botcheckConfig.apiRoot}/ExtensionLogin?token=${browserToken}`);
         // Now the background script auth-listener.js should see the login and trigger a response.
       }
@@ -270,7 +270,7 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
     LOG(context, payload) {
       console.log('(botcheck) action: LOG');
       // Log errors/messages/etc to remote logger
-      const uuid = botcheckUtils.generateUuid();
+      const uuid = BC.util.generateUuid();
 
       axios
         .post('https://log.declaredintent.com/entries', {

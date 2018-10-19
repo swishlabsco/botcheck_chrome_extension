@@ -22,7 +22,8 @@ const botcheckScanner = {
     try {
       jsonData = JSON.parse(document.querySelector('#init-data').value);
     } catch (ex) {
-      botcheckUtils.errorHandler(ex);
+      console.error(ex);
+      // botcheckUtils.errorHandler(ex);
     }
 
     botcheckCacheUsername = jsonData.screenName;
@@ -231,7 +232,7 @@ const botcheckScanner = {
 
       if (anchor && anchor.innerHTML) {
         const html = anchor.innerHTML;
-        const name = botcheckUtils.extractTextFromHTML(html);
+        const name = BC.util.extractTextFromHTML(html);
         return name;
       }
     }
