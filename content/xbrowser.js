@@ -36,12 +36,14 @@ function updateNestedKey(object, path, value) {
     BC_OPEN_NEW_TAB: 'BC_OPEN_NEW_TAB'
   };
 
+  // In Safari we need to use localStorage, so we include Lockr to do the JSON parsing etc.
+  // https://github.com/tsironis/lockr
+
   BC.xbrowser = {
     storage: {
       /**
        * STORAGE
        */
-      prefix: 'bce_', // only for safari since it uses localstorage
       get(key) {
         /**
          * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/get
@@ -49,15 +51,13 @@ function updateNestedKey(object, path, value) {
         console.assert(key === null || key.constructor === String);
 
         if (isSafari) {
-          // Special case if "null" - return all data
           let data;
 
           if (key === null) {
-            data = localStorage;
+            data = Object.assign({}, ...Lockr.getAll(true));
           }
           else {
-            data = localStorage.getItem(this.prefix + key);
-            data = JSON.parse(data);
+            data = Lockr.get(key);
           }
 
           return Promise.resolve(data);
@@ -74,8 +74,8 @@ function updateNestedKey(object, path, value) {
         if (isSafari) {
           // localStorage doesn't support setting multiple keys at once, so we do it manually.
           for (let [key, val] of Object.entries(keys)) {
-            key = this.prefix + key;
-            localStorage.setItem(key, JSON.stringify(val));
+            Lockr.set(key, val);
+            // localStorage.setItem(key, JSON.stringify(val));
           }
           return Promise.resolve();
         }
@@ -98,13 +98,13 @@ function updateNestedKey(object, path, value) {
           console.log('(botcheck) - queueSet', arguments);
 
           let firstKey = keyPath[0];
-          let existing = JSON.parse(localStorage.get(firstKey)) || {};
+          let existing = Lockr.get(firstKey) || {};
           let data = updateNestedKey(existing, keyPath, value);
 
           console.log('(botcheck) - existing', existing);
           console.log('(botcheck) - new data', data);
 
-          localStorage.setItem(firstKey, JSON.stringify(data));
+          Lockr.set(firstKey, data);
           return;
         }
 
@@ -126,7 +126,7 @@ function updateNestedKey(object, path, value) {
             let changes = {
               [event.key]: {
                 oldValue: event.oldValue,
-                newValue: event.newValue
+                newValue: Lockr.get(event.key)
               }
             };
             callback(changes)

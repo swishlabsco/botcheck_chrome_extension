@@ -105,6 +105,8 @@ else {
     console.log('(botcheck) Starting... Got state:', state);
 
     if (!state.apiKey) {
+      console.log('(botcheck) Starting but we dont have an apiKey, doing auth flow...', state.apiKey);
+
       // No API key found, ask user to login and do nothing until API key is received.
       // We use setTimeout because Twitter redirects to itself
       // for some reason, and we don't want to open two auth tabs.

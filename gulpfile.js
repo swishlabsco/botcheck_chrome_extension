@@ -18,6 +18,7 @@ let paths = {
       'vendor/vuex.js',
       'vendor/element.js',
       'vendor/axios.js',
+      'vendor/lockr.js',
       'content/util.js',
       'content/xbrowser.js',
       'content/components/botcheck-status.js',
