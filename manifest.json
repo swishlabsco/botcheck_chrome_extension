@@ -19,8 +19,8 @@
   ],
   "background": {
     "scripts": [
-      "vendor/browser-polyfill.js",
-      "background/storage.js"
+      "background/storage.js",
+      "background/reload-twitter-on-load.js"
     ]
   },
   "browser_action": {
