@@ -1,7 +1,10 @@
-Vue.component('dialog-results', {
+
+(function() {
+
+  Vue.component('dialog-results', {
   template: `
-    <el-dialog :visible.sync="dialogVisible" :class="{ 'botcheck-dialog': true }" :show-close="false">
-      <el-container>
+    <el-dialog :visible.sync="dialogVisible" class="botcheck-dialog">
+      <el-container v-if="result && 'prediction' in result">
         <el-main v-if="whitelisted">
           <el-row type="flex">
             <el-col :span="5">
@@ -21,40 +24,44 @@ Vue.component('dialog-results', {
             </el-col>
           </el-row>
         </el-main>
-        <el-main v-else>
+        <el-main>
           <el-row type="flex">
             <el-col :span="5">
               <img :src="icon" class="botcheck-modal-image">
             </el-col>
             <el-col :span="19">
-              <span class="header" v-if="prediction === true">Propaganda Bot-like Patterns Detected!</span>
-              <span class="status-text" v-if="prediction === true">
-                Our model has classified
-                <strong>@{{ result.username }}</strong> to exhibit patterns conducive to a political bot or highly moderated account. This account is likely a bot.
-              </span>
-              <span class="header" v-if="prediction === false">Propaganda Bot-like Patterns Not Detected!</span>
-              <span class="status-text" v-if="prediction === false">
-                Our model finds that
-                <strong>@{{ result.username }}</strong> does not exhibit patterns conducive to propaganda bots or moderated behavior conducive
-                to political propaganda accounts.
-              </span>
-              <div
-                v-if="prediction !== null"
-                :class="{ 'share-link': true, 'positive': prediction === false }"
-              >
+            
+              <div v-if="prediction === true">
+                <span class="header">Propaganda Bot-like Patterns Detected!</span>
+                <span class="status-text">
+                  Our model has classified
+                  <strong>@{{ result.username }}</strong> to exhibit patterns conducive to a political bot or highly moderated account. This account is likely a bot.
+                </span>              
+              </div>
+              <div v-else-if="prediction === false">
+                <span class="header">Propaganda Bot-like Patterns Not Detected!</span>
+                <span class="status-text">
+                  Our model finds that
+                  <strong>@{{ result.username }}</strong> does not exhibit patterns conducive to propaganda bots or moderated behavior conducive
+                  to political propaganda accounts.
+                </span>
+              </div>
+              <div v-else>
+                <span class="header">Unknown result</span>
+                <span class="status-text">
+                  We couldn't tell whether
+                  <strong>@{{ result.username }}</strong> is likely to be a bot.
+                  <br>
+                  This may happen if an account is set to private, or if something went wrong on our end.
+                </span>
+              </div>
+              
+              <div v-if="prediction !== null"
+                   :class="{ 'share-link': true, 'positive': prediction === false }">
                 <a href="#" @click="share">
                   <i class="Icon Icon--bird"></i><span>Share Result</span>
                 </a>
               </div>
-              <span class="header" v-if="prediction === null">
-                Unknown result
-              </span>
-              <span class="status-text" v-if="prediction === null">
-                We couldn't tell whether
-                <strong>@{{ result.username }}</strong> is likely to be a bot.
-                <br>
-                This may happen if an account is set to private, or if something went wrong on our end.
-              </span>
             </el-col>
           </el-row>
           <el-dropdown trigger="click" @command="actionCommand">
@@ -82,7 +89,7 @@ Vue.component('dialog-results', {
                 Report to Twitter
               </el-dropdown-item>
               <el-dropdown-item
-                v-bind:divided="prediction !== null"
+                :divided="prediction !== null"
                 command="learn-more"
               >
                 Learn More
@@ -118,13 +125,13 @@ Vue.component('dialog-results', {
     },
     icon() {
       if (this.whitelisted) {
-        return BC.xbrowser.extension.getURL('icons/Happy@128-gray.png');
+        return BC.xbrowser.extension.getURL('icons/happy@128-gray.png');
       }
       if (this.prediction === true) {
-        return BC.xbrowser.extension.getURL('icons/Mad@128.png');
+        return BC.xbrowser.extension.getURL('icons/mad@128.png');
       }
       if (this.prediction === false) {
-        return BC.xbrowser.extension.getURL('icons/Happy@128.png');
+        return BC.xbrowser.extension.getURL('icons/happy@128.png');
       }
       return BC.xbrowser.extension.getURL('icons/scanning@128.png');
     },
@@ -310,3 +317,5 @@ function clickRelevantReportButton(e, username, lastInteractedTweetEl) {
   }
   return false;
 }
+
+})();

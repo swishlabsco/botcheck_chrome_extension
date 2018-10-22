@@ -1,168 +1,208 @@
+@twitterTextGrey: #657786;
+@lightGrey: #BFBFBF;
+@botcheckRed: #FB0015;
+@botcheckLightRed: #FFD6D7;
+@botcheckGreen: #00D68C;
+@black: #333333;
+@lightBlack: #666666;
+
 .botcheck-feed-container {
-  display: inline-block;
+	display: inline-block;
 }
+
+// .el-dropdown-menu is appended to body,
+// so it sits outside .botcheck
 .el-dropdown-menu {
-  z-index: 5001 !important;
+	z-index: 5001 !important;
 }
+
 .el-dropdown-item {
-  font-size: 13px;
+	font-size: 13px;
 }
 
 .botcheck {
-  color: #657786;
-  font-size: 14px;
-  line-height: 1;
-  margin-bottom: 8px;
-  position: relative;
-  cursor: pointer;
-  top: 2px;
-}
-body div .botcheck .icon {
-  background-image: none !important;
-  width: 18px;
-  height: 18px;
-  position: absolute;
-  bottom: 0;
-  display: inline-block;
-}
-.botcheck .icon img {
-  width: 18px;
-  display: inline-block;
-}
-.botcheck .status-text {
-  padding-left: 22px;
-  line-height: 1;
-  color: #657786;
-  vertical-align: middle;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-  font-size: 14px;
-  display: inline-block;
-}
-.botcheck .status-text.bot {
-  color: #FB0015;
-}
-.botcheck.button {
-  border-radius: 25px;
-  background: #FFD6D7;
-  user-select: none;
-  cursor: pointer;
-  margin-top: 0;
-  margin-left: 0;
-  height: 24px;
-}
-.botcheck.button .icon {
-  position: relative;
-  vertical-align: middle;
-  padding-left: 10px;
-  padding-top: 3px;
-  width: 18px;
-  display: inline-block;
-}
-.botcheck.button .status-text {
-  padding-left: 4px;
-  padding-right: 10px;
-  vertical-align: middle;
-  margin-top: 3px;
-  font-size: 12px;
-}
-.botcheck.inline {
-  display: inline-block;
-}
-.botcheck.pull-up {
-  margin-top: -4px;
-  margin-left: 4px;
-}
-.botcheck.retweet {
-  margin-top: 3px;
-  margin-left: 3px;
+	color: @twitterTextGrey;
+	font-size: 14px;
+	line-height: 1;
+	margin-bottom: 8px;
+	position: relative;
+	cursor: pointer;
+	top: 2px;
+
+	.icon {
+		background-image: none !important;
+		width: 18px;
+		height: 18px;
+		position: absolute;
+		bottom: 0;
+		display: inline-block;
+
+		img {
+			width: 18px;
+			display: inline-block;
+		}
+	}
+
+	.status-text {
+		padding-left: 22px;
+		line-height: 1;
+		color: @twitterTextGrey;
+		vertical-align: middle;
+		box-decoration-break: clone;
+		-webkit-box-decoration-break: clone;
+		font-size: 14px;
+		display: inline-block;
+
+		&.bot {
+			color: @botcheckRed;
+		}
+	}
+
+	&.button {
+		border-radius: 25px;
+		background: @botcheckLightRed;
+		user-select: none;
+		cursor: pointer;
+		margin-top: 0;
+		margin-left: 0;
+		height: 24px;
+
+		.icon {
+			position: relative;
+			vertical-align: middle;
+			padding-left: 10px;
+			padding-top: 3px;
+			width: 18px;
+			display: inline-block;
+		}
+
+		.status-text {
+			padding-left: 4px;
+			padding-right: 10px;
+			vertical-align: middle;
+			margin-top: 3px;
+			font-size: 12px;
+		}
+	}
+
+	&.inline {
+		display: inline-block;
+	}
+
+	&.pull-up {
+		margin-top: -4px;
+		margin-left: 4px;
+	}
+
+	&.retweet {
+		margin-top: 3px;
+		margin-left: 3px;
+	}
 }
 
-
-/*
-  DIALOGS
- */
 .botcheck-dialog {
-  z-index: 5000 !important;
+	z-index: 5000 !important;
 
-  .botcheck-dialog-buttons-wrapper {
-    margin-top: 10px;
-  }
+	.el-dialog {
+		width: 640px;
+
+		&__close {
+			color:rgb(96, 98, 102);
+		}
+	}
+
+	.el-container {
+		padding: 0 20px;
+	}
+
+	.el-main {
+		padding-top: 10px;
+		padding-bottom: 0;
+	}
+
+	.el-dropdown {
+		position: absolute;
+		top: 1.25em;
+		right: 3.5em;
+	}
+
+	.el-icon-arrow-down {
+		font-weight: bold;
+		cursor: pointer;
+	}
+
+	img {
+		width: 80px;
+		display: inline-block;
+	}
+
+	.header {
+		font-size: 17px;
+		font-weight: bold;
+		display: block;
+		margin-bottom: 10px;
+		letter-spacing: 0.4px;
+		color: @black;
+	}
+
+	strong {
+		color: @black;
+	}
+
+	span:not(.header) {
+		font-size: 16px;
+		line-height: 1.5;
+		letter-spacing: 0.4px;
+	}
+
+	button.remove-from-whitelist {
+		margin-top: 24px;
+	}
+
+	.share-link {
+		text-align: right;
+		margin-top: 16px;
+
+		i {
+			font-size: 18px;
+			color: @botcheckRed;
+			vertical-align: middle;
+		}
+
+		span {
+			font-size: 13px;
+			display: inline-block;
+			margin-left: 4px;
+			color: @botcheckRed;
+			vertical-align: middle;
+			margin-top: 2px;
+		}
+
+		&.positive {
+			i {
+				color: @botcheckGreen;
+			}
+
+			span {
+				color: @botcheckGreen;
+			}
+		}
+	}
+
+	.botcheck-dialog-buttons-wrapper {
+		margin-top: 10px;
+	}
 }
 
-.botcheck-dialog .el-dialog {
-  width: 640px;
-}
-.botcheck-dialog .el-container {
-  padding: 0 20px;
-}
-.botcheck-dialog .el-main {
-  padding-top: 10px;
-  padding-bottom: 0;
-}
-.botcheck-dialog .el-dropdown {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-}
-.botcheck-dialog .el-icon-arrow-down {
-  font-weight: bold;
-  cursor: pointer;
-}
-.botcheck-dialog img {
-  width: 80px;
-  display: inline-block;
-}
-.botcheck-dialog .header {
-  font-size: 17px;
-  font-weight: bold;
-  display: block;
-  margin-bottom: 10px;
-  letter-spacing: 0.4px;
-  color: #333333;
-}
-.botcheck-dialog strong {
-  color: #333333;
-}
-.botcheck-dialog span:not(.header) {
-  font-size: 16px;
-  line-height: 1.5;
-  letter-spacing: 0.4px;
-}
-.botcheck-dialog button.remove-from-whitelist {
-  margin-top: 24px;
-}
-.botcheck-dialog .share-link {
-  text-align: right;
-  margin-top: 16px;
-}
-.botcheck-dialog .share-link i {
-  font-size: 18px;
-  color: #FB0015;
-  vertical-align: middle;
-}
-.botcheck-dialog .share-link span {
-  font-size: 13px;
-  display: inline-block;
-  margin-left: 4px;
-  color: #FB0015;
-  vertical-align: middle;
-  margin-top: 2px;
-}
-.botcheck-dialog .share-link.positive i {
-  color: #00D68C;
-}
-.botcheck-dialog .share-link.positive span {
-  color: #00D68C;
-}
 .remove-from-whitelist {
-  text-align: right;
-  margin-top: 16px;
-}
+	text-align: right;
+	margin-top: 16px;
+	}
+
 .remove-from-whitelist span {
-  font-size: 13px;
-  margin-left: 4px;
-  vertical-align: middle;
-  margin-top: 2px;
-  cursor: pointer;
+	font-size: 13px;
+	margin-left: 4px;
+	vertical-align: middle;
+	margin-top: 2px;
+	cursor: pointer;
 }

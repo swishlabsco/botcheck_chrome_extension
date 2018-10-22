@@ -30,8 +30,9 @@ function updateNestedKey(object, path, value) {
 
 (function() {
 
+  // Where gulp outputs js/css folders relative to the xcode project.
+  const extensionBuildOutputFolder = 'build/';
   const isSafari = 'safari' in window;
-  const extensionBuildOutputFolder = 'build/'; // Where gulp outputs js/css folders relative to the xcode project.
   const safariExtensionHandlerMessages = {
     BC_OPEN_NEW_TAB: 'BC_OPEN_NEW_TAB'
   };
@@ -54,6 +55,8 @@ function updateNestedKey(object, path, value) {
           let data;
 
           if (key === null) {
+            // Special case if "null" - return all data
+            // Turn array of dicts into 1 big dict
             data = Object.assign({}, ...Lockr.getAll(true));
           }
           else {
@@ -75,7 +78,6 @@ function updateNestedKey(object, path, value) {
           // localStorage doesn't support setting multiple keys at once, so we do it manually.
           for (let [key, val] of Object.entries(keys)) {
             Lockr.set(key, val);
-            // localStorage.setItem(key, JSON.stringify(val));
           }
           return Promise.resolve();
         }
@@ -147,6 +149,11 @@ function updateNestedKey(object, path, value) {
          * https://developer.apple.com/documentation/safariservices/safari_app_extensions/injecting_a_script_into_a_webpage
          */
         if (isSafari) {
+          // WTF: sometimes the safari.extension object dissappears randomly.
+          // This seeems to happen when an swallowed/not thrown error happens in our content scripts, but I'm not sure.
+          if (!safari.extension || !safari.extension.baseURI) {
+            console.error('safari.extension.baseURI not set', safari.extension);
+          }
           return safari.extension.baseURI + extensionBuildOutputFolder + path;
         }
         return browser.runtime.getURL(path);
