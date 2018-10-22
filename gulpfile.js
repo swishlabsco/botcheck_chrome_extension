@@ -35,7 +35,7 @@ let paths = {
     src: [
       'styles/element.css',
       'styles/style.css',
-      'styles/botcheck.css'
+      'styles/botcheck.less'
     ],
     dest: 'css/'
   },
