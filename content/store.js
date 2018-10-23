@@ -50,7 +50,8 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
     LOAD_DEEPSCAN_RESULTS(state, results = {}) {
       console.log('(botcheck) mutation: LOAD_DEEPSCAN_RESULTS');
       // Merge deep scan results in, ignoring those without a prediction
-      results.forEach((result, key) => {
+      Object.keys(results).forEach((key) => {
+        const result = results[key];
         if (result.prediction === true || result.prediction === false) {
           Vue.set(state.results, key, result);
         }
