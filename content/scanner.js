@@ -141,6 +141,11 @@ const botcheckScanner = {
       console.error('(botcheck) Could not extract realName from tweet.');
     }
 
+    // Skip putting status on own tweets
+    if (username === botcheckScanner.getUsername()) {
+      return;
+    }
+
     const el = document.createElement('div');
     el.classList = 'botcheck-feed-container';
     el.innerHTML = `
