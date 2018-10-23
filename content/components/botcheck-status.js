@@ -43,9 +43,8 @@ Vue.component('botcheck-status', {
       let className = 'botcheck';
       if (
         !this.whitelisted
-        && !this.isFeed
-        && !this.isProfile
         && this.prediction === true
+        && (this.isRetweet || this.isReply)
       ) {
         className += ' button';
       }
@@ -65,10 +64,7 @@ Vue.component('botcheck-status', {
       return className;
     },
     messageClass() {
-      if (this.prediction === false || this.whitelisted) {
-        return 'status-text';
-      }
-      if (this.prediction === true) {
+      if (this.prediction === true && !this.whitelisted) {
         return 'status-text bot';
       }
       return 'status-text';
