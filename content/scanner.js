@@ -170,17 +170,22 @@ const botcheckScanner = {
     `;
 
     let appendTo;
+    let insertAdjacent;
     if (isRetweet || isReply) {
       appendTo = tweetEl.querySelector('.stream-item-header');
     } else {
-      appendTo = tweetEl.querySelector('.ProfileTweet-actionList');
+      insertAdjacent = tweetEl.querySelector('.ProfileTweet-actionList .ProfileTweet-action.ProfileTweet-action--dm');
     }
-    if (!appendTo) {
+
+    if (appendTo) {
+      appendTo.appendChild(el);
+    } else if (insertAdjacent) {
+      insertAdjacent.insertAdjacentElement('afterend', el);
+    } else {
       console.error('(botcheck) Tried appending status to tweet but couldn\'t find the right container to insert it. Tweet element:');
       console.error(tweetEl);
       return;
     }
-    appendTo.appendChild(el);
 
     new Vue({ // eslint-disable-line no-new
       el,
