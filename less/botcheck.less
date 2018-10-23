@@ -6,6 +6,12 @@
 @black: #333333;
 @lightBlack: #666666;
 
+// Fix for when liner extension pushes botcheck status
+// out of the line, on feed tweets
+.ProfileTweet-actionList.js-actions {
+  white-space: nowrap;
+}
+
 // .el-dropdown-menu is appended to body,
 // so it sits outside .botcheck
 .el-dropdown-menu {
@@ -36,10 +42,6 @@
 
   &.profile, &.small-profile {
     margin: 8px 0px;
-  }
-
-  &.feed {
-    top: 1px;
   }
 
   .icon {
