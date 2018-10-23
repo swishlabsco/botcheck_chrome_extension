@@ -49,7 +49,7 @@ Vue.component('botcheck-status', {
       ) {
         className += ' button';
       }
-      if (!this.isFeed && !this.isProfile && this.prediction === false) {
+      if (this.isRetweet && this.prediction === false) {
         className += ' retweet';
       }
       if (

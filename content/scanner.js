@@ -40,12 +40,10 @@ const botcheckScanner = {
 
     // Process profile element if present on the page
     botcheckScanner.getSmallUserCards().forEach((card) => {
-      console.log('processing card:');
-      console.log(card);
       botcheckScanner.processProfileEl(card, { isSmallProfile: true, isProfile: false });
     });
-    document.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach((profileCard) => {
-      botcheckScanner.processProfileEl(profileCard, { isProfile: true, isSmallProfile: false });
+    document.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach((card) => {
+      botcheckScanner.processProfileEl(card, { isSmallProfile: false, isProfile: true });
     });
 
     // Set up an observer to listen for any future tweets/profiles
@@ -57,6 +55,9 @@ const botcheckScanner = {
       });
       botcheckScanner.getSmallUserCards().forEach((card) => {
         botcheckScanner.processProfileEl(card, { isSmallProfile: true, isProfile: false });
+      });
+      document.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach((card) => {
+        botcheckScanner.processProfileEl(card, { isSmallProfile: false, isProfile: true });
       });
 
       // Iterate over mutations
@@ -99,7 +100,7 @@ const botcheckScanner = {
     });
   },
   getFeedTweets: () => document.querySelectorAll('.stream .tweet.js-stream-tweet') || [],
-  getSmallUserCards: () => document.querySelectorAll('.UserSmallListItem') || [],
+  getSmallUserCards: () => document.querySelectorAll('.UserSmallListItem, .account.js-actionable-user.js-profile-popup-actionable') || [],
 
   injectDialogs: () => {
     const el = document.createElement('div');
@@ -240,12 +241,12 @@ const botcheckScanner = {
         console.error(el);
       }
     } else if (isSmallProfile) {
-      const header = profileEl.querySelector('a.account-group');
+      const header = profileEl.querySelector('.stream-item-header, a.account-group');
       if (header) {
         header.insertAdjacentElement('afterend', el);
       } else {
         console.error('(botcheck) Tried appending status to small profile card but couldn\'t find header. Element:');
-        console.error(el);
+        console.error(profileEl);
       }
     }
 
