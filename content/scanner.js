@@ -31,21 +31,33 @@ const botcheckScanner = {
 
   injectButtons: () => {
     // Process tweets already on the page
-    botcheckScanner.processFeedTweets();
+    botcheckScanner.getFeedTweets().forEach((tweet) => {
+      botcheckScanner.processTweetEl(tweet, { isFeed: true });
+    });
     document.querySelectorAll('.tweet.permalink-tweet').forEach((tweet) => {
       botcheckScanner.processTweetEl(tweet, { isPermalink: true });
     });
 
     // Process profile element if present on the page
+    botcheckScanner.getSmallUserCards().forEach((card) => {
+      console.log('processing card:');
+      console.log(card);
+      botcheckScanner.processProfileEl(card, { isSmallProfile: true, isProfile: false });
+    });
     document.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach((profileCard) => {
-      botcheckScanner.processProfileEl(profileCard);
+      botcheckScanner.processProfileEl(profileCard, { isProfile: true, isSmallProfile: false });
     });
 
     // Set up an observer to listen for any future tweets/profiles
     // when the user scrolls down or opens a tweet
     const observer = new MutationObserver((mutations) => {
-      // Process feed when something changes
-      botcheckScanner.processFeedTweets();
+      // Process feed and small profile cards when something changes
+      botcheckScanner.getFeedTweets().forEach((tweet) => {
+        botcheckScanner.processTweetEl(tweet, { isFeed: true });
+      });
+      botcheckScanner.getSmallUserCards().forEach((card) => {
+        botcheckScanner.processProfileEl(card, { isSmallProfile: true, isProfile: false });
+      });
 
       // Iterate over mutations
       mutations.forEach((mutation) => {
@@ -86,6 +98,8 @@ const botcheckScanner = {
       subtree: true
     });
   },
+  getFeedTweets: () => document.querySelectorAll('.stream .tweet.js-stream-tweet') || [],
+  getSmallUserCards: () => document.querySelectorAll('.UserSmallListItem') || [],
 
   injectDialogs: () => {
     const el = document.createElement('div');
@@ -102,7 +116,9 @@ const botcheckScanner = {
     isFeed = false,
     isRetweet = false,
     isReply = false,
-    isPermalink = false
+    isPermalink = false,
+    isSmallProfile = false,
+    isProfile = false
   } = {}) => {
     if (!tweetEl.dataset || !tweetEl.dataset.screenName) {
       console.log(`
@@ -163,7 +179,8 @@ const botcheckScanner = {
           isRetweet,
           isReply,
           isPermalink,
-          isProfile: false
+          isSmallProfile,
+          isProfile
         };
       },
       mounted() {
@@ -180,7 +197,7 @@ const botcheckScanner = {
   },
 
   // Process a Profile and add the Botcheck button to it
-  processProfileEl: (profileEl) => {
+  processProfileEl: (profileEl, { isProfile = false, isSmallProfile = false } = {}) => {
     if (!profileEl || profileEl.dataset.botcheckInjected) {
       return;
     }
@@ -203,18 +220,28 @@ const botcheckScanner = {
 
     // Insert with other metadata
     const el = document.createElement('div');
-    el.innerHTML = '<botcheck-status :real-name="realName" :username="username" :is-profile="isProfile"></botcheck-status>';
+    el.innerHTML = '<botcheck-status :real-name="realName" :username="username" :is-profile="isProfile" :is-small-profile="isSmallProfile"></botcheck-status>';
 
     // Get bio and insert after if it exists
-    const bigBio = profileEl.querySelector('.ProfileHeaderCard-bio'); // Profile page bio
-    const smallBio = profileEl.querySelector('.ProfileCard-bio'); // Followers page bio
-    if (bigBio) {
-      bigBio.insertAdjacentElement('afterend', el);
-    } else if (smallBio) {
-      smallBio.insertAdjacentElement('beforebegin', el);
-    } else {
-      console.error('(botcheck) Tried appending status to profile card but couldn\'t find big. Element:');
-      console.error(el);
+    if (isProfile) {
+      const bigBio = profileEl.querySelector('.ProfileHeaderCard-bio'); // Profile page bio
+      const smallBio = profileEl.querySelector('.ProfileCard-bio'); // Followers page bio
+      if (bigBio) {
+        bigBio.insertAdjacentElement('afterend', el);
+      } else if (smallBio) {
+        smallBio.insertAdjacentElement('beforebegin', el);
+      } else {
+        console.error('(botcheck) Tried appending status to profile card but couldn\'t find bio. Element:');
+        console.error(el);
+      }
+    } else if (isSmallProfile) {
+      const header = profileEl.querySelector('a.account-group');
+      if (header) {
+        header.insertAdjacentElement('afterend', el);
+      } else {
+        console.error('(botcheck) Tried appending status to small profile card but couldn\'t find header. Element:');
+        console.error(el);
+      }
     }
 
     new Vue({ // eslint-disable-line no-new
@@ -224,7 +251,8 @@ const botcheckScanner = {
         return {
           realName,
           username,
-          isProfile: true
+          isProfile,
+          isSmallProfile
         };
       },
       mounted() {
@@ -288,6 +316,12 @@ const botcheckScanner = {
         const name = botcheckScanner.extractTextFromHTML(html);
         return name;
       }
+    }
+
+    // For small profile cards
+    const fullName = element.querySelector('.account-group-inner .fullname');
+    if (fullName) {
+      return botcheckScanner.extractTextFromHTML(fullName);
     }
 
     // For other elements
@@ -359,17 +393,5 @@ const botcheckScanner = {
   extractTextFromHTML: (string) => {
     const doc = new DOMParser().parseFromString(string, 'text/html');
     return doc.body.textContent || '';
-  },
-
-  // Called on page load or when something changes.
-  // Processes tweets in the feed, either on the homepage,
-  // on a profile, or on the search.
-  processFeedTweets: () => {
-    const feed = document.querySelector('.stream');
-    if (feed) {
-      feed.querySelectorAll('.tweet.js-stream-tweet').forEach((tweet) => {
-        botcheckScanner.processTweetEl(tweet, { isFeed: true });
-      });
-    }
   }
 };

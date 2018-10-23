@@ -5,7 +5,7 @@ Vue.component('botcheck-status', {
       <span :class="messageClass">{{message}}</span>
     </div>
   `,
-  props: ['realName', 'username', 'isFeed', 'isRetweet', 'isReply', 'isPermalink', 'isProfile'],
+  props: ['realName', 'username', 'isFeed', 'isRetweet', 'isReply', 'isPermalink', 'isProfile', 'isSmallProfile'],
   computed: {
     result() {
       const results = this.$store.state.results;
