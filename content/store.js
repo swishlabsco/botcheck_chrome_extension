@@ -49,9 +49,12 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
     // Loads deepscan results coming from browser storage
     LOAD_DEEPSCAN_RESULTS(state, results) {
       console.log('(botcheck) mutation: LOAD_DEEPSCAN_RESULTS');
-      // We use Object.assign to merge the deep scan results in
-      // We don't want to erase our own, including the light scan results
-      state.results = Object.assign({}, state.results, results);
+      // Merge deep scan results in, ignoring those without a prediction
+      results.forEach((result, key) => {
+        if (result.prediction === true || result.prediction === false) {
+          Vue.set(state.results, key, result);
+        }
+      });
     },
     // This mutation should only be called by the LOAD_WHITELIST action
     DONOTCALLDIRECTLY_LOAD_WHITELIST(state, whitelist) {
