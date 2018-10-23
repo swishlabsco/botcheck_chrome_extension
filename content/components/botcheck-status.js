@@ -47,6 +47,12 @@ Vue.component('botcheck-status', {
       if (this.isFeed) {
         className += ' feed';
       }
+      if (this.isProfile) {
+        className += ' profile';
+      }
+      if (this.isSmallProfile) {
+        className += ' small-profile';
+      }
       if (
         !this.whitelisted
         && this.prediction === true

@@ -6,10 +6,6 @@
 @black: #333333;
 @lightBlack: #666666;
 
-.botcheck-feed-container {
-	display: inline-block;
-}
-
 // .el-dropdown-menu is appended to body,
 // so it sits outside .botcheck
 .el-dropdown-menu {
@@ -20,29 +16,37 @@
 	font-size: 13px;
 }
 
+.botcheck-feed-container {
+	display: inline-block;
+	// For when other extensions are present
+	padding-right: 20px;
+}
+
 .botcheck {
+	position: relative;
 	color: @twitterTextGrey;
 	font-size: 14px;
 	line-height: 1;
-	margin: 8px 0px;
-	position: relative;
 	cursor: pointer;
 	white-space: nowrap;
 
-	.reply {
+	&.reply {
 		margin: 3px 0 8px 8px;
 	}
 
-	.feed {
-		// For when other extensions are present
-		padding-right: 20px;
+	&.profile, &.small-profile {
+		margin: 8px 0px;
+	}
+
+	&.feed {
+    top: 1px;
 	}
 
 	.icon {
 		width: 18px;
 		height: 18px;
 		position: absolute;
-		bottom: 0;
+		bottom: -1px;
 		background-image: none;
 		display: inline-block;
 
