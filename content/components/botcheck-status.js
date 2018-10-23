@@ -44,6 +44,9 @@ Vue.component('botcheck-status', {
       if (this.isReply) {
         className += ' reply';
       }
+      if (this.isFeed) {
+        className += ' feed';
+      }
       if (
         !this.whitelisted
         && this.prediction === true

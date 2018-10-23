@@ -19,6 +19,9 @@
 .botcheck .reply {
   margin: 3px 0 8px 8px;
 }
+.botcheck .feed {
+  margin-right: 8px;
+}
 .botcheck .icon {
   width: 18px;
   height: 18px;
