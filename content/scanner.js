@@ -57,10 +57,7 @@ const botcheckScanner = {
 
           // Try to extract a tweet from the new node
           const result = botcheckScanner.extractTweetFromHTMLNode(addedNode);
-          console.log('Extracted:');
-          console.log(result);
-          console.log('from node:');
-          console.log(addedNode);
+
           if (result && result.tweet) {
             botcheckScanner.processTweetEl(result.tweet, {
               isFeed: result.isFeed,
