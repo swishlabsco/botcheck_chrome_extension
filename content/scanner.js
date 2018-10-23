@@ -31,15 +31,11 @@ const botcheckScanner = {
 
   injectButtons: () => {
     // Process tweets already on the page
-    const feed = document.querySelector('.stream');
-    if (feed) {
-      feed.querySelectorAll('.tweet.js-stream-tweet').forEach((tweet) => {
-        botcheckScanner.processTweetEl(tweet, { isFeed: true });
-      });
-    }
+    botcheckScanner.processFeedTweets();
     document.querySelectorAll('.tweet.permalink-tweet').forEach((tweet) => {
       botcheckScanner.processTweetEl(tweet, { isPermalink: true });
     });
+
     // Process profile element if present on the page
     document.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach((profileCard) => {
       botcheckScanner.processProfileEl(profileCard);
@@ -48,6 +44,10 @@ const botcheckScanner = {
     // Set up an observer to listen for any future tweets/profiles
     // when the user scrolls down or opens a tweet
     const observer = new MutationObserver((mutations) => {
+      // Process feed when something changes
+      botcheckScanner.processFeedTweets();
+
+      // Iterate over mutations
       mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((addedNode) => {
           if (!addedNode.querySelectorAll) {
@@ -57,7 +57,11 @@ const botcheckScanner = {
 
           // Try to extract a tweet from the new node
           const result = botcheckScanner.extractTweetFromHTMLNode(addedNode);
-          if (result.tweet) {
+          console.log('Extracted:');
+          console.log(result);
+          console.log('from node:');
+          console.log(addedNode);
+          if (result && result.tweet) {
             botcheckScanner.processTweetEl(result.tweet, {
               isFeed: result.isFeed,
               isRetweet: result.isRetweet,
@@ -103,10 +107,13 @@ const botcheckScanner = {
     isReply = false,
     isPermalink = false
   } = {}) => {
-    if (!tweetEl.dataset || !tweetEl.dataset.screenName || tweetEl.dataset.botcheckInjected) {
+    if (!tweetEl.dataset || !tweetEl.dataset.screenName) {
       console.log(`
-        (botcheck) Tried to process tweet element but it either had no dataset, no screenName, or already had been injected.
+      (botcheck) Tried to process tweet element but it either had no dataset, no screenName, or already had been injected.
       `);
+      return;
+    }
+    if (!tweetEl.dataset.botcheckInjected) {
       return;
     }
 
@@ -355,5 +362,17 @@ const botcheckScanner = {
   extractTextFromHTML: (string) => {
     const doc = new DOMParser().parseFromString(string, 'text/html');
     return doc.body.textContent || '';
+  },
+
+  // Called on page load or when something changes.
+  // Processes tweets in the feed, either on the homepage,
+  // on a profile, or on the search.
+  processFeedTweets: () => {
+    const feed = document.querySelector('.stream');
+    if (feed) {
+      feed.querySelectorAll('.tweet.js-stream-tweet').forEach((tweet) => {
+        botcheckScanner.processTweetEl(tweet, { isFeed: true });
+      });
+    }
   }
 };
