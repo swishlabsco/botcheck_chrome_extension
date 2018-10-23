@@ -61,7 +61,11 @@ const botcheckScanner = {
         botcheckScanner.processProfileEl(card, { isSmallProfile: true, isProfile: false });
       });
       document.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach((card) => {
-        botcheckScanner.processProfileEl(card, { isSmallProfile: false, isProfile: true });
+        let isProfile = false;
+        if (card.parentElement.classList.contains('ProfileSidebar')) {
+          isProfile = true;
+        }
+        botcheckScanner.processProfileEl(card, { isProfile, isSmallProfile: !isProfile });
       });
 
       // Iterate over mutations
