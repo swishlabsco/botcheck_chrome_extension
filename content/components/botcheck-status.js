@@ -41,6 +41,9 @@ Vue.component('botcheck-status', {
     },
     containerClass() {
       let className = 'botcheck';
+      if (this.isReply) {
+        className += ' reply';
+      }
       if (
         !this.whitelisted
         && this.prediction === true
