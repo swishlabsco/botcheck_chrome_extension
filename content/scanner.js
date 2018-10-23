@@ -113,7 +113,7 @@ const botcheckScanner = {
       `);
       return;
     }
-    if (!tweetEl.dataset.botcheckInjected) {
+    if (tweetEl.dataset.botcheckInjected) {
       return;
     }
 
