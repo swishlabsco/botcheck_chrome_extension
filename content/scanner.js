@@ -135,11 +135,18 @@ const botcheckScanner = {
       ></botcheck-status>
     `;
 
-    if (isRetweet) {
-      tweetEl.querySelector('.stream-item-header').appendChild(el);
+    let appendTo;
+    if (isRetweet || isReply) {
+      appendTo = tweetEl.querySelector('.stream-item-header');
     } else {
-      tweetEl.querySelector('.ProfileTweet-actionList').appendChild(el);
+      appendTo = tweetEl.querySelector('.ProfileTweet-actionList');
     }
+    if (!appendTo) {
+      console.error('(botcheck) Tried appending status to tweet but couldn\'t find the right container to insert it. Tweet element:');
+      console.error(tweetEl);
+      return;
+    }
+    appendTo.appendChild(el);
 
     new Vue({ // eslint-disable-line no-new
       el,
