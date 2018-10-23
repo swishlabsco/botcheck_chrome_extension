@@ -159,8 +159,11 @@ const botcheckScanner = {
         };
       },
       mounted() {
+        // Deep scan if retweet, reply, or permalink.
+        // (No need for profile, that is handled in processProfileEl)
+        const deepScan = (isRetweet || isReply || isPermalink);
         store.dispatch('SCAN', {
-          deepScan: false,
+          deepScan,
           realName: this.realName,
           username: this.username
         });
