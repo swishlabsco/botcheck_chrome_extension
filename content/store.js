@@ -47,7 +47,7 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       state.apiKey = apiKey;
     },
     // Loads deepscan results coming from browser storage
-    LOAD_DEEPSCAN_RESULTS(state, results) {
+    LOAD_DEEPSCAN_RESULTS(state, results = {}) {
       console.log('(botcheck) mutation: LOAD_DEEPSCAN_RESULTS');
       // Merge deep scan results in, ignoring those without a prediction
       results.forEach((result, key) => {
