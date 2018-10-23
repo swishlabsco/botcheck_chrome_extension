@@ -48,7 +48,7 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
     },
     // Loads deepscan results coming from browser storage
     LOAD_DEEPSCAN_RESULTS(state, results) {
-      console.log('(botcheck) mutation: LOAD_RESULTS');
+      console.log('(botcheck) mutation: LOAD_DEEPSCAN_RESULTS');
       // We use Object.assign to merge the deep scan results in
       // We don't want to erase our own, including the light scan results
       state.results = Object.assign({}, state.results, results);

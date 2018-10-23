@@ -23,9 +23,5 @@ const botcheckUtils = { // eslint-disable-line no-unused-vars
         .substring(1);
     }
     return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
-  },
-  extractTextFromHTML: (string) => {
-    const doc = new DOMParser().parseFromString(string, 'text/html');
-    return doc.body.textContent || '';
   }
 };
