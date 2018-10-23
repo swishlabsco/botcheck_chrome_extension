@@ -41,7 +41,9 @@ const botcheckScanner = {
       botcheckScanner.processTweetEl(tweet, { isPermalink: true });
     });
     // Process profile element if present on the page
-    document.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach(botcheckScanner.processProfileEl);
+    document.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach((profileCard) => {
+      botcheckScanner.processProfileEl(profileCard);
+    });
 
     // Set up an observer to listen for any future tweets/profiles
     // when the user scrolls down or opens a tweet
@@ -64,13 +66,15 @@ const botcheckScanner = {
             });
           }
 
-          // Look for a profile card in the new node
+          // Profile pages
           addedNode.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach((profileCard) => {
             botcheckScanner.processProfileEl(profileCard);
           });
+          // Hover profiles
           if (
             addedNode.classList.contains('ProfileHeaderCard')
-            || addedNode.classList.contains('ProfileCard')) {
+            || addedNode.classList.contains('ProfileCard')
+          ) {
             botcheckScanner.processProfileEl(addedNode);
           }
         });
@@ -99,13 +103,6 @@ const botcheckScanner = {
     isReply = false,
     isPermalink = false
   } = {}) => {
-    console.log('--------------------');
-    console.log('Processing tweet: ');
-    console.log({
-      isFeed, isRetweet, isReply, isPermalink
-    });
-    console.log(tweetEl);
-
     if (!tweetEl.dataset || !tweetEl.dataset.screenName || tweetEl.dataset.botcheckInjected) {
       console.log(`
         (botcheck) Tried to process tweet element but it either had no dataset, no screenName, or already had been injected.
@@ -181,7 +178,6 @@ const botcheckScanner = {
 
     const username = botcheckScanner.getScreenNameFromElement(profileEl);
     const realName = botcheckScanner.getRealNameFromElement(profileEl);
-    const isProfile = true;
 
     if (!username) {
       console.error('(botcheck) Tried processing profile element with no username.');
@@ -199,9 +195,15 @@ const botcheckScanner = {
     el.innerHTML = '<botcheck-status :real-name="realName" :username="username" :is-profile="isProfile"></botcheck-status>';
 
     // Get bio and insert after if it exists
-    const bio = profileEl.querySelector('.ProfileHeaderCard-bio');
-    if (bio) {
-      bio.insertAdjacentElement('afterend', el);
+    const bigBio = profileEl.querySelector('.ProfileHeaderCard-bio'); // Profile page bio
+    const smallBio = profileEl.querySelector('.ProfileCard-bio'); // Followers page bio
+    if (bigBio) {
+      bigBio.insertAdjacentElement('afterend', el);
+    } else if (smallBio) {
+      smallBio.insertAdjacentElement('beforebegin', el);
+    } else {
+      console.error('(botcheck) Tried appending status to profile card but couldn\'t find big. Element:');
+      console.error(el);
     }
 
     new Vue({ // eslint-disable-line no-new
@@ -211,7 +213,7 @@ const botcheckScanner = {
         return {
           realName,
           username,
-          isProfile
+          isProfile: true
         };
       },
       mounted() {
