@@ -40,10 +40,14 @@ const botcheckScanner = {
 
     // Process profile element if present on the page
     botcheckScanner.getSmallUserCards().forEach((card) => {
-      botcheckScanner.processProfileEl(card, { isSmallProfile: true, isProfile: false });
+      botcheckScanner.processProfileEl(card, { isProfile: false, isSmallProfile: true });
     });
     document.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach((card) => {
-      botcheckScanner.processProfileEl(card, { isSmallProfile: false, isProfile: true });
+      let isProfile = false;
+      if (card.parentElement.classList.contains('ProfileSidebar')) {
+        isProfile = true;
+      }
+      botcheckScanner.processProfileEl(card, { isProfile, isSmallProfile: !isProfile });
     });
 
     // Set up an observer to listen for any future tweets/profiles
@@ -228,26 +232,19 @@ const botcheckScanner = {
     const el = document.createElement('div');
     el.innerHTML = '<botcheck-status :real-name="realName" :username="username" :is-profile="isProfile" :is-small-profile="isSmallProfile"></botcheck-status>';
 
-    // Get bio and insert after if it exists
-    if (isProfile) {
-      const bigBio = profileEl.querySelector('.ProfileHeaderCard-bio'); // Profile page bio
-      const smallBio = profileEl.querySelector('.ProfileCard-bio'); // Followers page bio
-      if (bigBio) {
-        bigBio.insertAdjacentElement('afterend', el);
-      } else if (smallBio) {
-        smallBio.insertAdjacentElement('beforebegin', el);
-      } else {
-        console.error('(botcheck) Tried appending status to profile card but couldn\'t find bio. Element:');
-        console.error(el);
-      }
-    } else if (isSmallProfile) {
-      const header = profileEl.querySelector('.stream-item-header, a.account-group');
-      if (header) {
-        header.insertAdjacentElement('afterend', el);
-      } else {
-        console.error('(botcheck) Tried appending status to small profile card but couldn\'t find header. Element:');
-        console.error(profileEl);
-      }
+    // Insert status element
+    const bigBio = profileEl.querySelector('.ProfileHeaderCard-bio'); // Profile page bio
+    const smallBio = profileEl.querySelector('.ProfileCard-bio'); // Followers page bio
+    const header = profileEl.querySelector('.stream-item-header, a.account-group');
+    if (bigBio) {
+      bigBio.insertAdjacentElement('afterend', el);
+    } else if (smallBio) {
+      smallBio.insertAdjacentElement('beforebegin', el);
+    } else if (header) {
+      header.insertAdjacentElement('afterend', el);
+    } else {
+      console.error('(botcheck) Tried appending status to profile card but couldn\'t find the right place. Element:');
+      console.error(el);
     }
 
     new Vue({ // eslint-disable-line no-new
