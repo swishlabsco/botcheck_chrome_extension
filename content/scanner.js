@@ -263,7 +263,7 @@ const botcheckScanner = {
       },
       mounted() {
         store.dispatch('SCAN', {
-          deepScan: true,
+          deepScan: isProfile,
           realName: this.realName,
           username: this.username
         });
