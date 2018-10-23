@@ -88,7 +88,7 @@
         }
 
         browser.runtime.sendMessage({
-          type: 'botcheck-storage-queue-update',
+          type: BC.backgroundMessageTypes.storageQueueUpdate,
           key: keyPath,
           value: value
         });
@@ -151,9 +151,11 @@
           return;
         }
 
-        // This may not work unless the user clicked on something.
-        // Maybe we should use browser.tabs.create?
-        window.open(url);
+        // window.open can get blocked by the popup blocker so we need to call it via the background script.
+        browser.runtime.sendMessage({
+          type: BC.backgroundMessageTypes.openNewTab,
+          url: url
+        });
       }
     }
   };

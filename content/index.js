@@ -6,6 +6,9 @@
 
 console.log('(botcheck) Botcheck starting!');
 
+// Loads Element.js lib explicitly. Firefox needs this /shrug
+Vue.use(ELEMENT);
+
 // Send any uncaught exceptions up to log collector
 Vue.config.errorHandler = (error, vm, info) => {
   console.error('(Vue error handler) Dispatching log:');

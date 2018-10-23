@@ -106,7 +106,9 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
   },
   actions: {
     AUTH_TWITTER() {
-      if (window.top === window) {
+      let isLoginPage = (location.pathname.indexOf('/login') == 0);
+
+      if (window.top === window && !isLoginPage) {
         console.log('(botcheck) action: AUTH_TWITTER');
 
         const browserToken = BC.util.generateBrowserToken();
@@ -114,7 +116,7 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
         // Now the background script auth-listener.js should see the login and trigger a response.
       }
       else {
-        console.log('(botcheck) action: AUTH_TWITTER - skipping because not top window.');
+        console.log('(botcheck) action: AUTH_TWITTER - skipping because not relevant tab.');
       }
     },
     LOAD_WHITELIST(context, newWhitelist) {

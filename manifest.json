@@ -19,14 +19,19 @@
   ],
   "background": {
     "scripts": [
+      "vendor/browser-polyfill.js",
       "content/namespace.js",
       "content/util.js",
-      "background/storage.js",
-      "background/reload-twitter-on-load.js"
+      "background/index.js",
+      "background/storage.js"
     ]
   },
   "browser_action": {
-    "default_popup": "popup/popup.html"
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/default@16-gray.png",
+      "128": "icons/default@128-gray.png"
+    }
   },
   "permissions": [
     "storage",

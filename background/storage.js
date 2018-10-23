@@ -10,12 +10,12 @@
 const storageQueue = [];
 let isQueueBeingProcessed = false;
 
-chrome.runtime.onMessage.addListener(({ type, key, value } /* , sender, sendResponse */) => {
+browser.runtime.onMessage.addListener(({ type, key, value } /* , sender, sendResponse */) => {
   // Key is an array containing a sequence of keys
   // Example: ['person', 'birth', 'year']
   // means we want to update person.birth.year
   if (
-    type !== 'botcheck-storage-queue-update'
+    type !== BC.backgroundMessageTypes.storageQueueUpdate
     || !value
     || !key
     || key.length < 1
