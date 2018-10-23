@@ -43,6 +43,14 @@ Once that is done, simply install eslint and the eslint-airbnb-base dependency g
 * Make sure `manifest.json` is using the minified versions of scripts such as Vue and Vuex.
 * Set the proper configuration values in `config/config.js`.
 
+## Building for Mac OS
+* Open the Xcode project inside the `safari` folder
+
+* Install this on your mac https://github.com/sindresorhus/create-dmg
+
+## Developing for Firefox
+https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Getting_started_with_web-ext
+
 ## Further reading
 
 * [Chrome extension development](https://developer.chrome.com/extensions)
