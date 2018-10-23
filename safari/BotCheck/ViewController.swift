@@ -10,7 +10,7 @@ import Cocoa
 import SafariServices
 
 class ViewController: NSViewController {
-    let extensionIdentifier = "com.swishlabs.BotCheck.BotCheck-for-Twitter"
+    let extensionIdentifier = "com.swishlabs.BotCheck.mac.BotCheck-for-Twitter"
     
     @IBOutlet weak var button: NSButton!
     @IBOutlet weak var label: NSTextField!
