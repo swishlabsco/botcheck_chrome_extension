@@ -31,39 +31,52 @@ const botcheckScanner = {
   },
 
   injectButtons: () => {
-    // Inject buttons on tweets/profiles already on the page
-    document.querySelectorAll('.tweet.js-stream-tweet').forEach((tweet) => {
-      botcheckScanner.processTweetEl(tweet, { isFeed: true });
-    });
+    // Process tweets already on the page
+    botcheckScanner.processFeedTweets();
     document.querySelectorAll('.tweet.permalink-tweet').forEach((tweet) => {
-      botcheckScanner.processTweetEl(tweet);
+      botcheckScanner.processTweetEl(tweet, { isPermalink: true });
     });
-    document.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach(botcheckScanner.processProfileEl);
 
-    // Then we set up an observer to do the same for any future tweets/profiles
-    // that get added to the DOM because e.g. the user scrolled down or opened a tweet
+    // Process profile element if present on the page
+    document.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach((profileCard) => {
+      botcheckScanner.processProfileEl(profileCard);
+    });
+
+    // Set up an observer to listen for any future tweets/profiles
+    // when the user scrolls down or opens a tweet
     const observer = new MutationObserver((mutations) => {
+      // Process feed when something changes
+      botcheckScanner.processFeedTweets();
+
+      // Iterate over mutations
       mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((addedNode) => {
           if (!addedNode.querySelectorAll) {
+            // Some nodes are just text
             return;
           }
-          // Retweet prompt
-          if (addedNode.classList.contains('tweet') && addedNode.classList.contains('js-stream-tweet')) {
-            botcheckScanner.processTweetEl(addedNode, { isRetweet: true });
+
+          // Try to extract a tweet from the new node
+          const result = botcheckScanner.extractTweetFromHTMLNode(addedNode);
+
+          if (result && result.tweet) {
+            botcheckScanner.processTweetEl(result.tweet, {
+              isFeed: result.isFeed,
+              isRetweet: result.isRetweet,
+              isPermalink: result.isPermalink,
+              isReply: result.isReply
+            });
           }
-          // Tweets
-          addedNode.querySelectorAll('.tweet.js-stream-tweet').forEach((tweet) => {
-            botcheckScanner.processTweetEl(tweet, { isFeed: true });
-          });
-          // Permalink tweets
-          addedNode.querySelectorAll('.tweet.permalink-tweet').forEach((tweet) => {
-            botcheckScanner.processTweetEl(tweet);
-          });
+
           // Profile pages
-          addedNode.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach(botcheckScanner.processProfileEl);
+          addedNode.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach((profileCard) => {
+            botcheckScanner.processProfileEl(profileCard);
+          });
           // Hover profiles
-          if (addedNode.classList.contains('ProfileCard')) {
+          if (
+            addedNode.classList.contains('ProfileHeaderCard')
+            || addedNode.classList.contains('ProfileCard')
+          ) {
             botcheckScanner.processProfileEl(addedNode);
           }
         });
@@ -86,11 +99,19 @@ const botcheckScanner = {
   },
 
   // Process a Tweet and add the Botcheck button to it
-  processTweetEl: (tweetEl, { isFeed = false, isRetweet = false } = {}) => {
-    if (!tweetEl.dataset || !tweetEl.dataset.screenName || tweetEl.dataset.botcheckInjected) {
+  processTweetEl: (tweetEl, {
+    isFeed = false,
+    isRetweet = false,
+    isReply = false,
+    isPermalink = false
+  } = {}) => {
+    if (!tweetEl.dataset || !tweetEl.dataset.screenName) {
       console.log(`
-        (botcheck) Tried to process tweet element but it either had no dataset, no screenName, or already had been injected.
+      (botcheck) Tried to process tweet element but it either had no dataset, no screenName, or already had been injected.
       `);
+      return;
+    }
+    if (tweetEl.dataset.botcheckInjected) {
       return;
     }
 
@@ -107,13 +128,30 @@ const botcheckScanner = {
 
     const el = document.createElement('div');
     el.classList = 'botcheck-feed-container';
-    el.innerHTML = '<botcheck-status :real-name="realName" :username="username" :is-feed="isFeed" :is-retweet="isRetweet" :is-profile="isProfile"></botcheck-status>';
+    el.innerHTML = `
+      <botcheck-status
+        :real-name="realName"
+        :username="username"
+        :is-feed="isFeed"
+        :is-retweet="isRetweet"
+        :is-reply="isReply"
+        :is-permalink="isPermalink"
+        :is-profile="isProfile"
+      ></botcheck-status>
+    `;
 
-    if (isRetweet) {
-      tweetEl.querySelector('.stream-item-header').appendChild(el);
+    let appendTo;
+    if (isRetweet || isReply) {
+      appendTo = tweetEl.querySelector('.stream-item-header');
     } else {
-      tweetEl.querySelector('.ProfileTweet-actionList').appendChild(el);
+      appendTo = tweetEl.querySelector('.ProfileTweet-actionList');
     }
+    if (!appendTo) {
+      console.error('(botcheck) Tried appending status to tweet but couldn\'t find the right container to insert it. Tweet element:');
+      console.error(tweetEl);
+      return;
+    }
+    appendTo.appendChild(el);
 
     new Vue({ // eslint-disable-line no-new
       el,
@@ -124,12 +162,17 @@ const botcheckScanner = {
           username,
           isFeed,
           isRetweet,
+          isReply,
+          isPermalink,
           isProfile: false
         };
       },
       mounted() {
+        // Deep scan if retweet, reply, or permalink.
+        // (No need for profile, that is handled in processProfileEl)
+        const deepScan = (isRetweet || isReply || isPermalink);
         store.dispatch('SCAN', {
-          deepScan: false,
+          deepScan,
           realName: this.realName,
           username: this.username
         });
@@ -147,10 +190,10 @@ const botcheckScanner = {
 
     const username = botcheckScanner.getScreenNameFromElement(profileEl);
     const realName = botcheckScanner.getRealNameFromElement(profileEl);
-    const isProfile = true;
 
     if (!username) {
       console.error('(botcheck) Tried processing profile element with no username.');
+      console.error(profileEl);
       return;
     }
 
@@ -164,9 +207,15 @@ const botcheckScanner = {
     el.innerHTML = '<botcheck-status :real-name="realName" :username="username" :is-profile="isProfile"></botcheck-status>';
 
     // Get bio and insert after if it exists
-    const bio = profileEl.querySelector('.ProfileHeaderCard-bio');
-    if (bio) {
-      bio.insertAdjacentElement('afterend', el);
+    const bigBio = profileEl.querySelector('.ProfileHeaderCard-bio'); // Profile page bio
+    const smallBio = profileEl.querySelector('.ProfileCard-bio'); // Followers page bio
+    if (bigBio) {
+      bigBio.insertAdjacentElement('afterend', el);
+    } else if (smallBio) {
+      smallBio.insertAdjacentElement('beforebegin', el);
+    } else {
+      console.error('(botcheck) Tried appending status to profile card but couldn\'t find big. Element:');
+      console.error(el);
     }
 
     new Vue({ // eslint-disable-line no-new
@@ -176,11 +225,10 @@ const botcheckScanner = {
         return {
           realName,
           username,
-          isProfile
+          isProfile: true
         };
       },
-      mounted: function () { // eslint-disable-line object-shorthand
-        console.log(`(botcheck) Finished mounting on profile element for user ${username}. Running deep scan...`);
+      mounted() {
         store.dispatch('SCAN', {
           deepScan: true,
           realName: this.realName,
@@ -196,10 +244,26 @@ const botcheckScanner = {
       return;
     }
 
+    // For profile cards
+    const header = element.querySelector('h2.ProfileHeaderCard-screenname');
+
+    if (header) {
+      const anchor = header.querySelector('a.ProfileHeaderCard-screennameLink');
+
+      if (anchor) {
+        const b = anchor.querySelector('span b');
+        if (b) {
+          const html = b.innerHTML;
+          const username = botcheckScanner.extractTextFromHTML(html);
+          return username;
+        }
+      }
+    }
+
+    // For other elements
     if (element.dataset && element.dataset.screenName) {
       return element.dataset.screenName;
     }
-
     if (
       element.querySelector('[data-screen-name]')
       && element.querySelector('[data-screen-name]').dataset.screenName
@@ -214,6 +278,20 @@ const botcheckScanner = {
       return;
     }
 
+    // For profile cards
+    const header = element.querySelector('h1.ProfileHeaderCard-name');
+
+    if (header) {
+      const anchor = header.querySelector('a.ProfileHeaderCard-nameLink');
+
+      if (anchor && anchor.innerHTML) {
+        const html = anchor.innerHTML;
+        const name = botcheckScanner.extractTextFromHTML(html);
+        return name;
+      }
+    }
+
+    // For other elements
     if (element.dataset && element.dataset.name) {
       return element.dataset.name;
     }
@@ -223,18 +301,76 @@ const botcheckScanner = {
     ) {
       return element.querySelector('[data-name]').dataset.name;
     }
+  },
 
-    // For the profile card, the real name cannot be found in a [data-name] attribute
-    const header = element.querySelector('h1.ProfileHeaderCard-name');
-
-    if (header) {
-      const anchor = header.querySelector('a.ProfileHeaderCard-nameLink');
-
-      if (anchor && anchor.innerHTML) {
-        const html = anchor.innerHTML;
-        const name = BC.util.extractTextFromHTML(html);
-        return name;
+  /**
+   * Receives an HTML node and extracts a tweet node from it
+   * (it can be the node itself or a child)
+   * Returns an object in the format:
+   * {
+   *   tweet: HTML Node,
+   *   isRetweet: boolean,
+   *   isReply: boolean,
+   *   isPermalink: boolean,
+   *   isFeed: boolean
+   * }
+   */
+  extractTweetFromHTMLNode: (node) => {
+    if (!node.querySelectorAll) {
+      return { tweet: null };
+    }
+    // Node has class .tweet: Happens for replies and retweets
+    if (node.classList.contains('tweet')) {
+      // Retweet
+      if (node.parentElement.getAttribute('id') === 'retweet-tweet-dialog-body') {
+        return {
+          tweet: node,
+          isRetweet: true
+        };
       }
+      // Reply
+      if (node.parentElement.getAttribute('id') === 'global-tweet-dialog-body') {
+        return {
+          tweet: node,
+          isReply: true
+        };
+      }
+    }
+    // Node has child with class .tweet: Happens for feed and permalink tweets
+    const tweet = node.querySelector('.tweet');
+    if (tweet) {
+      // Permalink tweet
+      if (node.classList.contains('permalink-container')) {
+        return {
+          tweet,
+          isPermalink: true
+        };
+      }
+      // Feed tweet
+      if (node.classList.contains('js-stream-item')) {
+        return {
+          tweet,
+          isFeed: true
+        };
+      }
+    }
+    return { tweet: null };
+  },
+
+  extractTextFromHTML: (string) => {
+    const doc = new DOMParser().parseFromString(string, 'text/html');
+    return doc.body.textContent || '';
+  },
+
+  // Called on page load or when something changes.
+  // Processes tweets in the feed, either on the homepage,
+  // on a profile, or on the search.
+  processFeedTweets: () => {
+    const feed = document.querySelector('.stream');
+    if (feed) {
+      feed.querySelectorAll('.tweet.js-stream-tweet').forEach((tweet) => {
+        botcheckScanner.processTweetEl(tweet, { isFeed: true });
+      });
     }
   }
 };

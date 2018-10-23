@@ -47,11 +47,15 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       state.apiKey = apiKey;
     },
     // Loads deepscan results coming from browser storage
-    LOAD_DEEPSCAN_RESULTS(state, results) {
-      console.log('(botcheck) mutation: LOAD_RESULTS');
-      // We use Object.assign to merge the deep scan results in
-      // We don't want to erase our own, including the light scan results
-      state.results = Object.assign({}, state.results, results);
+    LOAD_DEEPSCAN_RESULTS(state, results = {}) {
+      console.log('(botcheck) mutation: LOAD_DEEPSCAN_RESULTS');
+      // Merge deep scan results in, ignoring those without a prediction
+      Object.keys(results).forEach((key) => {
+        const result = results[key];
+        if (result.prediction === true || result.prediction === false) {
+          Vue.set(state.results, key, result);
+        }
+      });
     },
     // This mutation should only be called by the LOAD_WHITELIST action
     DONOTCALLDIRECTLY_LOAD_WHITELIST(state, whitelist) {
@@ -232,17 +236,28 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
         previousResult = context.state.results[result.username];
       }
 
-      // Refuse new result if
-      if (
-        previousResult // A previous result exists
-        && !result.deepScan // AND new result is light scan
-        && previousResult.deepScan // AND previous result is deep scan
-      ) {
-        console.log(`
-          (botcheck) Tried storing light scan result for ${result.username},
-          but deep scan result was already stored. Aborting.
-        `);
-        return;
+      // Refuse new result if previous result exists and:
+      if (previousResult) {
+        // New result is not deep scan AND previous result is deep scan
+        if (!result.deepScan && previousResult.deepScan) {
+          console.log(`
+            (botcheck) Ignored light scan result for ${result.username} because
+            deep scan result was already stored.
+          `);
+          return;
+        }
+
+        // OR if new result has no prediction
+        if (
+          result.prediction !== true
+          || result.prediction !== false
+        ) {
+          console.log(`
+            (botcheck) Ignored scan result for ${result.username} because
+            it had no prediction and another result was already stored.
+          `);
+          return;
+        }
       }
 
       Vue.set(context.state.results, result.username, result);

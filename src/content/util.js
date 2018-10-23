@@ -26,10 +26,6 @@ BC.util = {
     }
     return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
   },
-  extractTextFromHTML(string) {
-    const doc = new DOMParser().parseFromString(string, 'text/html');
-    return doc.body.textContent || '';
-  },
   parseQueryString(queryString) {
     const query = {};
     const pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
