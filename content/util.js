@@ -51,5 +51,25 @@ BC.util = {
     } else {
       document.addEventListener('DOMContentLoaded', fn);
     }
+  },
+  updateNestedKey(object, path, value) {
+    /**
+     * Updates a nested key in a object,
+     * given a path ['in', 'this', 'format']
+     * updates object.in.this.format to value.
+     */
+    if (!object || !path || path.length < 1) {
+      return object;
+    }
+    // Set and return if done iterating over key components.
+    if (path.length === 1) {
+      object[path[0]] = value;
+      return object;
+    }
+    // Create path if it doesn't exist
+    if (!object[path[0]]) {
+      object[path[0]] = {};
+    }
+    return this.updateNestedKey(object[path[0]], path.slice(1), value);
   }
 };

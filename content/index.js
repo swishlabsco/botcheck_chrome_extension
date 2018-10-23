@@ -21,6 +21,7 @@ Vue.config.errorHandler = (error, vm, info) => {
 
 function registerListeners() {
   // Listen for whitelist changes and send updates to Vuex store
+  // Note: in safari this event only fires IF the change happened in a diff tab.
   BC.xbrowser.storage.onChanged((changes) => {
     if (changes.whitelist && changes.whitelist.newValue) {
       console.log('(botcheck) Detected whitelist change in storage');
@@ -33,7 +34,7 @@ function registerListeners() {
   // but then the same tab would be sending a lot of updates to itself)
   document.addEventListener('visibilitychange', () => {
     if (document.hidden === false) {
-      BC.xbrowser.storage.get('results').then((results) => {
+      BC.xbrowser.storage.get('results').then(({results}) => {
         console.log('(botcheck) Detected page focus. Loading deepscan results.');
         store.commit('LOAD_DEEPSCAN_RESULTS', results);
       });

@@ -5,6 +5,8 @@
  * of an object in storage. Updating the entire object at once led to race conditions.
  */
 
+(function() {
+
 const storageQueue = [];
 let isQueueBeingProcessed = false;
 
@@ -44,6 +46,7 @@ function processQueue() {
     }
     const obj = result[firstBaseKey] || {};
 
+    console.log('(botcheck) existing data for ', firstBaseKey, obj);
     console.log('(botcheck) Old storage size:');
     console.log(Object.keys(obj).length);
     console.log(JSON.stringify(Object.keys(obj)));
@@ -53,7 +56,7 @@ function processQueue() {
       if (key[0] !== firstBaseKey) {
         return;
       }
-      updateNestedKey(obj, key.slice(1), value); // eslint-disable-line no-use-before-define
+      BC.util.updateNestedKey(obj, key.slice(1), value); // eslint-disable-line no-use-before-define
 
       // Remove item from queue
       storageQueue.splice(index, 1);
@@ -78,20 +81,4 @@ function processQueue() {
   });
 }
 
-// Updates a nested key in a object,
-// given a path ['in', 'this', 'format']
-// updates object.in.this.format to value.
-function updateNestedKey(object, path, value) {
-  if (!object || !path || path.length < 1) {
-    return object;
-  }
-  if (path.length === 1) {
-    object[path[0]] = value;
-    return;
-  }
-  // Create path if it doesn't exist
-  if (!object[path[0]]) {
-    object[path[0]] = {};
-  }
-  return updateNestedKey(object[path[0]], path.slice(1), value);
-}
+})();

@@ -6,28 +6,6 @@
  * Most of these methods return promises, unlike the direct `chrome.*` methods.
  */
 
-// TODO move into utils
-function updateNestedKey(object, path, value) {
-  /**
-   * Updates a nested key in a object,
-   * given a path ['in', 'this', 'format']
-   * updates object.in.this.format to value.
-   */
-  if (!object || !path || path.length < 1) {
-    return object;
-  }
-  if (path.length === 1) {
-    object[path[0]] = value;
-    return;
-  }
-  // Create path if it doesn't exist
-  if (!object[path[0]]) {
-    object[path[0]] = {};
-  }
-  return updateNestedKey(object[path[0]], path.slice(1), value);
-}
-
-
 (function() {
 
   // Where gulp outputs js/css folders relative to the xcode project.
@@ -60,7 +38,8 @@ function updateNestedKey(object, path, value) {
             data = Object.assign({}, ...Lockr.getAll(true));
           }
           else {
-            data = Lockr.get(key);
+            // Return in same format as the browser.storage API.
+            data = {[key]: Lockr.get(key)};
           }
 
           return Promise.resolve(data);
@@ -90,21 +69,19 @@ function updateNestedKey(object, path, value) {
          * - In non-safari it just wraps browser.runtime.sendMessage which the background script handles.
          * - In safari things use localstorage, so no need for this.
          */
-        // TODO remove this once Marcos refactors this stuff.
-        // throw Error('not implemented for now');
-
         console.assert(keyPath.constructor === Array);
+        console.log('(botcheck) - queueSet', arguments);
 
         if (isSafari) {
           // Traverse tree to find right place to set value
-          console.log('(botcheck) - queueSet', arguments);
-
+          // Safari optimization: instead of retrieving all of storage, we just get the relevant key
+          // so that `updateNestedKey` only needs to update the children
           let firstKey = keyPath[0];
           let existing = Lockr.get(firstKey) || {};
-          let data = updateNestedKey(existing, keyPath, value);
+          let data = BC.util.updateNestedKey(existing, keyPath.slice(1), value);
 
-          console.log('(botcheck) - existing', existing);
-          console.log('(botcheck) - new data', data);
+          console.log('(botcheck) - existing for', firstKey, existing);
+          console.log('(botcheck) - setting new data for key', firstKey, data);
 
           Lockr.set(firstKey, data);
           return;

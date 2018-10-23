@@ -24,7 +24,7 @@
             </el-col>
           </el-row>
         </el-main>
-        <el-main>
+        <el-main v-else>
           <el-row type="flex">
             <el-col :span="5">
               <img :src="icon" class="botcheck-modal-image">
@@ -151,9 +151,7 @@
         this.$store.dispatch('DISAGREE', this.prediction);
         this.$store.commit('THANKS_OPEN');
       } else if (type === 'whitelist') {
-        const username = this.result.username;
-        const realName = this.result.realName;
-        this.addToWhitelist(username, realName);
+        this.addToWhitelist(this.result);
       } else if (type === 'report') {
         this.reportTweet();
       } else {
@@ -166,22 +164,24 @@
     },
     // Updates whitelist on browser storage.
     // Other content scripts should pick up on the change
-    addToWhitelist(username, realName) {
-      if (!username || !realName) {
+    addToWhitelist(result) {
+      console.log('(botcheck) addToWhitelist', result);
+
+      if (!result.username || !result.realName) {
         console.error(`
           (botcheck) Attempted to whitelist user but missing username or real name.
-          username: ${username}
-          realName: ${realName}
+          result: ${result}
+          username: ${result.username}
+          realName: ${result.realName}
         `);
       }
       this.getWhitelist((whitelist) => {
-        if (!whitelist[username]) {
-          whitelist[username] = {
-            realName
-          };
-        }
-        this.setWhitelist(whitelist);
-        this.$store.commit('RESULTS_CLOSE');
+        whitelist[result.username] = {
+          realName: result.realName
+        };
+        this.setWhitelist(whitelist, () => {
+          this.$store.commit('RESULTS_CLOSE');
+        });
       });
     },
     // Updates whitelist on browser storage.
@@ -201,25 +201,16 @@
       });
     },
     getWhitelist(callback) {
-      chrome.storage.local.get('whitelist', ({ whitelist }) => {
-        if (chrome.runtime.lastError) {
-          console.error('(botcheck) Failed to update whitelist.');
-          console.error(chrome.runtime.lastError);
-          return;
-        }
-        if (!whitelist) {
-          whitelist = {};
-        }
-        callback(whitelist);
+      BC.xbrowser.storage.get('whitelist').then(({whitelist}) => {
+        callback(whitelist || {});
       });
     },
     setWhitelist(whitelist, callback) {
-      chrome.storage.local.set({ whitelist }, () => {
-        if (chrome.runtime.lastError) {
-          console.error('(botcheck) Failed to update whitelist.');
-          console.error(chrome.runtime.lastError);
-          return;
-        }
+      console.log('(botcheck) setWhitelist', whitelist);
+
+      BC.xbrowser.storage.set({whitelist}).then(() => {
+        this.$store.dispatch('LOAD_WHITELIST', whitelist);
+
         if (callback) {
           callback();
         }
