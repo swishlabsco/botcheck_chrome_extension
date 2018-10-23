@@ -250,7 +250,7 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
         // OR if new result has no prediction
         if (
           result.prediction !== true
-          || result.prediction !== false
+          && result.prediction !== false
         ) {
           console.log(`
             (botcheck) Ignored scan result for ${result.username} because
