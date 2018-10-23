@@ -228,17 +228,28 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
         previousResult = context.state.results[result.username];
       }
 
-      // Refuse new result if
-      if (
-        previousResult // A previous result exists
-        && !result.deepScan // AND new result is light scan
-        && previousResult.deepScan // AND previous result is deep scan
-      ) {
-        console.log(`
-          (botcheck) Tried storing light scan result for ${result.username},
-          but deep scan result was already stored. Aborting.
-        `);
-        return;
+      // Refuse new result if previous result exists and:
+      if (previousResult) {
+        // New result is not deep scan AND previous result is deep scan
+        if (!result.deepScan && previousResult.deepScan) {
+          console.log(`
+            (botcheck) Ignored light scan result for ${result.username} because
+            deep scan result was already stored.
+          `);
+          return;
+        }
+
+        // OR if new result has no prediction
+        if (
+          result.prediction !== true
+          || result.prediction !== false
+        ) {
+          console.log(`
+            (botcheck) Ignored scan result for ${result.username} because
+            it had no prediction and another result was already stored.
+          `);
+          return;
+        }
       }
 
       Vue.set(context.state.results, result.username, result);
