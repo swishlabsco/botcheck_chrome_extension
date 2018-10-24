@@ -34,15 +34,20 @@
 	font-size: 14px;
 	line-height: 1;
 	cursor: pointer;
-	top: 2px;
+	top: 1px;
   white-space: nowrap;
 
   &.reply {
-    margin: 3px 0 8px 8px;
+    top: 0;
+    margin: 1px 0 8px 8px;
   }
 
-  &.profile, &.small-profile {
+  &.profile {
     margin: 8px 0px;
+  }
+
+  &.small-profile {
+    margin: 6px 0 12px 0;
   }
 
 	.icon {
@@ -87,7 +92,7 @@
 			position: relative;
 			vertical-align: middle;
 			padding-left: 10px;
-			padding-top: 3px;
+			padding-top: 1px;
 			width: 18px;
 			display: inline-block;
 		}
@@ -123,7 +128,7 @@
 		width: 640px;
 
 		&__close {
-			color:rgb(96, 98, 102);
+			color: @black;
 		}
 	}
 
