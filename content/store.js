@@ -133,6 +133,73 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       });
       context.commit('DONOTCALLDIRECTLY_LOAD_WHITELIST', newWhitelist);
     },
+    BULK_LIGHT_SCAN(context, users = []) {
+      console.log('(botcheck) action: BULK_LIGHT_SCAN. Users:');
+      console.log(users);
+
+      if (users.length < 1) {
+        return;
+      }
+
+      if (!context.state.apiKey) {
+        console.log('(botcheck) Called bulk light scan but store has no API key. Triggering authentication...');
+        context.dispatch('AUTH_TWITTER');
+        return;
+      }
+
+      const processedUsers = users.filter((user) => {
+        // Don't check whitelisted accounts
+        if (context.state.whitelist[user.username]) {
+          return false;
+        }
+
+        // Don't check network again if this is a light scan
+        // and we already have a result (from a deep scan or not)
+        if (context.state.results && context.state.results[user.username]) {
+          const previousResult = context.state.results[user.username];
+          if (previousResult === true || previousResult === false) {
+            return false;
+          }
+        }
+        return true;
+      });
+
+      let handles = processedUsers.map(user => `@a${user.username}`);
+
+      // Remove repeated handles
+      handles = Array.from(new Set(handles));
+
+      const usernameDictionary = {};
+      processedUsers.forEach((user) => {
+        usernameDictionary[user.username] = user;
+      });
+
+      axios
+        .post(`${botcheckConfig.apiRoot}/LightScanBulk`, {
+          usernames: handles,
+          apikey: context.state.apiKey
+        })
+        .then((result) => {
+          if (result && result.data) {
+            console.log('(botcheck) Bulk light scan successful:');
+            console.log(result);
+
+            result.data.response.forEach((value) => {
+              context.dispatch('STORE_RESULT', {
+                deepScan: false,
+                realName: usernameDictionary[value.username].realName,
+                username: value.username,
+                prediction: value.prediction
+              });
+              context.dispatch('LOG', value);
+            });
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+          console.error('Unable to run bulk light scan.');
+        });
+    },
     SCAN(context, {
       username,
       realName,
