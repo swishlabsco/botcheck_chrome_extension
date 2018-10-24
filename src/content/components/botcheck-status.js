@@ -5,7 +5,7 @@ Vue.component('botcheck-status', {
       <span :class="messageClass">{{message}}</span>
     </div>
   `,
-  props: ['realName', 'username', 'isFeed', 'isRetweet', 'isReply', 'isPermalink', 'isProfile'],
+  props: ['realName', 'username', 'isFeed', 'isRetweet', 'isReply', 'isPermalink', 'isProfile', 'isSmallProfile'],
   computed: {
     result() {
       const results = this.$store.state.results;
@@ -41,15 +41,26 @@ Vue.component('botcheck-status', {
     },
     containerClass() {
       let className = 'botcheck';
+      if (this.isReply) {
+        className += ' reply';
+      }
+      if (this.isFeed) {
+        className += ' feed';
+      }
+      if (this.isProfile) {
+        className += ' profile';
+      }
+      if (this.isSmallProfile) {
+        className += ' small-profile';
+      }
       if (
         !this.whitelisted
-        && !this.isFeed
-        && !this.isProfile
         && this.prediction === true
+        && (this.isRetweet || this.isReply)
       ) {
         className += ' button';
       }
-      if (!this.isFeed && !this.isProfile && this.prediction === false) {
+      if (this.isRetweet && this.prediction === false) {
         className += ' retweet';
       }
       if (
@@ -65,10 +76,7 @@ Vue.component('botcheck-status', {
       return className;
     },
     messageClass() {
-      if (this.prediction === false || this.whitelisted) {
-        return 'status-text';
-      }
-      if (this.prediction === true) {
+      if (this.prediction === true && !this.whitelisted) {
         return 'status-text bot';
       }
       return 'status-text';

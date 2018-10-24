@@ -32,21 +32,42 @@ const botcheckScanner = {
 
   injectButtons: () => {
     // Process tweets already on the page
-    botcheckScanner.processFeedTweets();
+    botcheckScanner.getFeedTweets().forEach((tweet) => {
+      botcheckScanner.processTweetEl(tweet, { isFeed: true });
+    });
     document.querySelectorAll('.tweet.permalink-tweet').forEach((tweet) => {
       botcheckScanner.processTweetEl(tweet, { isPermalink: true });
     });
 
     // Process profile element if present on the page
-    document.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach((profileCard) => {
-      botcheckScanner.processProfileEl(profileCard);
+    botcheckScanner.getSmallUserCards().forEach((card) => {
+      botcheckScanner.processProfileEl(card, { isProfile: false, isSmallProfile: true });
+    });
+    document.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach((card) => {
+      let isProfile = false;
+      if (card.parentElement.classList.contains('ProfileSidebar')) {
+        isProfile = true;
+      }
+      botcheckScanner.processProfileEl(card, { isProfile, isSmallProfile: !isProfile });
     });
 
     // Set up an observer to listen for any future tweets/profiles
     // when the user scrolls down or opens a tweet
     const observer = new MutationObserver((mutations) => {
-      // Process feed when something changes
-      botcheckScanner.processFeedTweets();
+      // Process feed and small profile cards when something changes
+      botcheckScanner.getFeedTweets().forEach((tweet) => {
+        botcheckScanner.processTweetEl(tweet, { isFeed: true });
+      });
+      botcheckScanner.getSmallUserCards().forEach((card) => {
+        botcheckScanner.processProfileEl(card, { isSmallProfile: true, isProfile: false });
+      });
+      document.querySelectorAll('.ProfileHeaderCard, .ProfileCard').forEach((card) => {
+        let isProfile = false;
+        if (card.parentElement.classList.contains('ProfileSidebar')) {
+          isProfile = true;
+        }
+        botcheckScanner.processProfileEl(card, { isProfile, isSmallProfile: !isProfile });
+      });
 
       // Iterate over mutations
       mutations.forEach((mutation) => {
@@ -87,6 +108,8 @@ const botcheckScanner = {
       subtree: true
     });
   },
+  getFeedTweets: () => document.querySelectorAll('.stream .tweet.js-stream-tweet') || [],
+  getSmallUserCards: () => document.querySelectorAll('.UserSmallListItem, .account.js-actionable-user.js-profile-popup-actionable') || [],
 
   injectDialogs: () => {
     const el = document.createElement('div');
@@ -103,7 +126,9 @@ const botcheckScanner = {
     isFeed = false,
     isRetweet = false,
     isReply = false,
-    isPermalink = false
+    isPermalink = false,
+    isSmallProfile = false,
+    isProfile = false
   } = {}) => {
     if (!tweetEl.dataset || !tweetEl.dataset.screenName) {
       console.log(`
@@ -126,6 +151,11 @@ const botcheckScanner = {
       console.error('(botcheck) Could not extract realName from tweet.');
     }
 
+    // Skip putting status on own tweets
+    if (username === botcheckScanner.getUsername()) {
+      return;
+    }
+
     const el = document.createElement('div');
     el.classList = 'botcheck-feed-container';
     el.innerHTML = `
@@ -141,17 +171,22 @@ const botcheckScanner = {
     `;
 
     let appendTo;
+    let insertAdjacent;
     if (isRetweet || isReply) {
       appendTo = tweetEl.querySelector('.stream-item-header');
     } else {
-      appendTo = tweetEl.querySelector('.ProfileTweet-actionList');
+      insertAdjacent = tweetEl.querySelector('.ProfileTweet-actionList .ProfileTweet-action.ProfileTweet-action--dm');
     }
-    if (!appendTo) {
+
+    if (appendTo) {
+      appendTo.appendChild(el);
+    } else if (insertAdjacent) {
+      insertAdjacent.insertAdjacentElement('afterend', el);
+    } else {
       console.error('(botcheck) Tried appending status to tweet but couldn\'t find the right container to insert it. Tweet element:');
       console.error(tweetEl);
       return;
     }
-    appendTo.appendChild(el);
 
     new Vue({ // eslint-disable-line no-new
       el,
@@ -164,7 +199,8 @@ const botcheckScanner = {
           isRetweet,
           isReply,
           isPermalink,
-          isProfile: false
+          isSmallProfile,
+          isProfile
         };
       },
       mounted() {
@@ -181,7 +217,7 @@ const botcheckScanner = {
   },
 
   // Process a Profile and add the Botcheck button to it
-  processProfileEl: (profileEl) => {
+  processProfileEl: (profileEl, { isProfile = false, isSmallProfile = false } = {}) => {
     if (!profileEl || profileEl.dataset.botcheckInjected) {
       return;
     }
@@ -204,17 +240,20 @@ const botcheckScanner = {
 
     // Insert with other metadata
     const el = document.createElement('div');
-    el.innerHTML = '<botcheck-status :real-name="realName" :username="username" :is-profile="isProfile"></botcheck-status>';
+    el.innerHTML = '<botcheck-status :real-name="realName" :username="username" :is-profile="isProfile" :is-small-profile="isSmallProfile"></botcheck-status>';
 
-    // Get bio and insert after if it exists
+    // Insert status element
     const bigBio = profileEl.querySelector('.ProfileHeaderCard-bio'); // Profile page bio
     const smallBio = profileEl.querySelector('.ProfileCard-bio'); // Followers page bio
+    const header = profileEl.querySelector('.stream-item-header, a.account-group');
     if (bigBio) {
       bigBio.insertAdjacentElement('afterend', el);
     } else if (smallBio) {
       smallBio.insertAdjacentElement('beforebegin', el);
+    } else if (header) {
+      header.insertAdjacentElement('afterend', el);
     } else {
-      console.error('(botcheck) Tried appending status to profile card but couldn\'t find big. Element:');
+      console.error('(botcheck) Tried appending status to profile card but couldn\'t find the right place. Element:');
       console.error(el);
     }
 
@@ -225,12 +264,13 @@ const botcheckScanner = {
         return {
           realName,
           username,
-          isProfile: true
+          isProfile,
+          isSmallProfile
         };
       },
       mounted() {
         store.dispatch('SCAN', {
-          deepScan: true,
+          deepScan: isProfile,
           realName: this.realName,
           username: this.username
         });
@@ -289,6 +329,12 @@ const botcheckScanner = {
         const name = botcheckScanner.extractTextFromHTML(html);
         return name;
       }
+    }
+
+    // For small profile cards
+    const fullName = element.querySelector('.account-group-inner .fullname');
+    if (fullName) {
+      return botcheckScanner.extractTextFromHTML(fullName);
     }
 
     // For other elements
@@ -360,17 +406,5 @@ const botcheckScanner = {
   extractTextFromHTML: (string) => {
     const doc = new DOMParser().parseFromString(string, 'text/html');
     return doc.body.textContent || '';
-  },
-
-  // Called on page load or when something changes.
-  // Processes tweets in the feed, either on the homepage,
-  // on a profile, or on the search.
-  processFeedTweets: () => {
-    const feed = document.querySelector('.stream');
-    if (feed) {
-      feed.querySelectorAll('.tweet.js-stream-tweet').forEach((tweet) => {
-        botcheckScanner.processTweetEl(tweet, { isFeed: true });
-      });
-    }
   }
 };

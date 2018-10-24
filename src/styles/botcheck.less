@@ -6,8 +6,10 @@
 @black: #333333;
 @lightBlack: #666666;
 
-.botcheck-feed-container {
-	display: inline-block;
+// Fix for when liner extension pushes botcheck status
+// out of the line, on feed tweets
+.ProfileTweet-actionList.js-actions {
+  white-space: nowrap;
 }
 
 // .el-dropdown-menu is appended to body,
@@ -20,21 +22,35 @@
 	font-size: 13px;
 }
 
+.botcheck-feed-container {
+	display: inline-block;
+	// For when other extensions are present
+	padding-right: 20px;
+}
+
 .botcheck {
+  position: relative;
 	color: @twitterTextGrey;
 	font-size: 14px;
 	line-height: 1;
-	margin-bottom: 8px;
-	position: relative;
 	cursor: pointer;
 	top: 2px;
+  white-space: nowrap;
+
+  &.reply {
+    margin: 3px 0 8px 8px;
+  }
+
+  &.profile, &.small-profile {
+    margin: 8px 0px;
+  }
 
 	.icon {
-		background-image: none !important;
 		width: 18px;
 		height: 18px;
 		position: absolute;
-		bottom: 0;
+    bottom: -1px;
+    background-image: none !important;
 		display: inline-block;
 
 		img {
