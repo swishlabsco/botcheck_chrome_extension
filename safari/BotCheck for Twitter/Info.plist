@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>8</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSExtension</key>
@@ -46,17 +46,6 @@
 				<string>build/injected.css</string>
 			</dict>
 		</array>
-<!--        <key>SFSafariToolbarItem</key>-->
-<!--        <dict>-->
-<!--            <key>Action</key>-->
-<!--            <string>Command</string>-->
-<!--            <key>Identifier</key>-->
-<!--            <string>Button</string>-->
-<!--            <key>Image</key>-->
-<!--            <string>ToolbarItemIcon.pdf</string>-->
-<!--            <key>Label</key>-->
-<!--            <string>Your Button</string>-->
-<!--        </dict>-->
 		<key>SFSafariWebsiteAccess</key>
 		<dict>
 			<key>Allowed Domains</key>
