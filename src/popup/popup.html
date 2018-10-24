@@ -3,11 +3,13 @@
 
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="../styles/element.css">
+  <link rel="stylesheet" type="text/css" href="../styles/popup.css">
+  <script src="../vendor/browser-polyfill.js"></script>
   <script src="../vendor/vue.js"></script>
   <script src="../vendor/vuex.js"></script>
   <script src="../vendor/element.js"></script>
-  <link rel="stylesheet" type="text/css" href="../styles/element.css">
-  <link rel="stylesheet" type="text/css" href="../styles/popup.css">
 </head>
 
 <body>
@@ -25,14 +27,14 @@
         </li>
         <li class="divider"></li>
         <li>
-          <a href="#" v-on:click="openWhitelist">View Whitelist</a>
+          <a href="#" @click="openWhitelist">View Whitelist</a>
         </li>
       </ul>
     </div>
     <div id="whitelist-view" v-if="showWhitelistView">
       <div class="whitelist-header">
         <div class="whitelist-header-text">Whitelisted Accounts</div>
-        <div class="whitelist-go-back" v-on:click="closeWhitelist">
+        <div class="whitelist-go-back" @click="closeWhitelist">
           <i class="el-icon-back"></i>
         </div>
       </div>
@@ -44,7 +46,7 @@
           <div v-for="(value, key) in whitelist" class="whitelist-item">
             <div class="whitelist-item-real-name">{{value.realName}}</div>
             <div class="whitelist-item-handle">@{{key}}</div>
-            <div class="un-whitelist-item" v-on:click="removeFromWhitelist(key)">
+            <div class="un-whitelist-item" @click="removeFromWhitelist(key)">
               <i class="el-icon-close"></i>
             </div>
           </div>

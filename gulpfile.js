@@ -31,7 +31,6 @@ const paths = {
   styles: {
     src: [
       'src/styles/element.css',
-      'src/styles/style.css',
       'src/styles/botcheck.less'
     ],
   }
@@ -52,6 +51,7 @@ function clean() {
  */
 
 function copy() {
+  // Copy these folders and contents as is
   gulp.src([
     'src/background/**',
     'src/content/**',
@@ -60,9 +60,16 @@ function copy() {
     'src/vendor/**'], {base: 'src'})
     .pipe(gulp.dest(OUTPUT_DIR_WEB_EXTENSION));
 
+  // Compile less into css
+  gulp.src('src/**/*.less', {base: 'src'})
+    .pipe(less())
+    .pipe(gulp.dest(OUTPUT_DIR_WEB_EXTENSION));
+
+  // Copy manifest
   gulp.src('src/manifest.json')
     .pipe(gulp.dest(OUTPUT_DIR_WEB_EXTENSION));
 
+  // Copy icons over
   return gulp.src('src/icons/**')
     .pipe(gulp.dest(OUTPUT_DIR_WEB_EXTENSION + 'icons'))
     .pipe(gulp.dest(OUTPUT_DIR_SAFARI + 'icons'));

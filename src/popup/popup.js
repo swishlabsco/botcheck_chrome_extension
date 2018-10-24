@@ -20,15 +20,11 @@ const app = new Vue({ // eslint-disable-line no-unused-vars
   methods: {
     openWhitelist() {
       // Load whitelist when opening
-      chrome.storage.local.get('whitelist', ({ whitelist }) => {
-        if (chrome.runtime.lastError) {
-          console.error('(botcheck) Failed to get whitelist.');
-          console.error(chrome.runtime.lastError);
-        }
+      browser.storage.local.get('whitelist').then(({ whitelist }) => {
         console.log('(botcheck) Popup loaded whitelist:');
         console.log(whitelist);
 
-        this.whitelist = whitelist;
+        this.whitelist = whitelist || {};
         this.showMainView = false;
         this.showWhitelistView = true;
       });
@@ -40,12 +36,7 @@ const app = new Vue({ // eslint-disable-line no-unused-vars
     // Updates browser storage,
     // content scripts should listen for changes
     removeFromWhitelist(username) {
-      chrome.storage.local.get('whitelist', ({ whitelist }) => {
-        if (chrome.runtime.lastError) {
-          console.error('(botcheck) Failed to get whitelist.');
-          console.error(chrome.runtime.lastError);
-          return;
-        }
+      browser.storage.local.get('whitelist').then(({ whitelist }) => {
         if (!whitelist[username]) {
           console.warn(`
             (botcheck) Attempted to remove user from whitelist by clicking X
@@ -58,12 +49,7 @@ const app = new Vue({ // eslint-disable-line no-unused-vars
         // Update UI
         this.whitelist = whitelist;
 
-        chrome.storage.local.set({ whitelist }, () => {
-          if (chrome.runtime.lastError) {
-            console.error('(botcheck) Failed to set whitelist.');
-            console.error(chrome.runtime.lastError);
-          }
-        });
+        browser.storage.local.set({ whitelist });
       });
     },
     openTwitterProfile(username) {
