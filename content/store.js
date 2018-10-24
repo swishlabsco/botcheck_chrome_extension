@@ -134,8 +134,7 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
       context.commit('DONOTCALLDIRECTLY_LOAD_WHITELIST', newWhitelist);
     },
     BULK_LIGHT_SCAN(context, users = []) {
-      console.log('(botcheck) action: BULK_LIGHT_SCAN. Users:');
-      console.log(users);
+      console.log('(botcheck) action: BULK_LIGHT_SCAN');
 
       if (users.length < 1) {
         return;
@@ -164,10 +163,13 @@ const store = new Vuex.Store({ // eslint-disable-line no-unused-vars
         return true;
       });
 
-      let handles = processedUsers.map(user => `@a${user.username}`);
+      let handles = processedUsers.map(user => `@${user.username}`);
 
       // Remove repeated handles
       handles = Array.from(new Set(handles));
+
+      console.log('Handles:');
+      console.log(handles);
 
       const usernameDictionary = {};
       processedUsers.forEach((user) => {

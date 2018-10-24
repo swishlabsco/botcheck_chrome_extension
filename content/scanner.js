@@ -130,7 +130,7 @@ const botcheckScanner = {
 
     feedTweets.forEach((tweet) => {
       const result = botcheckScanner.processTweetEl(tweet, { isFeed: true });
-      // console.log(result);
+
       if (result && result.username && result.realName) {
         users.push(result);
       }
