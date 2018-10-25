@@ -17,13 +17,15 @@
     <div id="main-view" v-if="showMainView">
       <ul>
         <li>
-          <a href="https://botcheck.me" target="_blank">Botcheck.me Site</a>
+          <a @click="openUrl('https://botcheck.me')" href="#" target="_blank" >Botcheck.me Site</a>
         </li>
         <li>
-          <a href="https://medium.com/@robhat/identifying-propaganda-bots-on-twitter-5240e7cb81a9" target="_blank">How This Works</a>
+          <a @click="openUrl('https://medium.com/@robhat/identifying-propaganda-bots-on-twitter-5240e7cb81a9')" href="#" target="_blank">
+            How This Works
+          </a>
         </li>
         <li>
-          <a href="http://twitter.com/theashbhat" target="_blank">Follow Us for Updates</a>
+          <a @click="openUrl('http://twitter.com/theashbhat')" href="#" target="_blank">Follow Us for Updates</a>
         </li>
         <li class="divider"></li>
         <li>

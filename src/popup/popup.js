@@ -18,6 +18,10 @@ const app = new Vue({ // eslint-disable-line no-unused-vars
     };
   },
   methods: {
+    openUrl(url) {
+      window.open(url, '_blank');
+      window.close();
+    },
     openWhitelist() {
       // Load whitelist when opening
       browser.storage.local.get('whitelist').then(({ whitelist }) => {
