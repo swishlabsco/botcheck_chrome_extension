@@ -15,11 +15,10 @@
               <span class="status-text">
                 <strong>@{{ result.username }}</strong> has been whitelisted, which means their scan results are being ignored.
               </span>
-              <br>
-              <div
-                @click="removeFromWhitelist(result.username)"
-                class="remove-from-whitelist"
-              ><span>Un-Whitelist</span>
+              <el-button type="text" class="remove-from-whitelist"
+                @click="removeFromWhitelist(result.username)">
+                Un-Whitelist
+              </el-button>
               </div>
             </el-col>
           </el-row>

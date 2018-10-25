@@ -126,10 +126,19 @@
 
 	.el-dialog {
 		width: 640px;
+    border-radius: 8px;
+
+    &__header {
+      padding: 0;
+    }
 
 		&__close {
 			color: @black;
 		}
+
+    &__body {
+      padding: 20px;
+    }
 	}
 
 	.el-container {
@@ -137,9 +146,14 @@
 	}
 
 	.el-main {
+    padding-left: 0;
 		padding-top: 10px;
 		padding-bottom: 0;
 	}
+
+  .el-footer {
+    padding: 0;
+  }
 
 	.el-dropdown {
 		position: absolute;
@@ -177,7 +191,8 @@
 	}
 
 	button.remove-from-whitelist {
-		margin-top: 24px;
+		margin-top: 16px;
+    float: right;
 	}
 
 	.share-link {
@@ -213,17 +228,4 @@
 	.botcheck-dialog-buttons-wrapper {
 		margin-top: 10px;
 	}
-}
-
-.remove-from-whitelist {
-	text-align: right;
-	margin-top: 16px;
-	}
-
-.remove-from-whitelist span {
-	font-size: 13px;
-	margin-left: 4px;
-	vertical-align: middle;
-	margin-top: 2px;
-	cursor: pointer;
 }
