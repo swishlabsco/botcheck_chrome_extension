@@ -32,11 +32,14 @@ const botcheckScanner = {
 
   injectButtons: () => {
     // Process tweets already on the page
-    botcheckScanner.getFeedTweets().forEach((tweet) => {
-      botcheckScanner.processTweetEl(tweet, { isFeed: true });
-    });
+    botcheckScanner.processFeedTweets();
     document.querySelectorAll('.tweet.permalink-tweet').forEach((tweet) => {
-      botcheckScanner.processTweetEl(tweet, { isPermalink: true });
+      const result = botcheckScanner.processTweetEl(tweet, { isPermalink: true });
+      store.dispatch('SCAN', {
+        deepScan: true,
+        realName: result.realName,
+        username: result.username
+      });
     });
 
     // Process profile element if present on the page
@@ -55,9 +58,7 @@ const botcheckScanner = {
     // when the user scrolls down or opens a tweet
     const observer = new MutationObserver((mutations) => {
       // Process feed and small profile cards when something changes
-      botcheckScanner.getFeedTweets().forEach((tweet) => {
-        botcheckScanner.processTweetEl(tweet, { isFeed: true });
-      });
+      botcheckScanner.processFeedTweets();
       botcheckScanner.getSmallUserCards().forEach((card) => {
         botcheckScanner.processProfileEl(card, { isSmallProfile: true, isProfile: false });
       });
@@ -81,12 +82,19 @@ const botcheckScanner = {
           const result = botcheckScanner.extractTweetFromHTMLNode(addedNode);
 
           if (result && result.tweet) {
-            botcheckScanner.processTweetEl(result.tweet, {
+            const user = botcheckScanner.processTweetEl(result.tweet, {
               isFeed: result.isFeed,
               isRetweet: result.isRetweet,
               isPermalink: result.isPermalink,
               isReply: result.isReply
             });
+            if (user && user.username && user.realName) {
+              store.dispatch('SCAN', {
+                deepScan: !result.isFeed,
+                realName: user.realName,
+                username: user.username
+              });
+            }
           }
 
           // Profile pages
@@ -110,6 +118,29 @@ const botcheckScanner = {
   },
   getFeedTweets: () => document.querySelectorAll('.stream .tweet.js-stream-tweet') || [],
   getSmallUserCards: () => document.querySelectorAll('.UserSmallListItem, .account.js-actionable-user.js-profile-popup-actionable') || [],
+
+  /**
+   * Processes the tweets in a feed (could be a profile or search feed)
+   * and issues a bulk light scan request.
+   * Ignores tweets that have already been processed,
+   * so it's fine to call this more than once.
+   */
+  processFeedTweets: () => {
+    const users = [];
+    const feedTweets = botcheckScanner.getFeedTweets();
+
+    feedTweets.forEach((tweet) => {
+      const result = botcheckScanner.processTweetEl(tweet, { isFeed: true });
+
+      if (result && result.username && result.realName) {
+        users.push(result);
+      }
+    });
+
+    if (users.length > 1) {
+      store.dispatch('BULK_LIGHT_SCAN', users);
+    }
+  },
 
   injectDialogs: () => {
     const el = document.createElement('div');
@@ -202,18 +233,10 @@ const botcheckScanner = {
           isSmallProfile,
           isProfile
         };
-      },
-      mounted() {
-        // Deep scan if retweet, reply, or permalink.
-        // (No need for profile, that is handled in processProfileEl)
-        const deepScan = (isRetweet || isReply || isPermalink);
-        store.dispatch('SCAN', {
-          deepScan,
-          realName: this.realName,
-          username: this.username
-        });
       }
     });
+
+    return { username, realName };
   },
 
   // Process a Profile and add the Botcheck button to it
