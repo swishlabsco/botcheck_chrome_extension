@@ -1,6 +1,6 @@
-# Botcheck.me Chrome Extension
+# Botcheck.me Chrome/Firefox/Safari Extension
 
-A chrome extension that uses machine learning techniques to detect propaganda accounts on Twitter.
+A cross-browser extension that uses machine learning techniques to detect propaganda accounts on Twitter.
 
 ## Details
 
@@ -13,6 +13,15 @@ A background script is used to listen for authentication, and another as a centr
 
 The Vuex store is only accessible by the content scripts that have been injected into the same tab.
 
+### Cross-browser support
+
+Avoid calling `chrome.*` or similar APIs.
+All browser extension API are to be done via  `xbrowser.js`, to abstract out differences between browsers. 
+Chrome and Firefox have largely compatible extension API's, with some differences that are handled in [webextension-polyfill](https://github.com/mozilla/webextension-polyfill).
+
+Safari is much more limited: background pages are not supported, so we rely on content scripts for everything. This means that certain things need special safari handling, but most of it is handled inside `xbrowser.js`
+Certain things like opening a new tab need to happen in Swift-land, so the Safari JS achieves this by passing a message into the Swift handler: https://developer.apple.com/documentation/safariservices/safari_app_extensions/passing_messages_between_safari_app_extensions_and_injected_scripts
+
 ### Whitelist
 
 The whitelist is managed both on the Twitter interface (whitelisting users) as well as on the extension popup (removing users from whitelist).
@@ -22,28 +31,40 @@ Both sides use the browser storage as the source of truth for both fetching/upda
 
 The content scripts keep an up to date version of the whitelist in the Vuex store, in order to quickly be able to check for the presence of a username.
 
-## Running Eslint
+## Development 
 
-The simplest way to set up eslint for this project is to use VSCode with the [eslint plugin](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
+- Install npm
+- Run  `npm i` to install local development deps 
+- Run `npx gulp watch` - this uses gulp to watch your folders for changes and recompiles JS/less/etc
 
-Once that is done, simply install eslint and the eslint-airbnb-base dependency globally using npm:
+### on Chrome/Firefox 
+The watch script outputs files into the `build` folder.
+This is the folder you want to open in Chrome/Firefox to test the extension while developing.
 
-`npm i -g eslint eslint-config-airbnb-base`
+### on Safari
+- Open the Xcode project inside `safari`
+- Make sure the watch command above is running
+- `Cmd+R` to run the project
+- Open safari, go to Develop > Enable unsigned extensions
+- In safari, go to Preferences > Extensions and enable Botcheck.
+ 
+## Deployment
 
-## Compiling Less stylesheets
+### on Chrome/Firefox
 
-* Install npm
-* Run `npm install -g less less-watch-compiler`
-* Run `less-watch-compiler less styles` to watch the `less` folder and automatically compile to `styles`.
+- Update the version number in `src/manifest.json`
+- Run `npx gulp dist`
+- This outputs a zip file to `dist` which can be uploaded in the browser extension marketplaces.
+- Commit changes to the manifest
 
-[More information on the `less-watch-compiler` package here](https://www.npmjs.com/package/less-watch-compiler).
-
-## Before packaging the extension
-
-* Make sure `manifest.json` is using the minified versions of scripts such as Vue and Vuex.
-* Set the proper configuration values in `config/config.js`.
+### on Safari
+- Make sure the JS/CSS is up to date `npx gulp build`
+- Open the Xcode project inside `safari`
+- Increment the build numbers for both the Botcheck and Botheck Extension build targets.
+- Make sure you're logged in to the shared Apple Developer account in Xcode
+- Click on Product > Archive to compile the build
+- Clik on Distribute app, and follow steps to upload to to Mac App Store
+- Finish app update submit process in iTunes Connect
 
 ## Further reading
-
-* [Chrome extension development](https://developer.chrome.com/extensions)
 * [Botcheck.me](https://botcheck.me)
