@@ -69,27 +69,43 @@ function begin(apiKey) {
   if (begun) return;
   begun = true;
 
-  // Load whitelist and stored results
-  BC.xbrowser.storage.get(null).then((state) => {
-    state = state || {};
+  // Load internationalization data
+  BC.internationalization.load().catch(() => {
+    throw new Error(`
+      (botcheck) Something went wrong when fetching translation file for Botcheck.
+      The extension won\'t be loaded on this tab.
+    `);
+  }).then(() => {
+    console.log('(botcheck) Loaded internationalization data');
 
-    if (!state.whitelist) {
-      state.whitelist = {};
-    }
-    store.dispatch('LOAD_WHITELIST', state.whitelist);
+    // Load whitelist and stored results
+    BC.xbrowser.storage.get(null).then((state) => {
+      state = state || {};
 
-    if (!state.results) {
-      state.results = {};
-    }
-    store.commit('LOAD_DEEPSCAN_RESULTS', state.results);
+      if (!state.whitelist) {
+        state.whitelist = {};
+      }
+      store.dispatch('LOAD_WHITELIST', state.whitelist);
 
-    BC.util.onDOMReady(() => {
-      botcheckScanner.injectButtons();
-      botcheckScanner.injectDialogs();
+      if (!state.results) {
+        state.results = {};
+      }
+      store.commit('LOAD_DEEPSCAN_RESULTS', state.results);
+
+      BC.util.onDOMReady(() => {
+        botcheckScanner.injectButtons();
+        botcheckScanner.injectDialogs();
+      });
     });
-  });
 
-  registerListeners();
+    registerListeners();
+
+  }).catch(() => {
+    throw new Error(`
+      (botcheck) Something went wrong when initializing Botcheck.
+      The extension won\'t be loaded on this tab.
+    `);
+  });
 }
 
 // On fresh page load, if the URL has the apikey lets get it.

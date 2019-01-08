@@ -18,6 +18,7 @@ const paths = {
       'src/vendor/element.js',
       'src/vendor/axios.js',
       'src/vendor/lockr.js',
+      'src/content/internationalization.js',
       'src/content/util.js',
       'src/content/xbrowser.js',
       'src/content/components/botcheck-status.js',

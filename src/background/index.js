@@ -9,8 +9,8 @@ browser.runtime.onMessage.addListener((msg, sender) => {
   }
 });
 
-// Reloads every twitter tab when this backround page loads.
-// This is useful when a users installs the extension with a twitter tab open,
+// Reloads every twitter tab when this background page loads.
+// This is useful when a user installs the extension with a twitter tab open,
 // and then goes to that tab expecting to see it in action.
 browser.tabs.query({ url: 'https://twitter.com/*' }).then((tabs) => {
   tabs.forEach(tab => browser.tabs.reload(tab.id));
