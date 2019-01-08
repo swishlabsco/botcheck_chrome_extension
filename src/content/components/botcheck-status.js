@@ -1,3 +1,6 @@
+// Shortcut for internationalization
+const i = BC.internationalization.getString;
+
 Vue.component('botcheck-status', {
   template: `
     <div :class="containerClass" @click="onClick">
@@ -86,7 +89,8 @@ Vue.component('botcheck-status', {
         return 'Whitelisted';
       }
       if (this.isClickToScan) {
-        return 'Run Bot Scan';
+        // return 'Run Bot Scan';
+        return i('from');
       }
       if (this.prediction === true) {
         return 'Likely a Bot';
