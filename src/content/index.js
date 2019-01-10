@@ -70,13 +70,8 @@ function begin(apiKey) {
   begun = true;
 
   // Load internationalization data
-  BC.internationalization.load().catch(() => {
-    throw new Error(`
-      (botcheck) Something went wrong when fetching translation file for Botcheck.
-      The extension won\'t be loaded on this tab.
-    `);
-  }).then(() => {
-    console.log('(botcheck) Loaded internationalization data');
+  BC.internationalization.load().then(() => {
+    console.log('(botcheck) Loaded internationalization data and served callbacks');
 
     // Load whitelist and stored results
     BC.xbrowser.storage.get(null).then((state) => {
@@ -100,11 +95,12 @@ function begin(apiKey) {
 
     registerListeners();
 
-  }).catch(() => {
-    throw new Error(`
+  }).catch((e) => {
+    console.error(`
       (botcheck) Something went wrong when initializing Botcheck.
       The extension won\'t be loaded on this tab.
     `);
+    throw e;
   });
 }
 
