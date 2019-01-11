@@ -12,7 +12,7 @@
   // Retrieves localization JSON file
   const getJSONData = (lang) =>
     axios
-      .get(`${botcheckConfig.internationalizationURL}/bins/kajnk`)
+      .get(`${botcheckConfig.internationalizationURL}${lang}`)
       .then(result => result.data);
 
   // Replaces all ocurrences of a string (safely)
