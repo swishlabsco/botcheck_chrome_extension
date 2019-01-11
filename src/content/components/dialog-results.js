@@ -10,13 +10,13 @@ BC.internationalization.getInternationalizer((i) => {
                 <img :src="icon" class="botcheck-modal-image">
               </el-col>
               <el-col :span="19">
-                <span class="header">${i('results.userWhitelisted')}</span>
+                <span class="header">${i('results_userWhitelisted')}</span>
                 <span class="status-text">
-                  <strong>@{{ result.username }}</strong> ${i('results.userWhitelistedDescription')}
+                  <strong>@{{ result.username }}</strong> ${i('results_userWhitelistedDescription')}
                 </span>
                 <el-button type="text" class="remove-from-whitelist"
                   @click="removeFromWhitelist(result.username)">
-                  ${i('results.unwhitelist')}
+                  ${i('results_unwhitelist')}
                 </el-button>
                 </div>
               </el-col>
@@ -30,23 +30,23 @@ BC.internationalization.getInternationalizer((i) => {
               <el-col :span="19">
 
                 <div v-if="prediction === true">
-                  <span class="header">${i('results.isBot')}</span>
+                  <span class="header">${i('results_isBot')}</span>
                   <span class="status-text">
                     Our model has classified
-                    <strong>@{{ result.username }}</strong> ${i('results.isBotDescription')}
+                    <strong>@{{ result.username }}</strong> ${i('results_isBotDescription')}
                   </span>
                 </div>
                 <div v-else-if="prediction === false">
-                  <span class="header">${i('results.notBot')}</span>
+                  <span class="header">${i('results_notBot')}</span>
                   <span class="status-text">
                     Our model finds that
-                    <strong>@{{ result.username }}</strong> ${i('results.notBotDescription')}
+                    <strong>@{{ result.username }}</strong> ${i('results_notBotDescription')}
                   </span>
                 </div>
                 <div v-else>
-                  <span class="header">${i('results.unknown')}</span>
+                  <span class="header">${i('results_unknown')}</span>
                   <span class="status-text">
-                    ${i('results.unknownDescription', {
+                    ${i('results_unknownDescription', {
                       username: '<strong>@{{ result.username }}</strong>'
                     })}
                   </span>
@@ -55,7 +55,7 @@ BC.internationalization.getInternationalizer((i) => {
                 <div v-if="prediction !== null"
                     :class="{ 'share-link': true, 'positive': prediction === false }">
                   <a href="#" @click="share">
-                    <i class="Icon Icon--bird"></i><span>${i('results.sharePrompt')}</span>
+                    <i class="Icon Icon--bird"></i><span>${i('results_sharePrompt')}</span>
                   </a>
                 </div>
               </el-col>
@@ -69,26 +69,26 @@ BC.internationalization.getInternationalizer((i) => {
                   command="disagree"
                   v-if="prediction !== null"
                 >
-                  ${i('results.dropdown.disagree')}
+                  ${i('results_dropdown.disagree')}
                 </el-dropdown-item>
                 <el-dropdown-item
                   command="whitelist"
                   v-if="prediction !== null"
                 >
-                  ${i('results.dropdown.whitelist')}
+                  ${i('results_dropdown.whitelist')}
                 </el-dropdown-item>
                 <el-dropdown-item
                   divided
                   command="report"
                   v-if="prediction !== null"
                 >
-                  ${i('results.dropdown.report')}
+                  ${i('results_dropdown.report')}
                 </el-dropdown-item>
                 <el-dropdown-item
                   :divided="prediction !== null"
                   command="learn-more"
                 >
-                  ${i('results.dropdown.learnMore')}
+                  ${i('results_dropdown.learnMore')}
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>

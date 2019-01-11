@@ -88,20 +88,20 @@ BC.internationalization.getInternationalizer((i) => {
           return 'Whitelisted';
         }
         if (this.isClickToScan) {
-          return i('botStatus.runBotScan');
+          return i('botStatus_runBotScan');
         }
         if (this.prediction === true) {
-          return i('botStatus.likelyABot');
+          return i('botStatus_likelyABot');
         }
         if (this.prediction === false) {
-          return i('botStatus.notABot');
+          return i('botStatus_notABot');
         }
         if (this.prediction === null) {
           // Happens for private profiles,
           // or when server returns error
-          return i('botStatus.unknown');
+          return i('botStatus_unknown');
         }
-        return i('botStatus.scanning');
+        return i('botStatus_scanning');
       }
     },
     methods: {
