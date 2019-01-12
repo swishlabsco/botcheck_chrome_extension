@@ -69,13 +69,20 @@ function begin(apiKey) {
   if (begun) return;
   begun = true;
 
-  // Load internationalization data
-  BC.internationalization.load().then(() => {
-    console.log('(botcheck) Loaded internationalization data and served callbacks');
+  // Load whitelist and stored results
+  BC.xbrowser.storage.get(null).then((state) => {
+    state = state || {};
 
-    // Load whitelist and stored results
-    BC.xbrowser.storage.get(null).then((state) => {
-      state = state || {};
+    if (!state.lang) {
+      state.lang = BC.internationalization.getTwitterLang();
+
+      console.log('(botcheck) Storing lang setting:', state.lang);
+      BC.xbrowser.storage.set({ lang: state.lang });
+    }
+
+    // Load internationalization data
+    BC.internationalization.load(state.lang).then(() => {
+      console.log('(botcheck) Loaded internationalization data and served callbacks');
 
       if (!state.whitelist) {
         state.whitelist = {};

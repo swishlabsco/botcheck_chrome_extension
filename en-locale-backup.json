@@ -25,5 +25,7 @@
   "popup_howThisWorks": "How This Works",
   "popup_follow": "Follow Us for Updates",
   "popup_whitelistedAccounts": "Whitelisted Accounts",
-  "popup_emptyWhitelist": "No users have been whitelisted so far!"
+  "popup_emptyWhitelist": "No users have been whitelisted so far!",
+  "popup_languageMenuTitle": "Choose Language",
+  "popup_viewLanguageOptions": "Choose Language"
 }

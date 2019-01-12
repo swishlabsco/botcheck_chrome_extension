@@ -1,18 +1,8 @@
 (function () {
-  // Returns the value of the lang attribute of the <html> tag
-  const getHtmlLang = () => {
-    const html = document.querySelector('html');
-    if (html.attributes['lang'] && html.attributes['lang'].value) {
-      return html.attributes['lang'].value;
-    } else {
-      return 'en';
-    }
-  };
-
   // Retrieves localization JSON file
   const getJSONData = (lang) =>
     axios
-      .get(`${botcheckConfig.internationalizationURL}${lang}`)
+      .get(`${botcheckConfig.internationalizationURL}locale/${lang}`)
       .then(result => result.data);
 
   // Replaces all ocurrences of a string (safely)
@@ -36,9 +26,17 @@
 
   window.BC.internationalization.data = null;
 
-  window.BC.internationalization.load = (optionalLang) => {
-    const lang = optionalLang ? optionalLang : getHtmlLang();
+  // Returns the value of the lang attribute of the <html> tag
+  window.BC.internationalization.getTwitterLang = () => {
+    const html = document.querySelector('html');
+    if (html.attributes['lang'] && html.attributes['lang'].value) {
+      return html.attributes['lang'].value;
+    } else {
+      return 'en';
+    }
+  }
 
+  window.BC.internationalization.load = (lang = 'en') => {
     // Store loaded language for reference
     BC.internationalization.lang = lang;
 
