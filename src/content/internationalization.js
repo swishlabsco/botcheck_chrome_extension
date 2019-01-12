@@ -39,9 +39,6 @@
       .then((data) => {
         BC.internationalization.data = data;
 
-        console.log('(botcheck) Loaded internationalization data:');
-        console.log(data);
-
         BC.internationalization.callbacks.forEach(fn =>
           fn(BC.internationalization.getString)
         );
