@@ -6,10 +6,13 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <link rel="stylesheet" type="text/css" href="../styles/element.css">
   <link rel="stylesheet" type="text/css" href="../styles/popup.css">
+  <script src="../config.js"></script>
   <script src="../vendor/browser-polyfill.js"></script>
   <script src="../vendor/vue.js"></script>
   <script src="../vendor/vuex.js"></script>
   <script src="../vendor/element.js"></script>
+  <script src="../vendor/axios.js"></script>
+  <script src="../vendor/internationalization.js"></script>
 </head>
 
 <body>
@@ -17,25 +20,25 @@
     <div id="main-view" v-if="showMainView">
       <ul>
         <li>
-          <a @click="openUrl('https://botcheck.me')" href="#" target="_blank" >Botcheck.me Site</a>
+          <a @click="openUrl('https://botcheck.me')" href="#" target="_blank" >{{i('popup_site')}}</a>
         </li>
         <li>
           <a @click="openUrl('https://medium.com/@robhat/identifying-propaganda-bots-on-twitter-5240e7cb81a9')" href="#" target="_blank">
-            How This Works
+            {{i('popup_howThisWorks')}}
           </a>
         </li>
         <li>
-          <a @click="openUrl('http://twitter.com/theashbhat')" href="#" target="_blank">Follow Us for Updates</a>
+          <a @click="openUrl('http://twitter.com/theashbhat')" href="#" target="_blank">{{i('popup_follow')}}</a>
         </li>
         <li class="divider"></li>
         <li>
-          <a href="#" @click="openWhitelist">View Whitelist</a>
+          <a href="#" @click="openWhitelist">{{i('popup_viewWhitelist')}}</a>
         </li>
       </ul>
     </div>
     <div id="whitelist-view" v-if="showWhitelistView">
       <div class="whitelist-header">
-        <div class="whitelist-header-text">Whitelisted Accounts</div>
+        <div class="whitelist-header-text">{{i('popup_whitelistedAccounts')}}</div>
         <div class="whitelist-go-back" @click="closeWhitelist">
           <i class="el-icon-back"></i>
         </div>
@@ -43,7 +46,7 @@
       <div class="whitelist-table">
         <div class="whitelist-table-inner">
           <div class="whitelist-empty" v-if="Object.keys(whitelist).length < 1">
-            No users have been whitelisted so far!
+            {{i('popup_emptyWhitelist')}}
           </div>
           <div v-for="(value, key) in whitelist" class="whitelist-item">
             <div class="whitelist-item-real-name">{{value.realName}}</div>

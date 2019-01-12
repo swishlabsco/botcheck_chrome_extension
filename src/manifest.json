@@ -18,6 +18,7 @@
   "background": {
     "scripts": [
       "vendor/browser-polyfill.js",
+      "config.js",
       "content/namespace.js",
       "content/util.js",
       "background/index.js",

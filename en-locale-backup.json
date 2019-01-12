@@ -19,5 +19,11 @@
   "results_dropdown_report": "Report to Twitter",
   "results_dropdown_learnMore": "Learn More",
   "thanksDialog_title": "Thank You for Your Feedback!",
-  "thanksDialog_description": "Our model currently has about 90% accuracy but occasionally makes mistakes. Thank you for your input."
+  "thanksDialog_description": "Our model currently has about 90% accuracy but occasionally makes mistakes. Thank you for your input.",
+  "popup_viewWhitelist": "View Whitelist",
+  "popup_site": "Botcheck.me Site",
+  "popup_howThisWorks": "How This Works",
+  "popup_follow": "Follow Us for Updates",
+  "popup_whitelistedAccounts": "Whitelisted Accounts",
+  "popup_emptyWhitelist": "No users have been whitelisted so far!"
 }

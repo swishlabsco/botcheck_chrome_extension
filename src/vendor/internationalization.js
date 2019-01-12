@@ -28,12 +28,19 @@
    * Exposed functionality
    */
 
-  BC.internationalization = {};
+  if (!window.BC) {
+    window.BC = {};
+  }
 
-  BC.internationalization.data = null;
+  window.BC.internationalization = {};
 
-  BC.internationalization.load = () => {
-    const lang = getHtmlLang();
+  window.BC.internationalization.data = null;
+
+  window.BC.internationalization.load = (optionalLang) => {
+    const lang = optionalLang ? optionalLang : getHtmlLang();
+
+    // Store loaded language for reference
+    BC.internationalization.lang = lang;
 
     return getJSONData(lang)
       .then((data) => {
@@ -57,7 +64,7 @@
    * %% %% was used instead of the more common {{ }} due to Vue already
    * using the latter.
    */
-  BC.internationalization.getString = (key, filler = {}) => {
+  window.BC.internationalization.getString = (key, filler = {}) => {
     if (!BC.internationalization.data) {
       throw new Error(`
         (botcheck) Called internationalization.getString()
@@ -65,7 +72,8 @@
       `);
     }
     if (!BC.internationalization.data[key]) {
-      return '';
+      console.error('Missing translation string for key ', key, ' in lang ', BC.internationalization.lang);
+      return key;
     }
 
     const string = BC.internationalization.data[key];
@@ -79,7 +87,7 @@
     return filledString;
   };
 
-  BC.internationalization.callbacks = [];
+  window.BC.internationalization.callbacks = [];
 
   /**
    * This function is called by scripts that need access to the
@@ -89,7 +97,7 @@
    *           is ready to use. BC.internationalization.getString is sent
    *           as a parameter for ease of use.
    */
-  BC.internationalization.getInternationalizer = (fn) => {
+  window.BC.internationalization.getInternationalizer = (fn) => {
     if (BC.internationalization.data) {
       fn(BC.internationalization.getString);
     } else {
