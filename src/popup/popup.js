@@ -95,7 +95,6 @@ browser.storage.local.get('lang').then(({ lang }) => {
           if (browser && browser.runtime && browser.runtime.sendMessage) {
             // Reload Twitter tabs
             browser.runtime.sendMessage({ message: 'reloadTwitterTabs' }).then(() => {
-
               // Refresh popup for changes to take effect
               window.location.reload();
             });
