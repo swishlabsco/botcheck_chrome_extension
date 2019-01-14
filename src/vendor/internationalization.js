@@ -41,6 +41,12 @@
     BC.internationalization.lang = lang;
 
     return getJSONData(lang)
+      .catch((e) => {
+        console.error(e);
+        console.log(`(botcheck) Something went wrong when loading translation for language "${lang}". Loading english...`);
+
+        return getJSONData('en');
+      })
       .then((data) => {
         BC.internationalization.data = data;
 
