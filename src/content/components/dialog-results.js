@@ -71,26 +71,26 @@ BC.internationalization.getInternationalizer((i) => {
                   command="disagree"
                   v-if="prediction !== null"
                 >
-                  ${i('results_dropdown.disagree')}
+                  ${i('results_dropdown_disagree')}
                 </el-dropdown-item>
                 <el-dropdown-item
                   command="whitelist"
                   v-if="prediction !== null"
                 >
-                  ${i('results_dropdown.whitelist')}
+                  ${i('results_dropdown_whitelist')}
                 </el-dropdown-item>
                 <el-dropdown-item
                   divided
                   command="report"
                   v-if="prediction !== null"
                 >
-                  ${i('results_dropdown.report')}
+                  ${i('results_dropdown_report')}
                 </el-dropdown-item>
                 <el-dropdown-item
                   :divided="prediction !== null"
                   command="learn-more"
                 >
-                  ${i('results_dropdown.learnMore')}
+                  ${i('results_dropdown_learnMore')}
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
