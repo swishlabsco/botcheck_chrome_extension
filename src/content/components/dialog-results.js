@@ -32,15 +32,17 @@ BC.internationalization.getInternationalizer((i) => {
                 <div v-if="prediction === true">
                   <span class="header">${i('results_isBot')}</span>
                   <span class="status-text">
-                    Our model has classified
-                    <strong>@{{ result.username }}</strong> ${i('results_isBotDescription')}
+                    ${i('results_isBotDescription', {
+                      username: '<strong>@{{ result.username }}</strong>'
+                    })}
                   </span>
                 </div>
                 <div v-else-if="prediction === false">
                   <span class="header">${i('results_notBot')}</span>
                   <span class="status-text">
-                    Our model finds that
-                    <strong>@{{ result.username }}</strong> ${i('results_notBotDescription')}
+                    ${i('results_notBotDescription', {
+                      username: '<strong>@{{ result.username }}</strong>'
+                    })}
                   </span>
                 </div>
                 <div v-else>
